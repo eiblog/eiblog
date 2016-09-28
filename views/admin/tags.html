@@ -1,0 +1,58 @@
+{{define "admin-tags"}}
+<div class="body container">
+    <div class="typecho-page-title">
+        <h2>管理标签</h2>
+    </div>
+    <div class="row typecho-page-main manage-metas">
+        <div class="col-mb-12 col-tb-8" role="main">
+            <form method="post" name="manage_tags" class="operate-form">
+                <div class="typecho-list-operate clearfix">
+                    <div class="operate">
+                        <label><i class="sr-only">全选</i>
+                            <input type="checkbox" class="typecho-table-select-all" />
+                        </label>
+                        <div class="btn-group btn-drop">
+                            <button class="btn dropdown-toggle btn-s" type="button"><i class="sr-only">操作</i>选中项 <i class="i-caret-down"></i></button>
+                            <!-- <ul class="dropdown-menu"> -->
+                                <!-- <li><a lang="你确认要删除这些标签吗?" href="/admin/api/tag-delete">删除</a></li> -->
+                            <!-- </ul> -->
+                        </div>
+                    </div>
+                </div>
+                <ul class="typecho-list-notable tag-list clearfix">
+                    {{range $k,$v:=.List}}
+                    <li class="size-5"><input type="checkbox" name="mid[]" />{{$k}}<i class="i-edit"></i></li>
+                    {{end}}
+                </ul>
+            </form>
+        </div>
+        <div class="col-mb-12 col-tb-4" role="form">
+            <p>　　夏雷在天际回响<br>　　纸船在水中荡漾<br>　　时间就这么走了<br>　　远离了三年的学堂<br>　　<br>　　是否还记得前排的那个姑凉<br>　　如今你又彷徨在谁的身旁<br>　　那时我们都太迷茫<br>　　沉醉在青春路上<br>　　<br>　　嘴角扬起的微笑<br>　　那是我们最美好的时光<br>　　那个女孩的嘴角<br>　　深深地印在我的胸膛<br>　　<br>　　青春是多么昂扬<br>　　奏响生命的乐章<br>　　雨中漫步的时光<br>　　在记忆流逝中远航<br>　　<br>　　别了，我亲爱的课堂<br>　　别了，我最好的同窗<br>　　别了，敬爱三年的师长<br>　　我多么希望，记忆停留归航<br>　　2016/9.9殇星<br>　　</p>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+(function () {
+    $(document).ready(function () {
+
+        $('.typecho-list-notable').tableSelectable({
+            checkEl     :   'input[type=checkbox]',
+            rowEl       :   'li',
+            selectAllEl :   '.typecho-table-select-all',
+            actionEl    :   '.dropdown-menu a'
+        });
+
+        $('.btn-drop').dropdownMenu({
+            btnEl       :   '.dropdown-toggle',
+            menuEl      :   '.dropdown-menu'
+        });
+
+        $('.dropdown-menu button.merge').click(function () {
+            var btn = $(this);
+            btn.parents('form').attr('action', btn.attr('rel')).submit();
+        });
+
+            });
+})();
+</script>
+{{end}}

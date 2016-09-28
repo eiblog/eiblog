@@ -1,0 +1,178 @@
+<!DOCTYPE HTML>
+<html lang="zh-cn">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{.Title}}</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="stylesheet" href="/static/admin/background.css">
+    <link rel="stylesheet" href="/static/admin/style.css">
+    <!--[if lt IE 9]>
+        <script src="//cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+    <!--[if lt IE 9]>
+        <div class="alert alert-danger topframe" role="alert">你的浏览器实在<strong>太太太太太太旧了</strong>，放学别走，升级完浏览器再说 <a target="_blank" class="alert-link" href="http://browsehappy.com">立即升级</a></div>
+    <![endif]-->
+    <script src="/static/admin/jquery.js"></script>
+    <script src="/static/admin/jquery-ui.js"></script>
+    <script src="/static/admin/typecho.js"></script>
+    <div class="typecho-head-nav clearfix" role="navigation">
+        <nav id="typecho-nav-list">
+            <ul class="root {{if .Console}}focus{{end}}">
+                <li class="parent"><a target="_self" href="/admin/profile">控制台</a></dt>
+                </li>
+                <ul class="child">
+                    <li {{if eq .Path "/admin/profile"}}class="focus" {{end}}><a target="_self" href="/admin/profile">个人设置</a></li>
+                    <li {{if eq .Path "/admin/plugins"}}class="focus" {{end}}><a target="_self" href="/admin/plugins">插件</a></li>
+                    <li class="last {{if eq .Path "/admin/themes"}}focus{{end}}"><a target="_self" href="/admin/themes">外观</a></li>
+                </ul>
+            </ul>
+            <ul class="root {{if .Post}}focus{{end}}">
+                <li class="parent"><a target="_self" href="/admin/write-post">撰写</a></dt>
+                </li>
+                <ul class="child">
+                    <li class="last {{if eq .Path "/admin/write-post"}}focus{{end}}"><a target="_self" href="/admin/write-post">撰写文章</a></li>
+                </ul>
+            </ul>
+            <ul class="root {{if .Manage}}focus{{end}}">
+                <li class="parent"><a target="_self" href="/admin/manage-posts">管理</a></dt>
+                </li>
+                <ul class="child">
+                    <li {{if eq .Path "/admin/manage-posts"}}class="focus" {{end}}><a target="_self" href="/admin/manage-posts">文章</a></li>
+                    <li {{if eq .Path "/admin/manage-series"}}class="focus" {{end}}><a target="_self" href="/admin/manage-series">专题</a></li>
+                    {{if eq .Path "/admin/add-serie"}}<li class="focus"><a target="_self" href="/admin/add-serie">{{if .Edit}}编辑专题{{else}}新增专题{{end}}</a></li>{{end}}
+                    <li class="last {{if eq .Path "/admin/manage-tags"}}focus{{end}}"><a target="_self" href="/admin/manage-tags">标签</a></li>
+                    <li class="last {{if eq .Path "/admin/manage-draft"}}focus{{end}}"><a target="_self" href="/admin/manage-draft">草稿箱</a></li>
+                    <li class="last {{if eq .Path "/admin/manage-trash"}}focus{{end}}"><a target="_self" href="/admin/manage-trash">回收箱</a></li>
+                </ul>
+            </ul>
+            <ul class="root {{if .Setting}}focus{{end}}">
+                <li class="parent"><a target="_self" href="/admin/options-general">设置</a></dt>
+                </li>
+                <ul class="child">
+                    <li {{if eq .Path "/admin/options-general"}}class="focus" {{end}}><a target="_self" href="/admin/options-general">基本</a></li>
+                    <li class="last {{if eq .Path "/admin/options-discussion"}}focus{{end}}"><a target="_self" href="/admin/options-discussion">阅读</a></li>
+                </ul>
+            </ul>
+        </nav>
+        <div class="operate">
+            <a target="_self" title="{{.LastLogin}}" href="/admin/profile" class="author">{{.Author}}</a><a class="exit" href="/admin/login?logout=true">登出</a><a target="_back" href="/">网站</a>
+        </div>
+    </div>
+    <div class="main">
+        {{if .Profile}}{{template "admin-profile" .}}{{else if .Post}}{{template "admin-post" .}}{{else if .Posts}}{{template "admin-posts" .}}{{else if .Series}}{{template "admin-series" .}}{{else if .Serie}}{{template "admin-serie" .}}{{else if .Tags}}{{template "admin-tags" .}}{{else if .General}}{{template "admin-general" .}}{{else if .Discussion}}{{template "admin-discussion" .}}{{else if .Draft}}{{template "admin-draft" .}}{{else if .Trash}}{{template "admin-trash" .}}{{end}}
+    </div>
+    <div class="typecho-foot" role="contentinfo">
+        <div class="copyright">
+            <a href="http://typecho.org" class="i-logo-s">Typecho</a>
+            <p>由 <a href="http://typecho.org">Typecho</a> 提供皮肤, 版本 1.0 (14.10.10)</p>
+        </div>
+    </div>
+    <script>
+    (function () {
+        $(document).ready(function() {
+            // 处理消息机制
+            (function () {
+                    cookies = {
+                        notice      :   $.cookie( 'notice'),
+                        noticeType  :   $.cookie( 'notice_type'),
+                        highlight   :   $.cookie('notice_highlight')
+                    },
+                    path = '/';
+
+                if (!!cookies.notice && 'success|notice|error'.indexOf(cookies.noticeType) >= 0) {
+                    var head = $('.typecho-head-nav'),
+                        p = $('<div class="message popup ' + cookies.noticeType + '">'
+                        + '<ul><li>' + $.parseJSON(cookies.notice).join('</li><li>') 
+                        + '</li></ul></div>'), offset = 0;
+
+                    if (head.length > 0) {
+                        p.insertAfter(head);
+                        offset = head.outerHeight();
+                    } else {
+                        p.prependTo(document.body);
+                    }
+
+                    function checkScroll () {
+                        if ($(window).scrollTop() >= offset) {
+                            p.css({
+                                'position'  :   'fixed',
+                                'top'       :   0
+                            });
+                        } else {
+                            p.css({
+                                'position'  :   'absolute',
+                                'top'       :   offset
+                            });
+                        }
+                    }
+
+                    $(window).scroll(function () {
+                        checkScroll();
+                    });
+
+                    checkScroll();
+
+                    p.slideDown(function () {
+                        var t = $(this), color = '#C6D880';
+                        
+                        if (t.hasClass('error')) {
+                            color = '#FBC2C4';
+                        } else if (t.hasClass('notice')) {
+                            color = '#FFD324';
+                        }
+
+                        t.effect('highlight', {color : color})
+                            .delay(5000).slideUp(function () {
+                            $(this).remove();
+                        });
+                    });
+
+                    
+                    $.cookie('notice', null, {path : path});
+                    $.cookie('notice_type', null, {path : path});
+                }
+
+                if (cookies.highlight) {
+                    $('#' + cookies.highlight).effect('highlight', 1000);
+                    $.cookie('notice_highlight', null, {path : path});
+                }
+            })();
+
+
+            // 导航菜单 tab 聚焦时展开下拉菜单
+            (function () {
+                $('#typecho-nav-list').find('.parent a').focus(function() {
+                    $('#typecho-nav-list').find('.child').hide();
+                    $(this).parents('.root').find('.child').show();
+                });
+                $('.operate').find('a').focus(function() {
+                    $('#typecho-nav-list').find('.child').hide();
+                });
+            })();
+
+            // if ($('.typecho-login').length == 0) {
+            //     $('a').each(function() {
+            //         var t = $(this),
+            //             href = t.attr('href');
+
+            //         if ((href && href[0] == '#') || /^http\:\/\/localhost\/admin\/.*$/.exec(href)) {
+            //             return;
+            //         }
+
+            //         t.attr('target', '_blank');
+            //     });
+            // }
+        });
+    })();
+    </script>
+</body>
+
+</html>

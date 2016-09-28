@@ -1,0 +1,73 @@
+{{define "admin-serie"}}
+<div class="body container">
+    <div class="typecho-page-title">
+        {{if .Edit}}
+        <h2>编辑 {{with .Edit}}{{.Name}}{{end}}</h2>
+        {{else}}
+        <h2>新增专题</h2>
+        {{end}}
+    </div>
+    <div class="row typecho-page-main" role="form">
+        <div class="col-mb-12 col-tb-6 col-tb-offset-3">
+            <form action="/admin/api/serie-add" method="post" enctype="application/x-www-form-urlencoded">
+                <ul class="typecho-option" id="typecho-option-item-name-0">
+                    <li>
+                        <label class="typecho-label" for="name-0-1">
+                            专题名称 *</label>
+                        <input id="name-0-1" name="name" type="text" class="text" {{with .Edit}}value="{{.Name}}"{{end}} />
+                    </li>
+                </ul>
+                <ul class="typecho-option" id="typecho-option-item-slug-1">
+                    <li>
+                        <label class="typecho-label" for="slug-0-2">
+                            专题缩略名</label>
+                        <input id="slug-0-2" name="slug" type="text" class="text" {{with .Edit}}value="{{.Slug}}"{{end}} />
+                        <p class="description">
+                            专题缩略名用于创建友好的链接形式, 建议使用字母, 数字, 下划线和横杠.</p>
+                    </li>
+                </ul>
+                <ul class="typecho-option" id="typecho-option-item-description-3">
+                    <li>
+                        <label class="typecho-label" for="description-0-3">
+                            专题描述</label>
+                        <textarea id="description-0-3" name="description">{{with .Edit}}{{.Desc}}{{end}} </textarea>
+                        <p class="description">
+                            此文字用于描述专题, 在有的主题中它会被显示.</p>
+                    </li>
+                </ul>
+                <ul class="typecho-option typecho-option-submit" id="typecho-option-item--6">
+                    <li>
+                        <button type="submit" class="btn primary">
+                            增加专题</button>
+                    </li>
+                </ul>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+(function () {
+    $(document).ready(function () {
+        var error = $('.typecho-option .error:first');
+
+        if (error.length > 0) {
+            $('html,body').scrollTop(error.parents('.typecho-option').offset().top);
+        }
+
+        $('form').submit(function () {
+            if (this.submitted) {
+                return false;
+            } else {
+                this.submitted = true;
+            }
+        });
+
+        $('label input[type=text]').click(function (e) {
+            var check = $('#' + $(this).parents('label').attr('for'));
+            check.prop('checked', true);
+            return false;
+        });
+    });
+})();
+</script>
+{{end}}

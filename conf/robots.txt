@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+Sitemap: https://deepzz.com/sitemap.xml
+
+User-agent: MJ12bot
+Disallow: /

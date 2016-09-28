@@ -1,0 +1,76 @@
+# 静态文件版本
+staticversion: 2
+# 运行模式 dev or prod
+runmode: dev
+# 回收箱保留48小时
+trash: -48
+# 定时清理回收箱，%d小时
+clean: 12
+# 首页展示文章数量
+pagenum: 10
+# 管理界面
+pagesize: 20
+# 自动截取预览, 字符数
+length: 200
+# 截取预览标识
+identifier: <!-- more -->
+# favicon
+favicon: //st.deepzz.com/static/img/favicon.png
+# 起始ID，预留id不时之需, 不用管
+startid: 11
+# 静态文件地址, 后台js,css在用, cdn: //domain.com
+static: //127.0.0.1:8080
+# elasticsearch url
+searchurl: http://elasticsearch:9200
+# 评论相关
+disqus:
+  shortname: deepzz
+  publickey: wdSgxRm9rdGAlLKFcFdToBe3GT4SibmV7Y8EjJQ0r4GWXeKtxpopMAeIeoI2dTEg
+  url: https://disqus.com/api/3.0/threads/set.json
+  interval: 5
+# 运行模式
+modes:
+  dev:
+    # don't modify
+    enablehttp: true
+    httpport: 8080
+    domain: 127.0.0.1:8080
+  prod:
+    # you can fix certfile, keyfile, domain
+    enablehttp: true
+    httpport: 80
+    enablehttps: true
+    httpsport: 443
+    certfile: conf/certs/domain.pem
+    keyfile: conf/certs/domain.key
+    domain: deepzz.com
+# twitter地址: //twitter.com/chenqijing2
+twitter: //twitter.com/chenqijing2
+# rss地址
+rss: /rss.html
+# search地址
+search: /search.html
+
+# 以下数据初始化用，可在后台修改
+account:
+  # *后台登录用户名
+  username: deepzz
+  # *登录明文密码
+  password: deepzz
+  # 邮箱，用于通知: chenqijing2#163.com
+  email: chenqijing2#163.com
+  # 手机号, "+8615100000000"
+  phonenumber: "+8615100000000"
+  # 家庭住址
+  address: ""
+blogger:
+  # left显示名称: Deepzz
+  blogname: Deepzz
+  # 小标题: 不抛弃，不放弃
+  subtitle: 不抛弃，不放弃
+  # 备案号: 蜀 ICP 备 16021362 号
+  beian: 蜀 ICP 备 16021362 号
+  # footer显示名称及tab标题: Deepzz's Blog
+  btitle: Deepzz's Blog
+  # 版权声明: 本站使用「<a href="//creativecommons.org/licenses/by/4.0/">署名 4.0 国际</a>」创作共享协议，转载请注明作者及原网址。
+  copyright: 本站使用「<a href="//creativecommons.org/licenses/by/4.0/">署名 4.0 国际</a>」创作共享协议，转载请注明作者及原网址。

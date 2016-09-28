@@ -1,0 +1,81 @@
+{{define "admin-draft"}}
+<div class="body container">
+    <div class="typecho-page-title">
+        <h2>草稿箱</h2>
+    </div>
+    <div class="row typecho-page-main manage-metas">
+        <div class="col-mb-12" role="main">
+            <form method="post" name="manage_draft" class="operate-form">
+                <div class="typecho-list-operate clearfix">
+                    <div class="operate">
+                        <label><i class="sr-only">全选</i>
+                            <input type="checkbox" class="typecho-table-select-all" />
+                        </label>
+                        <div class="btn-group btn-drop">
+                            <button class="btn dropdown-toggle btn-s" type="button"><i class="sr-only">操作</i>选中项 <i class="i-caret-down"></i></button>
+                            <ul class="dropdown-menu">
+                                <li><a lang="此草稿箱下的所有内容将被永久删除, 你确认要删除这些文章吗?" href="/admin/api/draft-delete">删除</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="search" role="search">
+                    </div>
+                </div>
+                <div class="typecho-table-wrap">
+                    <table class="typecho-list-table">
+                        <colgroup>
+                            <col width="20" />
+                            <col width="40%" />
+                            <col width="" />
+                            <col width="12%" />
+                            <col width="14%" />
+                            <col width="14%" />
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th> </th>
+                                <th>标题</th>
+                                <th>作者</th>
+                                <th>专题</th>
+                                <th>创建</th>
+                                <th>保存</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{range .List}}
+                            <tr id="mid-article-{{.ID}}">
+                                <td>
+                                    <input type="checkbox" value="{{.ID}}" name="mid[]" />
+                                </td>
+                                <td><a href="/admin/write-post?cid={{.ID}}">{{.Title}}</a></td>
+                                <td>{{.Author}}</td>
+                                <td>{{if gt .SerieID 0}}专题ID:{{.SerieID}}{{else}}--{{end}}</td>
+                                <td>{{dateformat .CreateTime "2006/01/02 15:04"}}</td>
+                                <td>{{dateformat .UpdateTime "2006/01/02 15:04"}}</td>
+                            </tr>
+                            {{end}}
+                        </tbody>
+                    </table>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+(function() {
+    $(document).ready(function() {
+        $('.typecho-list-table').tableSelectable({
+            checkEl: 'input[type=checkbox]',
+            rowEl: 'tr',
+            selectAllEl: '.typecho-table-select-all',
+            actionEl: '.dropdown-menu a,button.btn-operate'
+        });
+
+        $('.btn-drop').dropdownMenu({
+            btnEl: '.dropdown-toggle',
+            menuEl: '.dropdown-menu'
+        });
+    });
+})();
+</script>
+{{end}}

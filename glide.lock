@@ -1,0 +1,18 @@
+hash: 0da7cc4f8131804e7a030fd66408ea7b0d8796970eda67b7a18fa7e4f6ab5292
+updated: 2016-08-06T23:43:20.163798264+08:00
+imports:
+- name: github.com/EiBlog/utils
+  version: 5a2bb8d46f95cd0d799a7eeebfb611431305eed3
+  subpackages:
+  - log
+  - mgo
+- name: gopkg.in/ini.v1
+  version: 9144852efba7c4daf409943ee90767da62d55438
+- name: gopkg.in/mgo.v2
+  version: 01084657862d7b12d3b10ffd0394357abf8f8bc2
+  subpackages:
+  - bson
+  - internal/json
+  - internal/sasl
+  - internal/scram
+testImports: []

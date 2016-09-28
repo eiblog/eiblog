@@ -1,0 +1,166 @@
+{{define "admin-profile"}}
+<div class="body container">
+    <div class="typecho-page-title">
+        <h2>个人设置</h2>
+    </div>
+    {{with .Account}}
+    <div class="row typecho-page-main">
+        <div class="col-mb-12 col-tb-3">
+            <p>
+                <img class="profile-avatar" src="//st.deepzz.com/static/img/deepzz.jpg" alt="{{.BlogName}}" />
+            </p>
+            <h2>{{.BlogName}}</h2>
+            <p>{{.SubTitle}}</p>
+            <p>最后登录: {{dateformat .LoginTime "2006/01/02 15:04"}}</p>
+        </div>
+        <div class="col-mb-12 col-tb-6 col-tb-offset-1 typecho-content-panel" role="form">
+            <section>
+                <h3>账号信息</h3>
+                <form action="/admin/api/account" method="post" enctype="application/x-www-form-urlencoded">
+                    <ul class="typecho-option">
+                        <li>
+                            <label class="typecho-label" for="info-0-1">
+                                个人邮箱</label>
+                            <input id="info-0-1" name="email" type="text" class="text" value="{{.Email}}" />
+                            <p class="description">
+                                用于发送告警邮件及其它通知, 建议填写, 如: example#163.com.</p>
+                        </li>
+                    </ul>
+                    <ul class="typecho-option">
+                        <li>
+                            <label class="typecho-label" for="info-0-2">
+                                移动电话</label>
+                            <input id="info-0-2" name="phoneNumber" type="text" class="text" value="{{.PhoneN}}" />
+                            <p class="description">
+                                选择填写, 如: ＋8615123456789.</p>
+                        </li>
+                    </ul>
+                    <ul class="typecho-option">
+                        <li>
+                            <label class="typecho-label" for="info-0-3">
+                                家庭住址</label>
+                            <input id="info-0-3" name="address" type="text" class="text" value="{{.Address}}" />
+                            <p class="description">
+                                选择填写, 如: xx省xx市xx区(县)xxxx小区xxx号.</p>
+                        </li>
+                    </ul>
+                    <ul class="typecho-option typecho-option-submit">
+                        <li>
+                            <button type="submit" class="btn primary">
+                                更新账号信息</button>
+                        </li>
+                    </ul>
+                </form>
+            </section>
+            <br>
+            <section>
+                <h3>博客信息</h3>
+                <form action="/admin/api/blog" method="post" enctype="application/x-www-form-urlencoded">
+                    <ul class="typecho-option">
+                        <li>
+                            <label class="typecho-label" for="blog-0-1">
+                                博客昵称 *</label>
+                            <input id="blog-0-1" name="blogName" type="text" class="text" value="{{.BlogName}}" />
+                            <p class="description">
+                                用户昵称可以与用户名不同, 用于前台显示.
+                                <br />如果你将此项留空, 将默认使用登录用户名.</p>
+                        </li>
+                    </ul>
+                    <ul class="typecho-option">
+                        <li>
+                            <label class="typecho-label" for="blog-0-4">
+                                标题显示 *</label>
+                            <input id="blog-0-4" name="bTitle" type="text" class="text" value="{{.BTitle}}" />
+                            <p class="description">
+                                用于所有页面的title组成, 如: Deepzz's Blog</p>
+                        </li>
+                    </ul>
+                    <ul class="typecho-option">
+                        <li>
+                            <label class="typecho-label" for="blog-0-2">
+                                个人格言</label>
+                            <input id="blog-0-2" name="subTitle" type="text" class="text" value="{{.SubTitle}}" />
+                            <p class="description">
+                                简介或格言, 如: 生活百般滋味, 人生需要笑对.</p>
+                        </li>
+                    </ul>
+                     <ul class="typecho-option">
+                        <li>
+                            <label class="typecho-label" for="blog-0-3">
+                                备案号</label>
+                            <input id="blog-0-3" name="beiAn" type="text" class="text" value="{{.BeiAn}}" />
+                            <p class="description">
+                                用于底部显示, 不添加则不显示, 如: 蜀 ICP 备 16021362 号</p>
+                        </li>
+                    </ul>
+                    <ul class="typecho-option">
+                        <li>
+                            <label class="typecho-label" for="blog-0-4">
+                                专题前说</label>
+                            <textarea id="blog-0-4" name="seriessay">{{.SeriesSay}}</textarea>
+                            <p class="description">
+                                此文字用于专题前述, 会在专题最前方显示.</p>
+                        </li>
+                    </ul>
+                    <ul class="typecho-option">
+                        <li>
+                            <label class="typecho-label" for="blog-0-5">
+                                归档前说</label>
+                            <textarea id="blog-0-5" name="archivessay">{{.ArchivesSay}}</textarea>
+                            <p class="description">
+                                此文字用于归档前述, 会在归档最前方显示.</p>
+                        </li>
+                    </ul>
+                    <ul class="typecho-option typecho-option-submit" id="typecho-option-item-submit-4">
+                        <li>
+                            <button type="submit" class="btn primary">
+                                更新博客信息</button>
+                        </li>
+                    </ul>
+                </form>
+            </section>
+            <br>
+            <section id="change-password">
+                <h3>密码修改</h3>
+                <form action="/admin/api/password" method="post" enctype="application/x-www-form-urlencoded">
+                    <ul class="typecho-option" id="typecho-option-item-password-10">
+                        <li>
+                            <label class="typecho-label" for="password-0-11">
+                                原始密码</label>
+                            <input id="password-0-11" name="old" type="password" class="w-60" />
+                            <p class="description">
+                                该账户旧密码.</p>
+                        </li>
+                    </ul>
+                    <ul class="typecho-option" id="typecho-option-item-password-10">
+                        <li>
+                            <label class="typecho-label" for="password-0-11">
+                                用户密码</label>
+                            <input id="password-0-11" name="new" type="password" class="w-60" />
+                            <p class="description">
+                                为此用户分配一个密码.
+                                <br />建议使用特殊字符与字母、数字的混编样式,以增加系统安全性.</p>
+                        </li>
+                    </ul>
+                    <ul class="typecho-option" id="typecho-option-item-confirm-11">
+                        <li>
+                            <label class="typecho-label" for="confirm-0-12">
+                                用户密码确认</label>
+                            <input id="confirm-0-12" name="confirm" type="password" class="w-60" />
+                            <p class="description">
+                                请确认你的密码, 与上面输入的密码保持一致.</p>
+                        </li>
+                    </ul>
+                    <ul class="typecho-option typecho-option-submit" id="typecho-option-item-submit-13">
+                        <li>
+                            <button type="submit" class="btn primary">
+                                更新密码</button>
+                        </li>
+                    </ul>
+                </form>
+            </section>
+        </div>
+    </div>
+    {{end}}
+</div>
+{{end}}

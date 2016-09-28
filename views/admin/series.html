@@ -1,0 +1,109 @@
+{{define "admin-series"}}
+<div class="body container">
+    <div class="typecho-page-title">
+        <h2>管理专题<a href="/admin/add-serie">新增</a></h2>
+    </div>
+    <div class="row typecho-page-main manage-metas">
+        <div class="col-mb-12" role="main">
+            <form method="post" name="manage_categories" class="operate-form">
+                <div class="typecho-list-operate clearfix">
+                    <div class="operate">
+                        <label><i class="sr-only">全选</i>
+                            <input type="checkbox" class="typecho-table-select-all" />
+                        </label>
+                        <div class="btn-group btn-drop">
+                            <button class="btn dropdown-toggle btn-s" type="button"><i class="sr-only">操作</i>选中项 <i class="i-caret-down"></i></button>
+                            <ul class="dropdown-menu">
+                                <li><a lang="此分类下的所有内容将被删除, 你确认要删除这些分类吗?" href="/admin/api/serie-delete">删除</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="search" role="search">
+                    </div>
+                </div>
+                <div class="typecho-table-wrap">
+                    <table class="typecho-list-table">
+                        <colgroup>
+                            <col width="20" />
+                            <col width="10%" />
+                            <col width="45%" />
+                            <col width="30%" />
+                            <col width="10%" />
+                        </colgroup>
+                        <thead>
+                            <tr class="nodrag">
+                                <th> </th>
+                                <th>ID</th>
+                                <th>名称</th>
+                                <th>创建</th>
+                                <th>文章数</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{range .List}}
+                            <tr id="mid-category-{{.ID}}">
+                                <td>
+                                    <input type="checkbox" value="{{.ID}}" name="mid[]" />
+                                </td>
+                                <td><a href="/admin/add-serie?mid={{.ID}}">{{.ID}}</a>
+                                    <a href="/series.html#toc-{{.ID}}" title="浏览 {{.Name}}"><i class="i-exlink"></i></a>
+                                </td>
+                                <td>{{.Name}}</td>
+                                <td>{{dateformat .CreateTime "2006/01/02 15:04"}}</td>
+                                <td><a class="balloon-button left size-50" href="#">{{len .Articles}}</a></td>
+                            </tr>
+                            {{end}}
+                        </tbody>
+                    </table>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+(function() {
+    $(document).ready(function() {
+        var table = $('.typecho-list-table').tableDnD({
+            onDrop: function() {
+                var ids = [];
+
+                $('input[type=checkbox]', table).each(function() {
+                    ids.push($(this).val());
+                });
+
+                $.post('/admin/api/move',
+                    $.param({
+                        mid: ids
+                    }));
+
+                $('tr', table).each(function(i) {
+                    if (i % 2) {
+                        $(this).addClass('even');
+                    } else {
+                        $(this).removeClass('even');
+                    }
+                });
+            }
+        });
+
+        table.tableSelectable({
+            checkEl: 'input[type=checkbox]',
+            rowEl: 'tr',
+            selectAllEl: '.typecho-table-select-all',
+            actionEl: '.dropdown-menu a'
+        });
+
+        $('.btn-drop').dropdownMenu({
+            btnEl: '.dropdown-toggle',
+            menuEl: '.dropdown-menu'
+        });
+
+        $('.dropdown-menu button.merge').click(function() {
+            var btn = $(this);
+            btn.parents('form').attr('action', btn.attr('rel')).submit();
+        });
+
+    });
+})();
+</script>
+{{end}}

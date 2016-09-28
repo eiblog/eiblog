@@ -1,0 +1,17 @@
+network.host: 0.0.0.0
+
+index:
+  analysis:
+    analyzer:
+      ik_syno:
+          type: custom
+          tokenizer: ik_max_word
+          filter: [my_synonym_filter]
+      ik_syno_smart:
+          type: custom
+          tokenizer: ik_smart
+          filter: [my_synonym_filter]
+    filter:
+      my_synonym_filter:
+          type: synonym
+          synonyms_path: analysis/synonym.txt

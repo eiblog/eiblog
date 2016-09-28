@@ -1,0 +1,125 @@
+{{define "admin-posts"}}
+<div class="body container">
+    <div class="typecho-page-title">
+        <h2>管理文章<a href="/admin/write-post">新增</a></h2>
+    </div>
+    <div class="row typecho-page-main" role="main">
+        <div class="col-mb-12 typecho-list">
+            <div class="typecho-list-operate clearfix">
+                <form method="get">
+                    <div class="operate">
+                        <label><i class="sr-only">全选</i>
+                            <input type="checkbox" class="typecho-table-select-all" />
+                        </label>
+                        <div class="btn-group btn-drop">
+                            <button class="btn dropdown-toggle btn-s" type="button"><i class="sr-only">操作</i>选中项 <i class="i-caret-down"></i></button>
+                            <ul class="dropdown-menu">
+                                <li><a lang="你确认要删除这些文章吗?" href="/admin/api/post-delete">删除</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="search" role="search">
+                        {{if or .KW (gt .Serie 0)}}<a href="/admin/manage-posts">« 取消筛选</a>{{end}}
+                        <input type="text" class="text-s" placeholder="请输入关键字" value="{{if .KW}}{{.KW}}{{end}}" name="keywords" />
+                        <select name="serie">
+                            <option value="">所有专题</option>
+                            {{range .Series}}
+                                <option {{if eq $.Serie .ID}}selected{{end}} value="{{.ID}}">{{.Name}}
+                            {{end}}
+                        </select>
+                        <button type="submit" class="btn btn-s">筛选</button>
+                    </div>
+                </form>
+            </div>
+            <!-- end .typecho-list-operate -->
+            <form method="post" name="manage_posts" class="operate-form">
+                <div class="typecho-table-wrap">
+                    <table class="typecho-list-table">
+                        <colgroup>
+                            <col width="20" />
+                            <col width="6%" />
+                            <col width="40%" />
+                            <col width="" />
+                            <col width="12%" />
+                            <col width="14%" />
+                            <col width="14%" />
+                        </colgroup>
+                        <thead>
+                            <tr>
+                                <th> </th>
+                                <th> </th>
+                                <th>标题</th>
+                                <th>作者</th>
+                                <th>专题</th>
+                                <th>创建</th>
+                                <th>更新</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {{range .List}}
+                            <tr id="post-{{.ID}}">
+                                <td>
+                                    <input type="checkbox" value="{{.ID}}" name="cid[]" />
+                                </td>
+                                <td><a href="/admin/manage-comments?cid={{.ID}}" class="balloon-button size-1">{{.Count}}</a></td>
+                                <td>
+                                    <a href="/admin/write-post?cid={{.ID}}">{{.Title}}</a>
+                                    <a target="_black" href="/post/{{.Slug}}.html" title="浏览 {{.Title}}"><i class="i-exlink"></i></a>
+                                </td>
+                                <td>{{.Author}}</td>
+                                <td>{{if gt .SerieID 0}}专题ID:{{.SerieID}}{{else}}--{{end}}</td>
+                                <td>{{dateformat .CreateTime "06/01/02 15:04"}}</td>
+                                <td>{{dateformat .UpdateTime "06/01/02 15:04"}}</td>
+                            </tr>
+                            {{end}}
+                        </tbody>
+                    </table>
+                </div>
+            </form>
+            <!-- end .operate-form -->
+            <div class="typecho-list-operate clearfix">
+                <form method="get">
+                    <div class="operate">
+                        <label><i class="sr-only">全选</i>
+                            <input type="checkbox" class="typecho-table-select-all" />
+                        </label>
+                        <div class="btn-group btn-drop">
+                            <button class="btn dropdown-toggle btn-s" type="button"><i class="sr-only">操作</i>选中项 <i class="i-caret-down"></i></button>
+                            <ul class="dropdown-menu">
+                                <li><a lang="你确认要删除这些文章吗?" href="/admin/api/post-delete">删除</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <ul class="typecho-pager">
+                        {{if .Prev}}<li class="prev"><a href="/admin/manage-posts?{{html .Prev}}">«</a></li>{{end}}
+                        {{range $k,$v := .PP}}
+                        <li {{if eq $.Cur $k}}class="current"{{end}}><a href="/admin/manage-posts?{{html $v}}">{{$k}}</a></li>
+                        {{end}}
+                        {{if .Next}}<li class="next"><a href="/admin/manage-posts?{{html .Next}}">»</a></li>{{end}}
+                    </ul>
+                </form>
+            </div>
+            <!-- end .typecho-list-operate -->
+        </div>
+        <!-- end .typecho-list -->
+    </div>
+    <!-- end .typecho-page-main -->
+</div>
+<script>
+(function() {
+    $(document).ready(function() {
+        $('.typecho-list-table').tableSelectable({
+            checkEl: 'input[type=checkbox]',
+            rowEl: 'tr',
+            selectAllEl: '.typecho-table-select-all',
+            actionEl: '.dropdown-menu a,button.btn-operate'
+        });
+
+        $('.btn-drop').dropdownMenu({
+            btnEl: '.dropdown-toggle',
+            menuEl: '.dropdown-menu'
+        });
+    });
+})();
+</script>
+{{end}}

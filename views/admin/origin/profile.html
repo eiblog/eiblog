@@ -1,0 +1,393 @@
+<!DOCTYPE HTML>
+<html class="no-js">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
+    <meta name="renderer" content="webkit">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>个人设置 - Hello World - Powered by Typecho</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="stylesheet" href="http://localhost/admin/css/normalize.css?v=14.10.10">
+    <link rel="stylesheet" href="http://localhost/admin/css/grid.css?v=14.10.10">
+    <link rel="stylesheet" href="http://localhost/admin/css/style.css?v=14.10.10">
+    <!--[if lt IE 9]>
+<script src="http://localhost/admin/js/html5shiv.js?v=14.10.10"></script>
+<script src="http://localhost/admin/js/respond.js?v=14.10.10"></script>
+<![endif]-->
+</head>
+
+<body>
+    <!--[if lt IE 9]>
+        <div class="message error browsehappy" role="dialog">当前网页 <strong>不支持</strong> 你正在使用的浏览器. 为了正常的访问, 请 <a href="http://browsehappy.com/">升级你的浏览器</a>.</div>
+    <![endif]-->
+    <div class="typecho-head-nav clearfix" role="navigation">
+        <nav id="typecho-nav-list">
+            <ul class="root focus">
+                <li class="parent"><a target="_self" href="/admin/home">控制台</a></dt>
+                </li>
+                <ul class="child">
+                    <li target="_self" class="focus"><a href="/admin/home">概要</a></li>
+                    <li><a target="_self" href="/admin/profile">个人设置</a></li>
+                    <li><a target="_self" href="/admin/plugin">插件</a></li>
+                    <li class="last"><a target="_self" href="/admin/theme">外观</a></li>
+                </ul>
+            </ul>
+            <ul class="root">
+                <li class="parent"><a target="_self" href="/admin/write">撰写</a></dt>
+                </li>
+                <ul class="child">
+                    <li class="last"><a target="_self" href="/admin/write">撰写文章</a></li>
+                </ul>
+            </ul>
+            <ul class="root">
+                <li class="parent"><a target="_self" href="/admin/articles">管理</a></dt>
+                </li>
+                <ul class="child">
+                    <li><a target="_self" href="/admin/articles">文章</a></li>
+                    <li><a target="_self" href="/admin/categories">分类</a></li>
+                    <li class="last"><a target="_self" href="/admin/tags">标签</a></li>
+                </ul>
+            </ul>
+            <ul class="root">
+                <li class="parent"><a target="_self" href="/admin/setting">设置</a></dt>
+                </li>
+                <ul class="child">
+                    <li><a target="_self" href="/admin/setting">基本</a></li>
+                    <li class="last"><a target="_self" href="/admin/reading">阅读</a></li>
+                </ul>
+            </ul>
+        </nav>
+        <div class="operate">
+            <a target="_self" title="最后登录: 7小时前" href="/admin/profile" class="author">admin</a><a target="_self" class="exit" href="/admin/login?logout=true">登出</a><a href="/">网站</a>
+        </div>
+    </div>
+    <div class="main">
+        <div class="body container">
+            <div class="typecho-page-title">
+                <h2>个人设置</h2>
+            </div>
+            <div class="row typecho-page-main">
+                <div class="col-mb-12 col-tb-3">
+                    <p>
+                        <a href="http://gravatar.com/emails/" title="在 Gravatar 上修改头像"><img class="profile-avatar" src="http://www.gravatar.com/avatar/20a5844bc608d51cdbe28b74495f809d?s=220&amp;r=X&amp;d=mm" alt="admin" /></a>
+                    </p>
+                    <h2>admin</h2>
+                    <p>admin</p>
+                    <p>目前有 <em>2</em> 篇日志, 并有 <em>1</em> 条关于你的评论在 <em>11</em> 个分类中.</p>
+                    <p>最后登录: 2天前</p>
+                </div>
+                <div class="col-mb-12 col-tb-6 col-tb-offset-1 typecho-content-panel" role="form">
+                    <section>
+                        <h3>个人资料</h3>
+                        <form action="http://localhost/index.php/action/users-profile?_=48e2b106ce2f611ac20443fb2acdc076" method="post" enctype="application/x-www-form-urlencoded">
+                            <ul class="typecho-option" id="typecho-option-item-screenName-0">
+                                <li>
+                                    <label class="typecho-label" for="screenName-0-1">
+                                        昵称</label>
+                                    <input id="screenName-0-1" name="screenName" type="text" class="text" value="admin" />
+                                    <p class="description">
+                                        用户昵称可以与用户名不同, 用于前台显示.
+                                        <br />如果你将此项留空, 将默认使用用户名.</p>
+                                </li>
+                            </ul>
+                            <ul class="typecho-option" id="typecho-option-item-url-1">
+                                <li>
+                                    <label class="typecho-label" for="url-0-2">
+                                        个人主页地址</label>
+                                    <input id="url-0-2" name="url" type="text" class="text" value="http://www.typecho.org" />
+                                    <p class="description">
+                                        此用户的个人主页地址, 请用 <code>http://</code> 开头.</p>
+                                </li>
+                            </ul>
+                            <ul class="typecho-option" id="typecho-option-item-mail-2">
+                                <li>
+                                    <label class="typecho-label" for="mail-0-3">
+                                        电子邮箱地址 *</label>
+                                    <input id="mail-0-3" name="mail" type="text" class="text" value="webmaster@yourdomain.com" />
+                                    <p class="description">
+                                        电子邮箱地址将作为此用户的主要联系方式.
+                                        <br />请不要与系统中现有的电子邮箱地址重复.</p>
+                                </li>
+                            </ul>
+                            <ul class="typecho-option" id="typecho-option-item-do-3" style="display:none">
+                                <li>
+                                    <input name="do" type="hidden" value="profile" />
+                                </li>
+                            </ul>
+                            <ul class="typecho-option typecho-option-submit" id="typecho-option-item-submit-4">
+                                <li>
+                                    <button type="submit" class="btn primary">
+                                        更新我的档案</button>
+                                </li>
+                            </ul>
+                        </form>
+                    </section>
+                    <br>
+                    <section id="writing-option">
+                        <h3>撰写设置</h3>
+                        <form action="http://localhost/index.php/action/users-profile?_=48e2b106ce2f611ac20443fb2acdc076" method="post" enctype="application/x-www-form-urlencoded">
+                            <ul class="typecho-option" id="typecho-option-item-markdown-5">
+                                <li>
+                                    <label class="typecho-label">
+                                        使用 Markdown 语法编辑和解析内容</label>
+                                    <span>
+<input name="markdown" type="radio" value="0" id="markdown-0" />
+<label for="markdown-0">
+关闭</label>
+</span>
+                                    <span>
+<input name="markdown" type="radio" value="1" id="markdown-1" checked="true" />
+<label for="markdown-1">
+打开</label>
+</span>
+                                    <p class="description">
+                                        使用 <a href="http://daringfireball.net/projects/markdown/">Markdown</a> 语法能够使您的撰写过程更加简便直观.
+                                        <br />此功能开启不会影响以前没有使用 Markdown 语法编辑的内容.</p>
+                                </li>
+                            </ul>
+                            <ul class="typecho-option" id="typecho-option-item-autoSave-6">
+                                <li>
+                                    <label class="typecho-label">
+                                        自动保存</label>
+                                    <span>
+<input name="autoSave" type="radio" value="0" id="autoSave-0" checked="true" />
+<label for="autoSave-0">
+关闭</label>
+</span>
+                                    <span>
+<input name="autoSave" type="radio" value="1" id="autoSave-1" />
+<label for="autoSave-1">
+打开</label>
+</span>
+                                    <p class="description">
+                                        自动保存功能可以更好地保护你的文章不会丢失.</p>
+                                </li>
+                            </ul>
+                            <ul class="typecho-option" id="typecho-option-item-defaultAllow-7">
+                                <li>
+                                    <label class="typecho-label">
+                                        默认允许</label>
+                                    <span>
+<input name="defaultAllow[]" type="checkbox" value="comment" id="defaultAllow-comment" checked="true" />
+<label for="defaultAllow-comment">
+可以被评论</label>
+</span>
+                                    <span>
+<input name="defaultAllow[]" type="checkbox" value="ping" id="defaultAllow-ping" checked="true" />
+<label for="defaultAllow-ping">
+可以被引用</label>
+</span>
+                                    <span>
+<input name="defaultAllow[]" type="checkbox" value="feed" id="defaultAllow-feed" checked="true" />
+<label for="defaultAllow-feed">
+出现在聚合中</label>
+</span>
+                                    <p class="description">
+                                        设置你经常使用的默认允许权限</p>
+                                </li>
+                            </ul>
+                            <ul class="typecho-option" id="typecho-option-item-do-8" style="display:none">
+                                <li>
+                                    <input name="do" type="hidden" value="options" />
+                                </li>
+                            </ul>
+                            <ul class="typecho-option typecho-option-submit" id="typecho-option-item-submit-9">
+                                <li>
+                                    <button type="submit" class="btn primary">
+                                        保存设置</button>
+                                </li>
+                            </ul>
+                        </form>
+                    </section>
+                    <br>
+                    <section id="change-password">
+                        <h3>密码修改</h3>
+                        <form action="http://localhost/index.php/action/users-profile?_=48e2b106ce2f611ac20443fb2acdc076" method="post" enctype="application/x-www-form-urlencoded">
+                            <ul class="typecho-option" id="typecho-option-item-password-10">
+                                <li>
+                                    <label class="typecho-label" for="password-0-11">
+                                        用户密码</label>
+                                    <input id="password-0-11" name="password" type="password" class="w-60" />
+                                    <p class="description">
+                                        为此用户分配一个密码.
+                                        <br />建议使用特殊字符与字母、数字的混编样式,以增加系统安全性.</p>
+                                </li>
+                            </ul>
+                            <ul class="typecho-option" id="typecho-option-item-confirm-11">
+                                <li>
+                                    <label class="typecho-label" for="confirm-0-12">
+                                        用户密码确认</label>
+                                    <input id="confirm-0-12" name="confirm" type="password" class="w-60" />
+                                    <p class="description">
+                                        请确认你的密码, 与上面输入的密码保持一致.</p>
+                                </li>
+                            </ul>
+                            <ul class="typecho-option" id="typecho-option-item-do-12" style="display:none">
+                                <li>
+                                    <input name="do" type="hidden" value="password" />
+                                </li>
+                            </ul>
+                            <ul class="typecho-option typecho-option-submit" id="typecho-option-item-submit-13">
+                                <li>
+                                    <button type="submit" class="btn primary">
+                                        更新密码</button>
+                                </li>
+                            </ul>
+                        </form>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="typecho-foot" role="contentinfo">
+        <div class="copyright">
+            <a href="http://typecho.org" class="i-logo-s">Typecho</a>
+            <p>由 <a href="http://typecho.org">Typecho</a> 强力驱动, 版本 1.0 (14.10.10)</p>
+        </div>
+        <nav class="resource">
+            <a href="http://docs.typecho.org">帮助文档</a> &bull;
+            <a href="http://forum.typecho.org">支持论坛</a> &bull;
+            <a href="https://github.com/typecho/typecho/issues">报告错误</a> &bull;
+            <a href="http://extends.typecho.org">资源下载</a>
+        </nav>
+    </div>
+    <script src="http://localhost/admin/js/jquery.js?v=14.10.10"></script>
+    <script src="http://localhost/admin/js/jquery-ui.js?v=14.10.10"></script>
+    <script src="http://localhost/admin/js/typecho.js?v=14.10.10"></script>
+    <script>
+    (function() {
+        $(document).ready(function() {
+            // 处理消息机制
+            (function() {
+                var prefix = '86a9106ae65537651a8e456835b316ab',
+                    cookies = {
+                        notice: $.cookie(prefix + '__typecho_notice'),
+                        noticeType: $.cookie(prefix + '__typecho_notice_type'),
+                        highlight: $.cookie(prefix + '__typecho_notice_highlight')
+                    },
+                    path = '/';
+
+                if (!!cookies.notice && 'success|notice|error'.indexOf(cookies.noticeType) >= 0) {
+                    var head = $('.typecho-head-nav'),
+                        p = $('<div class="message popup ' + cookies.noticeType + '">' + '<ul><li>' + $.parseJSON(cookies.notice).join('</li><li>') + '</li></ul></div>'),
+                        offset = 0;
+
+                    if (head.length > 0) {
+                        p.insertAfter(head);
+                        offset = head.outerHeight();
+                    } else {
+                        p.prependTo(document.body);
+                    }
+
+                    function checkScroll() {
+                        if ($(window).scrollTop() >= offset) {
+                            p.css({
+                                'position': 'fixed',
+                                'top': 0
+                            });
+                        } else {
+                            p.css({
+                                'position': 'absolute',
+                                'top': offset
+                            });
+                        }
+                    }
+
+                    $(window).scroll(function() {
+                        checkScroll();
+                    });
+
+                    checkScroll();
+
+                    p.slideDown(function() {
+                        var t = $(this),
+                            color = '#C6D880';
+
+                        if (t.hasClass('error')) {
+                            color = '#FBC2C4';
+                        } else if (t.hasClass('notice')) {
+                            color = '#FFD324';
+                        }
+
+                        t.effect('highlight', {
+                                color: color
+                            })
+                            .delay(5000).slideUp(function() {
+                                $(this).remove();
+                            });
+                    });
+
+
+                    $.cookie(prefix + '__typecho_notice', null, {
+                        path: path
+                    });
+                    $.cookie(prefix + '__typecho_notice_type', null, {
+                        path: path
+                    });
+                }
+
+                if (cookies.highlight) {
+                    $('#' + cookies.highlight).effect('highlight', 1000);
+                    $.cookie(prefix + '__typecho_notice_highlight', null, {
+                        path: path
+                    });
+                }
+            })();
+
+
+            // 导航菜单 tab 聚焦时展开下拉菜单
+            (function() {
+                $('#typecho-nav-list').find('.parent a').focus(function() {
+                    $('#typecho-nav-list').find('.child').hide();
+                    $(this).parents('.root').find('.child').show();
+                });
+                $('.operate').find('a').focus(function() {
+                    $('#typecho-nav-list').find('.child').hide();
+                });
+            })();
+
+
+            if ($('.typecho-login').length == 0) {
+                $('a').each(function() {
+                    var t = $(this),
+                        href = t.attr('href');
+
+                    if ((href && href[0] == '#') || /^http\:\/\/localhost\/admin\/.*$/.exec(href) || /^http\:\/\/localhost\/index\.php\/action\/[_a-zA-Z0-9\/]+.*$/.exec(href)) {
+                        return;
+                    }
+
+                    t.attr('target', '_blank');
+                });
+            }
+        });
+    })();
+    </script>
+    <script>
+    (function() {
+        $(document).ready(function() {
+            var error = $('.typecho-option .error:first');
+
+            if (error.length > 0) {
+                $('html,body').scrollTop(error.parents('.typecho-option').offset().top);
+            }
+
+            $('form').submit(function() {
+                if (this.submitted) {
+                    return false;
+                } else {
+                    this.submitted = true;
+                }
+            });
+
+            $('label input[type=text]').click(function(e) {
+                var check = $('#' + $(this).parents('label').attr('for'));
+                check.prop('checked', true);
+                return false;
+            });
+        });
+    })();
+    </script>
+</body>
+
+</html>
