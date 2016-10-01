@@ -3,6 +3,9 @@ dist: trusty
 
 language: go
 
+deploy:
+  on: master
+
 go:
   - tip
 
