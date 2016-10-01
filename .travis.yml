@@ -3,16 +3,17 @@ sudo: required
 language: go
 
 go:
-  - 1.4
   - 1.5
   - 1.6
   - 1.7
+  - tip
 
 service:
   - docker
 
 before_install:
-  - curl https://glide.sh/get | sh
+  - add-apt-repository ppa:masterminds/glide && sudo apt-get update
+  - apt-get install glide
 
 script:
   - glide up
