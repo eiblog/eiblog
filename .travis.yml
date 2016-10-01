@@ -9,10 +9,6 @@ go:
   - 1.7
   - tip
 
-env:
-  - GOBIN=$GOPTH/bin
-  - PATH=$GOBIN:$PATH
-
 service:
   - docker
 
