@@ -9,8 +9,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/EiBlog/eiblog/setting"
-	"github.com/EiBlog/utils/logd"
+	"github.com/eiblog/eiblog/setting"
+	"github.com/eiblog/utils/logd"
 	"github.com/gin-gonic/gin"
 	"gopkg.in/mgo.v2/bson"
 )

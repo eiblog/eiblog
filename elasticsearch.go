@@ -9,8 +9,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/EiBlog/eiblog/setting"
-	"github.com/EiBlog/utils/logd"
+	"github.com/eiblog/eiblog/setting"
+	"github.com/eiblog/utils/logd"
 )
 
 const (

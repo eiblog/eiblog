@@ -10,10 +10,10 @@ import (
 	"sync"
 	"time"
 
-	"github.com/EiBlog/blackfriday"
-	"github.com/EiBlog/eiblog/setting"
-	"github.com/EiBlog/utils/logd"
-	db "github.com/EiBlog/utils/mgo"
+	"github.com/eiblog/blackfriday"
+	"github.com/eiblog/eiblog/setting"
+	"github.com/eiblog/utils/logd"
+	db "github.com/eiblog/utils/mgo"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )

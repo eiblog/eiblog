@@ -6,9 +6,9 @@ import (
 	"html/template"
 	"time"
 
-	"github.com/EiBlog/eiblog/setting"
-	"github.com/EiBlog/utils/logd"
-	"github.com/EiBlog/utils/tmpl"
+	"github.com/eiblog/eiblog/setting"
+	"github.com/eiblog/utils/logd"
+	"github.com/eiblog/utils/tmpl"
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 )

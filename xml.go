@@ -7,8 +7,8 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/EiBlog/utils/logd"
-	"github.com/EiBlog/utils/tmpl"
+	"github.com/eiblog/utils/logd"
+	"github.com/eiblog/utils/tmpl"
 )
 
 const (

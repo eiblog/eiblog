@@ -6,7 +6,7 @@ import (
 	"os"
 	"path"
 
-	"github.com/EiBlog/utils/logd"
+	"github.com/eiblog/utils/logd"
 	"gopkg.in/yaml.v2"
 )
 
