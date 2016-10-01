@@ -1,18 +1,57 @@
-hash: 0da7cc4f8131804e7a030fd66408ea7b0d8796970eda67b7a18fa7e4f6ab5292
-updated: 2016-08-06T23:43:20.163798264+08:00
+hash: 4b70e76a2e830e97033c06d0e5a90c3199985ff5070bdf8364b1feca63d5caa5
+updated: 2016-10-02T03:49:24.76719466+08:00
 imports:
-- name: github.com/EiBlog/utils
-  version: 5a2bb8d46f95cd0d799a7eeebfb611431305eed3
+- name: github.com/boj/redistore
+  version: fc113767cd6b051980f260d6dbe84b2740c46ab0
+- name: github.com/eiblog/blackfriday
+  version: 53e24c296953e3463c7e310dfab69f5e9ad0be62
+- name: github.com/eiblog/utils
+  version: ed3ca0d59259a3ca13b1a1970cec5bacd25c0414
   subpackages:
-  - log
+  - logd
   - mgo
-- name: gopkg.in/ini.v1
-  version: 9144852efba7c4daf409943ee90767da62d55438
+  - tmpl
+- name: github.com/garyburd/redigo
+  version: ffa8d46ada782d81cfda81a0fbd9f45ceae448e8
+  subpackages:
+  - redis
+  - internal
+- name: github.com/gin-gonic/contrib
+  version: 547e518040cfb96576b507d2f26779ab9c6fc829
+  subpackages:
+  - sessions
+- name: github.com/gin-gonic/gin
+  version: f931d1ea80ae95a6fc739213cdd9399bd2967fb6
+  subpackages:
+  - binding
+  - render
+- name: github.com/golang/protobuf
+  version: 2402d76f3d41f928c7902a765dfc872356dd3aad
+  subpackages:
+  - proto
+- name: github.com/gorilla/context
+  version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
+- name: github.com/gorilla/securecookie
+  version: c13558c2b1c44da35e0eb043053609a5ba3a1f19
+- name: github.com/gorilla/sessions
+  version: ca9ada44574153444b00d3fd9c8559e4cc95f896
+- name: github.com/manucorporat/sse
+  version: ee05b128a739a0fb76c7ebd3ae4810c1de808d6d
+- name: github.com/shurcooL/sanitized_anchor_name
+  version: 1dba4b3954bc059efc3991ec364f9f9a35f597d2
+- name: golang.org/x/net
+  version: f315505cf3349909cdf013ea56690da34e96a451
+  subpackages:
+  - context
+- name: gopkg.in/go-playground/validator.v8
+  version: c193cecd124b5cc722d7ee5538e945bdb3348435
 - name: gopkg.in/mgo.v2
-  version: 01084657862d7b12d3b10ffd0394357abf8f8bc2
+  version: 3f83fa5005286a7fe593b055f0d7771a7dce4655
   subpackages:
   - bson
-  - internal/json
   - internal/sasl
   - internal/scram
+  - internal/json
+- name: gopkg.in/yaml.v2
+  version: a5b47d31c556af34a302ce5d659e6fea44d90de0
 testImports: []

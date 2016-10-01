@@ -1,2 +1,16 @@
-package: github.com/EiBlog/eiblog
-import: []
+package: github.com/eiblog/eiblog
+import:
+- package: github.com/eiblog/blackfriday
+- package: github.com/eiblog/utils
+  subpackages:
+  - logd
+  - mgo
+  - tmpl
+- package: github.com/gin-gonic/contrib
+  subpackages:
+  - sessions
+- package: github.com/gin-gonic/gin
+- package: gopkg.in/mgo.v2
+  subpackages:
+  - bson
+- package: gopkg.in/yaml.v2
