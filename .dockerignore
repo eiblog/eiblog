@@ -1,0 +1,12 @@
+.git
+.git/**
+.dockerignore
+*.yml
+*.md
+.gitignore
+Dockerfile
+vendor
+vendor/**
+*.go
+*.sh
+setting
