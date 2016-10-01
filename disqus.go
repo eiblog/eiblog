@@ -27,9 +27,9 @@ func CommentsCount() {
 		return
 	}
 	baseUrl := setting.Conf.Disqus.URL + "?api_key=" + setting.Conf.Disqus.PublicKey + "&forum=" + setting.Conf.Disqus.ShortName + "&"
-	domain := "http:" + runmode.Domain
+	domain := "http://" + runmode.Domain
 	if runmode.EnableHttps {
-		domain = "https:" + runmode.Domain
+		domain = "https://" + runmode.Domain
 	}
 	var count, index int
 	for index < len(Ei.Articles) {

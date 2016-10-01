@@ -1,7 +1,7 @@
 # 静态文件版本
 staticversion: 2
 # 运行模式 dev or prod
-runmode: dev
+runmode: prod
 # 回收箱保留48小时
 trash: -48
 # 定时清理回收箱，%d小时
@@ -15,11 +15,11 @@ length: 200
 # 截取预览标识
 identifier: <!-- more -->
 # favicon
-favicon: //st.deepzz.com/static/img/favicon.png
+favicon: //st.deepzz.com/static/img/favicon.ico
 # 起始ID，预留id不时之需, 不用管
 startid: 11
 # 静态文件地址, 后台js,css在用, cdn: //domain.com
-static: //127.0.0.1:8080
+static: //deepzz.com
 # elasticsearch url
 searchurl: http://elasticsearch:9200
 # 评论相关
@@ -33,13 +33,13 @@ modes:
   dev:
     # don't modify
     enablehttp: true
-    httpport: 8080
-    domain: 127.0.0.1:8080
+    httpport: 9000
+    domain: deepzz.com
   prod:
     # you can fix certfile, keyfile, domain
     enablehttp: true
-    httpport: 80
-    enablehttps: true
+    httpport: 9000
+    enablehttps: false
     httpsport: 443
     certfile: conf/certs/domain.pem
     keyfile: conf/certs/domain.key

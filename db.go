@@ -11,7 +11,6 @@ import (
 	"time"
 
 	"github.com/EiBlog/blackfriday"
-	"github.com/EiBlog/eiblog/helper"
 	"github.com/EiBlog/eiblog/setting"
 	"github.com/EiBlog/utils/logd"
 	db "github.com/EiBlog/utils/mgo"
@@ -95,7 +94,7 @@ func init() {
 	// 启动定时器
 	go timer()
 	// 获取评论数量
-	// go CommentsCount()
+	go CommentsCount()
 }
 
 // 读取或初始化帐号信息
@@ -106,7 +105,7 @@ func loadAccount() (a *Account) {
 	if err == mgo.ErrNotFound {
 		a = &Account{
 			Username:   setting.Conf.Account.Username,
-			Password:   helper.EncryptPasswd(setting.Conf.Account.Username, setting.Conf.Account.Password),
+			Password:   EncryptPasswd(setting.Conf.Account.Username, setting.Conf.Account.Password),
 			Email:      setting.Conf.Account.Email,
 			PhoneN:     setting.Conf.Account.PhoneNumber,
 			Address:    setting.Conf.Account.Address,
@@ -173,7 +172,7 @@ func generateMarkdown() {
 				buffer.WriteString(serie.Desc)
 				buffer.WriteString("\n\n")
 				for _, artc := range serie.Articles {
-					// * [标题一](/post/hello-world.html) <span class="date">(Man 02, 2006)</span>
+					//eg. * [标题一](/post/hello-world.html) <span class="date">(Man 02, 2006)</span>
 					buffer.WriteString("* [" + artc.Title + "](/post/" + artc.Slug + ".html) <span class=\"date\">(" + artc.CreateTime.Format("Jan 02, 2006") + ")</span>\n")
 				}
 				buffer.WriteByte('\n')

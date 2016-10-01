@@ -145,7 +145,7 @@ func ElasticIndex(artc *Article) error {
 		"content":     artc.Content,
 		"slug":        artc.Slug,
 		"tags":        artc.Tags,
-		"create_time": artc.CreateTime.Format("2006-01-02"),
+		"create_time": artc.CreateTime,
 	}
 	b, _ := json.Marshal(mapping)
 	return IndexOrUpdateDocument(INDEX, TYPE, artc.ID, b)

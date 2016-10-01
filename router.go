@@ -19,6 +19,8 @@ var runmode = setting.Conf.Modes[setting.Conf.RunMode]
 func init() {
 	if setting.Conf.RunMode == setting.PROD {
 		gin.SetMode(gin.ReleaseMode)
+		// set log print level
+		logd.SetLevel(logd.Lerror)
 	}
 	router = gin.Default()
 	store := sessions.NewCookieStore([]byte("eiblog321"))
@@ -49,7 +51,9 @@ func init() {
 	router.GET("/series.html", HandleSeriesPage)
 	router.GET("/archives.html", HandleArchivesPage)
 	router.GET("/search.html", HandleSearchPage)
+	router.GET("/beacon.html", HandleBeacon)
 	router.GET("/data/comment", HandleComments)
+	router.GET("/rss.html", HandleFeed)
 	router.GET("/feed", HandleFeed)
 	router.GET("/opensearch.xml", HandleOpenSearch)
 	router.GET("/sitemap.xml", HandleSitemap)

@@ -3,7 +3,7 @@
   <channel>
     <title>{{.Title}}</title>
     <link>{{if .EnableHttps}}https://{{else}}http://{{end}}{{.Domain}}</link>
-    <atom:link href="{{if .EnableHttps}}https://{{else}}http://{{end}}{{.Domain}}/feed" rel="self"/>
+    <atom:link href="{{if .EnableHttps}}https://{{else}}http://{{end}}{{.Domain}}/rss.html" rel="self"/>
     <description>{{.SubTitle}}</description>
     <language>zh-CN</language>
     <lastBuildDate>{{.BuildDate}}</lastBuildDate>  

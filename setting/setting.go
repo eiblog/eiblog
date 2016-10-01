@@ -81,7 +81,7 @@ func init() {
 	data, err = ioutil.ReadFile(path.Join(dir, "blackip.yml"))
 	checkError(err)
 	err = yaml.Unmarshal(data, BlackIP)
-	chekError(err)
+	checkError(err)
 }
 
 func checkError(err error) {

@@ -79,7 +79,7 @@ func GetBase() gin.H {
 func HandleHomePage(c *gin.Context) {
 	h := GetBase()
 	h["Version"] = StaticVersion(c)
-	h["Title"] = Ei.BTitle
+	h["Title"] = Ei.BTitle + " | " + Ei.SubTitle
 	h["Path"] = c.Request.URL.Path
 	h["HomePage"] = true
 	h["CurrentPage"] = "blog-home"
@@ -198,25 +198,22 @@ func HandleSearchPage(c *gin.Context) {
 	c.HTML(http.StatusOK, "homeLayout.html", h)
 }
 
+func HandleBeacon(c *gin.Context) {}
+
 func HandleFeed(c *gin.Context) {
-	http.ServeFile(c.Writer, c.Request, "conf/feed.xml")
+	http.ServeFile(c.Writer, c.Request, "static/feed.xml")
 }
 
 func HandleOpenSearch(c *gin.Context) {
-	c.Header("Content-Type", "application/xml; charset=utf-8")
-	c.Writer.WriteString("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n")
-	c.HTML(http.StatusOK, "opensearch.xml", gin.H{
-		"BTitle":   Ei.BTitle,
-		"SubTitle": Ei.SubTitle,
-	})
+	http.ServeFile(c.Writer, c.Request, "static/opensearch.xml")
 }
 
 func HandleRobots(c *gin.Context) {
-	http.ServeFile(c.Writer, c.Request, "conf/robots.txt")
+	http.ServeFile(c.Writer, c.Request, "static/robots.txt")
 }
 
 func HandleSitemap(c *gin.Context) {
-	http.ServeFile(c.Writer, c.Request, "conf/sitemap.xml")
+	http.ServeFile(c.Writer, c.Request, "static/sitemap.xml")
 }
 
 func HandleComments(c *gin.Context) {

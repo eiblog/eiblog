@@ -4,7 +4,7 @@ services:
     image: mongo:3.2
     container_name: eidb
     volumes:
-      - /data/eiblog/db:/data/db
+      - /data/eiblog/mgodb:/data/db
     restart: always
   elasticsearch:
     image: elasticsearch:2.4
@@ -26,11 +26,10 @@ services:
     volumes:
       - /data/eiblog/logdata:/eiblog/logdata
       - /data/eiblog/conf:/eiblog/conf
+      - /data/eiblog/static:/eiblog/static
     links:
       - elasticsearch
       - mongodb
     ports:
-      - "443:443"
-      - "80:80"
-      - "8080:8080"
+      - "9000:9000"
     restart: always

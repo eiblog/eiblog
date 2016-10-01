@@ -24,12 +24,17 @@ func init() {
 	if err != nil {
 		logd.Fatal(err)
 	}
-
+	doOpensearch()
 	go doFeed()
 	go doSitemap()
 }
 
 func doFeed() {
+	tpl := tpls.Lookup("feedTpl.xml")
+	if tpl == nil {
+		logd.Error("not found feedTpl.")
+		return
+	}
 	_, _, artcs := PageList(1, FEED_COUNT)
 	buildDate := time.Now()
 	params := map[string]interface{}{
@@ -41,17 +46,12 @@ func doFeed() {
 		"Artcs":       artcs,
 	}
 
-	f, err := os.OpenFile("conf/feed.xml", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, os.ModePerm)
+	f, err := os.OpenFile("static/feed.xml", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, os.ModePerm)
 	if err != nil {
 		logd.Error(err)
 		return
 	}
 	defer f.Close()
-	tpl := tpls.Lookup("feedTpl.xml")
-	if tpl == nil {
-		logd.Error(err)
-		return
-	}
 	err = tpl.Execute(f, params)
 	if err != nil {
 		logd.Error(err)
@@ -61,22 +61,45 @@ func doFeed() {
 }
 
 func doSitemap() {
+	tpl := tpls.Lookup("sitemapTpl.xml")
+	if tpl == nil {
+		logd.Error("not found sitemapTpl.")
+		return
+	}
 	params := map[string]interface{}{"Artcs": Ei.Articles, "Domain": runmode.Domain, "Enablehttps": runmode.EnableHttps}
-	f, err := os.OpenFile("conf/sitemap.xml", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, os.ModePerm)
+	f, err := os.OpenFile("static/sitemap.xml", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, os.ModePerm)
 	if err != nil {
 		logd.Error(err)
 		return
 	}
 	defer f.Close()
-	tpl := tpls.Lookup("sitemapTpl.xml")
-	if tpl == nil {
-		logd.Error(err)
-		return
-	}
 	err = tpl.Execute(f, params)
 	if err != nil {
 		logd.Error(err)
 		return
 	}
 	time.AfterFunc(time.Hour*24, doFeed)
+}
+
+func doOpensearch() {
+	tpl := tpls.Lookup("opensearchTpl.xml")
+	if tpl == nil {
+		logd.Error("not found opensearchTpl.")
+		return
+	}
+	params := map[string]string{
+		"BTitle":   Ei.BTitle,
+		"SubTitle": Ei.SubTitle,
+	}
+	f, err := os.OpenFile("static/opensearch.xml", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, os.ModePerm)
+	if err != nil {
+		logd.Error(err)
+		return
+	}
+	defer f.Close()
+	err = tpl.Execute(f, params)
+	if err != nil {
+		logd.Error(err)
+		return
+	}
 }
