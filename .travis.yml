@@ -1,0 +1,24 @@
+sudo: required
+dist: trusty
+
+language: go
+
+go:
+  - tip
+
+service:
+  - docker
+
+before_install:
+  - curl https://glide.sh/get | sh
+
+script:
+  - glide up
+  - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build
+  - docker build -t registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog . 
+
+after_success:
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then
+    docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD" registry.cn-hangzhou.aliyuncs.com;
+    docker push registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog;
+    fi
