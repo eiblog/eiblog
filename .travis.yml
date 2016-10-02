@@ -1,24 +1,30 @@
-sudo: required
-dist: trusty
+sudo: required            # 声明构建语言环境
+dist: trusty              # 在ubuntu:trusty
+notifications:            # 每次构建的时候是否通知，如果不想收到通知邮箱（个人感觉邮件贼烦），那就设置false吧
+  email: false
 
-language: go
+language: go              # 声明构建语言环境
 
-go:
+go:                       # 只构建最新版本
   - tip
 
-service:
+service:                  # docker环境
   - docker
 
+branches:                 # 限定项目分支
+  only:
+    - master
+
 before_install:
-  - curl https://glide.sh/get | sh
+  - curl https://glide.sh/get | sh  # 安装glide包管理
 
 script:
   - glide up
-  - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build
-  - docker build -t registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog . 
+  - CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build                      # 编译版本
+  - docker build -t registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog .   # 构建镜像
 
 after_success:
-  - if [ "$TRAVIS_BRANCH" == "master" ]; then
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then                           # push到镜像仓库
     docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD" registry.cn-hangzhou.aliyuncs.com;
     docker push registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog;
     fi

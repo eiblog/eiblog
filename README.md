@@ -1,1 +1,1 @@
-# EiBlog
+# EiBlog [![Build Status](https://travis-ci.org/eiblog/eiblog.svg?branch=master)](https://travis-ci.org/eiblog/eiblog)

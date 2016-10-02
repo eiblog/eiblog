@@ -18,8 +18,8 @@ identifier: <!-- more -->
 favicon: //st.deepzz.com/static/img/favicon.ico
 # 起始ID，预留id不时之需, 不用管
 startid: 11
-# 静态文件地址, 后台js,css在用, cdn: //domain.com
-static: //deepzz.com
+# cdn: //domain.com
+static: //st.deepzz.com
 # elasticsearch url
 searchurl: http://elasticsearch:9200
 # 评论相关
