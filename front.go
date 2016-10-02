@@ -207,7 +207,9 @@ func HandleSitemap(c *gin.Context) {
 func HandleBeacon(c *gin.Context) {}
 
 // 服务端获取评论详细
-func HandleComments(c *gin.Context) {
+func HandleDisqus(c *gin.Context) {
+	slug := c.Query("slug")
+	logd.Debug(slug)
 	// TODO comments
 	var ss = map[string]interface{}{
 		"errno":  0,

@@ -51,7 +51,7 @@ func init() {
 	router.GET("/archives.html", HandleArchivesPage)
 	router.GET("/search.html", HandleSearchPage)
 	router.GET("/beacon.html", HandleBeacon)
-	router.GET("/data/comment", HandleComments)
+	router.GET("/disqus/:slug", HandleDisqus)
 	router.GET("/rss.html", HandleFeed)
 	router.GET("/feed", HandleFeed)
 	router.GET("/opensearch.xml", HandleOpenSearch)
