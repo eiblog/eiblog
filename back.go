@@ -119,7 +119,7 @@ func HandlePost(c *gin.Context) {
 	h["Post"] = true
 	h["Path"] = c.Request.URL.Path
 	h["Title"] = "撰写文章 | " + Ei.BTitle
-	h["Domain"] = runmode.Domain
+	h["Domain"] = setting.Conf.Mode.Domain
 	h["Series"] = Ei.Series
 	c.HTML(http.StatusOK, "backLayout.html", h)
 }

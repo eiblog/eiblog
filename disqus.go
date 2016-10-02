@@ -33,7 +33,7 @@ func CommentsCount() {
 		var threads []string
 		for ; index < len(Ei.Articles) && count < 20; index++ {
 			artc := Ei.Articles[index]
-			threads = append(threads, fmt.Sprintf("thread=link:https://%s/post/%s.html", runmode.Domain, artc.Slug))
+			threads = append(threads, fmt.Sprintf("thread=link:https://%s/post/%s.html", setting.Conf.Mode.Domain, artc.Slug))
 			count++
 		}
 		count = 0

@@ -14,7 +14,6 @@ import (
 )
 
 var router *gin.Engine
-var runmode = setting.Conf.Modes[setting.Conf.RunMode]
 
 func init() {
 	if setting.Conf.RunMode == setting.PROD {
@@ -90,10 +89,10 @@ func Run() {
 		endRunning = make(chan bool, 1)
 		err        error
 	)
-	if runmode.EnableHttp {
+	if setting.Conf.Mode.EnableHttp {
 		go func() {
-			logd.Info(fmt.Sprintf("http server Running on %d", runmode.HttpPort))
-			err = router.Run(fmt.Sprintf(":%d", runmode.HttpPort))
+			logd.Info(fmt.Sprintf("http server Running on %d", setting.Conf.Mode.HttpPort))
+			err = router.Run(fmt.Sprintf(":%d", setting.Conf.Mode.HttpPort))
 			if err != nil {
 				logd.Info("ListenAndServe: ", err)
 				time.Sleep(100 * time.Microsecond)
@@ -101,10 +100,10 @@ func Run() {
 			}
 		}()
 	}
-	if runmode.EnableHttps {
+	if setting.Conf.Mode.EnableHttps {
 		go func() {
-			logd.Info(fmt.Sprintf("https server Running on %d", runmode.HttpsPort))
-			err = router.RunTLS(fmt.Sprintf(":%d", runmode.HttpsPort), runmode.CertFile, runmode.KeyFile)
+			logd.Info(fmt.Sprintf("https server Running on %d", setting.Conf.Mode.HttpsPort))
+			err = router.RunTLS(fmt.Sprintf(":%d", setting.Conf.Mode.HttpsPort), setting.Conf.Mode.CertFile, setting.Conf.Mode.KeyFile)
 			if err != nil {
 				logd.Info("ListenAndServe: ", err)
 				time.Sleep(100 * time.Microsecond)

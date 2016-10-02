@@ -69,7 +69,7 @@ func GetBase() gin.H {
 		"CopyYear": time.Now().Year(),
 		"BTitle":   Ei.BTitle,
 		"BeiAn":    Ei.BeiAn,
-		"Domain":   runmode.Domain,
+		"Domain":   setting.Conf.Mode.Domain,
 		"Static":   setting.Conf.Static,
 	}
 }

@@ -40,9 +40,9 @@ type Config struct {
 		URL       string
 		Interval  int
 	}
-	Modes   map[string]RunMode // 运行模式
-	Twitter string             // twitter地址
-	Blogger struct {           // 初始化数据
+	Mode    RunMode  // 运行模式
+	Twitter string   // twitter地址
+	Blogger struct { // 初始化数据
 		BlogName  string
 		SubTitle  string
 		BeiAn     string

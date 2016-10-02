@@ -7,6 +7,7 @@ import (
 	"text/template"
 	"time"
 
+	"github.com/eiblog/eiblog/setting"
 	"github.com/eiblog/utils/logd"
 	"github.com/eiblog/utils/tmpl"
 )
@@ -40,7 +41,7 @@ func doFeed() {
 	params := map[string]interface{}{
 		"Title":     Ei.BTitle,
 		"SubTitle":  Ei.SubTitle,
-		"Domain":    runmode.Domain,
+		"Domain":    setting.Conf.Mode.Domain,
 		"BuildDate": buildDate.Format(time.RFC1123Z),
 		"Artcs":     artcs,
 	}
@@ -65,7 +66,7 @@ func doSitemap() {
 		logd.Error("not found sitemapTpl.")
 		return
 	}
-	params := map[string]interface{}{"Artcs": Ei.Articles, "Domain": runmode.Domain}
+	params := map[string]interface{}{"Artcs": Ei.Articles, "Domain": setting.Conf.Mode.Domain}
 	f, err := os.OpenFile("static/sitemap.xml", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, os.ModePerm)
 	if err != nil {
 		logd.Error(err)

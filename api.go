@@ -375,7 +375,7 @@ func apiTrashRecover(c *gin.Context) {
 }
 
 func responseNotice(c *gin.Context, typ, content, hl string) {
-	domain := runmode.Domain
+	domain := setting.Conf.Mode.Domain
 	if i := strings.Index(domain, ":"); i > -1 {
 		domain = domain[0:i]
 	}
