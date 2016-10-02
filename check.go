@@ -7,7 +7,7 @@ import (
 )
 
 func CheckEmail(e string) bool {
-	reg := regexp.MustCompile(`^(\w)+([\.\-]\w+)*#(\w)+((\.\w+)+)$`)
+	reg := regexp.MustCompile(`^(\w)+([\.\-]\w+)*@(\w)+((\.\w+)+)$`)
 	return reg.MatchString(e)
 }
 

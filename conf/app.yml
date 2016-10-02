@@ -57,8 +57,8 @@ account:
   username: deepzz
   # *登录明文密码
   password: deepzz
-  # 邮箱，用于通知: chenqijing2#163.com
-  email: chenqijing2#163.com
+  # 邮箱，用于通知: chenqijing2@163.com
+  email: chenqijing2@163.com
   # 手机号, "+8615100000000"
   phonenumber: "+8615100000000"
   # 家庭住址

@@ -159,7 +159,6 @@ func loadArticles() (artcs SortArticles) {
 // generate series,archive markdown
 func generateMarkdown() {
 	for {
-
 		switch typ := <-Ei.CH; typ {
 		case SERIES_MD:
 			sort.Sort(Ei.Series)

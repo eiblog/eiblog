@@ -14,17 +14,18 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+func isLogin(c *gin.Context) bool {
+	session := sessions.Default(c)
+	v := session.Get("username")
+	if v == nil || v.(string) != Ei.Username {
+		return false
+	}
+	return true
+}
+
 func AuthFilter() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		// TODO 过滤登录
-		session := sessions.Default(c)
-		v := session.Get("username")
-		if v == nil {
-			c.Abort()
-			c.Redirect(http.StatusFound, "/admin/login")
-			return
-		}
-		if v.(string) != Ei.Username {
+		if !isLogin(c) {
 			c.Abort()
 			c.Redirect(http.StatusFound, "/admin/login")
 			return
@@ -40,6 +41,9 @@ func HandleLogin(c *gin.Context) {
 		session := sessions.Default(c)
 		session.Delete("username")
 		session.Save()
+	} else if isLogin(c) {
+		c.Redirect(http.StatusFound, "/admin/profile")
+		return
 	}
 	c.HTML(http.StatusOK, "login.html", gin.H{
 		"BTitle": Ei.BTitle,

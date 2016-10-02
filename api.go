@@ -152,20 +152,18 @@ func apiPostAdd(c *gin.Context) {
 	var cid int
 	defer func() {
 		if !publish {
-			// TODO 返回cid, success改为0
 			// {"success":1,"time":"10:40:46 AM","cid":"4"}
-			if err != nil {
-				c.JSON(http.StatusOK, gin.H{"success": FAIL, "time": time.Now().Format("15:04:05 PM"), "cid": cid})
-			} else {
+			if err == nil {
 				c.JSON(http.StatusOK, gin.H{"success": SUCCESS, "time": time.Now().Format("15:04:05 PM"), "cid": cid})
+				return
 			}
+			logd.Error(err)
+		}
+		if err == nil {
+			c.Redirect(http.StatusFound, "/admin/manage-posts")
 			return
 		}
-		if err != nil {
-
-		} else {
-			c.Redirect(http.StatusFound, "/admin/posts")
-		}
+		logd.Error(err)
 	}()
 	do := c.PostForm("do") // save or publish
 	slug := c.PostForm("slug")

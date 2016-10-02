@@ -29,7 +29,7 @@ func Filter() gin.HandlerFunc {
 func UserCookie(c *gin.Context) {
 	cookie, err := c.Request.Cookie("u")
 	if err != nil || cookie.Value == "" {
-
+		// TODO cookie操作
 	}
 }
 
@@ -144,14 +144,6 @@ func HandleArticlePage(c *gin.Context) {
 	c.HTML(http.StatusOK, "homeLayout.html", h)
 }
 
-type temp struct {
-	Title      string
-	Slug       string
-	URL        string
-	Img        string
-	CreateTime time.Time
-}
-
 func HandleSearchPage(c *gin.Context) {
 	h := GetBase()
 	h["Version"] = StaticVersion(c)
@@ -167,7 +159,6 @@ func HandleSearchPage(c *gin.Context) {
 	}
 	if q != "" {
 		h["Word"] = q
-		// TODO search
 		var result *ESSearchResult
 		vals := c.Request.URL.Query()
 		reg := regexp.MustCompile(`^[a-z]+:\w+$`)
@@ -198,6 +189,7 @@ func HandleSearchPage(c *gin.Context) {
 	c.HTML(http.StatusOK, "homeLayout.html", h)
 }
 
+// 服务端推送谷歌统计
 func HandleBeacon(c *gin.Context) {}
 
 func HandleFeed(c *gin.Context) {
@@ -216,6 +208,7 @@ func HandleSitemap(c *gin.Context) {
 	http.ServeFile(c.Writer, c.Request, "static/sitemap.xml")
 }
 
+// 服务端获取评论
 func HandleComments(c *gin.Context) {
 	// TODO comments
 	var ss = map[string]interface{}{
