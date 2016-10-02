@@ -27,14 +27,13 @@ func CommentsCount() {
 		return
 	}
 	baseUrl := setting.Conf.Disqus.URL + "?api_key=" + setting.Conf.Disqus.PublicKey + "&forum=" + setting.Conf.Disqus.ShortName + "&"
-	domain := "https://" + runmode.Domain
 	var count, index int
 	for index < len(Ei.Articles) {
 		logd.Debugf("count=====%d, index=======%d, length=======%d, bool=========%t", count, index, len(Ei.Articles), index < len(Ei.Articles) && count < 10)
 		var threads []string
 		for ; index < len(Ei.Articles) && count < 20; index++ {
 			artc := Ei.Articles[index]
-			threads = append(threads, fmt.Sprintf("thread=link:%s/post/%s.html", domain, artc.Slug))
+			threads = append(threads, fmt.Sprintf("thread=link:https://%s/post/%s.html", runmode.Domain, artc.Slug))
 			count++
 		}
 		count = 0

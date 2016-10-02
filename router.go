@@ -42,7 +42,7 @@ func init() {
 	} else {
 		logd.Fatal(err)
 	}
-	// 测试，开启静态文件
+	// 开启静态文件
 	router.Static("/static", "./static")
 	router.Use(Filter())
 	router.NoRoute(HandleNotFound)

@@ -158,6 +158,7 @@ func HandleSearchPage(c *gin.Context) {
 	}
 	if q != "" {
 		h["Word"] = q
+		h["HotWord"] = []string{}
 		var result *ESSearchResult
 		vals := c.Request.URL.Query()
 		reg := regexp.MustCompile(`^[a-z]+:\w+$`)
@@ -188,9 +189,6 @@ func HandleSearchPage(c *gin.Context) {
 	c.HTML(http.StatusOK, "homeLayout.html", h)
 }
 
-// 服务端推送谷歌统计
-func HandleBeacon(c *gin.Context) {}
-
 func HandleFeed(c *gin.Context) {
 	http.ServeFile(c.Writer, c.Request, "static/feed.xml")
 }
@@ -207,7 +205,10 @@ func HandleSitemap(c *gin.Context) {
 	http.ServeFile(c.Writer, c.Request, "static/sitemap.xml")
 }
 
-// 服务端获取评论
+// 服务端推送谷歌统计
+func HandleBeacon(c *gin.Context) {}
+
+// 服务端获取评论详细
 func HandleComments(c *gin.Context) {
 	// TODO comments
 	var ss = map[string]interface{}{
