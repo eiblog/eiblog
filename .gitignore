@@ -1,6 +1,7 @@
 *.DS_Store
-imququ
-vendor
 *.exe
+vendor
+vendor/**
+conf/ssl/domain.*
 eiblog
-conf/certs/*
+
