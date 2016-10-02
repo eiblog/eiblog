@@ -2,7 +2,7 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 	{{range .Artcs}}
 	<url>
-        <loc>{{if $.EnableHttps}}https{{else}}http{{end}}://{{$.Domain}}/post/{{.Slug}}.html</loc>
+        <loc>https://{{$.Domain}}/post/{{.Slug}}.html</loc>
         <lastmod>{{dateformat .CreateTime "2006-01-02"}}</lastmod>
         <priority>0.6</priority>
     </url>

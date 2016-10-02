@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>{{.Title}}</title>
-    <link>{{if .EnableHttps}}https://{{else}}http://{{end}}{{.Domain}}</link>
-    <atom:link href="{{if .EnableHttps}}https://{{else}}http://{{end}}{{.Domain}}/rss.html" rel="self"/>
+    <link>https://{{.Domain}}</link>
+    <atom:link href="https://{{.Domain}}/rss.html" rel="self"/>
     <description>{{.SubTitle}}</description>
     <language>zh-CN</language>
     <lastBuildDate>{{.BuildDate}}</lastBuildDate>  
     {{range .Artcs}}
     <item>
       <title>{{.Title}}</title>
-      <link>{{if $.EnableHttps}}https://{{else}}http://{{end}}{{$.Domain}}/post/{{.Slug}}.html</link>
-      <comments>{{if $.EnableHttps}}https://{{else}}http://{{end}}{{$.Domain}}/post/{{.Slug}}.html#comments</comments>
-  	  <guid>{{if $.EnableHttps}}https://{{else}}http://{{end}}{{$.Domain}}/post/{{.Slug}}.html</guid>
+      <link>https://{{$.Domain}}/post/{{.Slug}}.html</link>
+      <comments>https://{{$.Domain}}/post/{{.Slug}}.html#comments</comments>
+  	  <guid>https://{{$.Domain}}/post/{{.Slug}}.html</guid>
       <description><![CDATA[<blockquote>{{.Content}}]]></description>
     </item>
     {{end}}

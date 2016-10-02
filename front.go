@@ -140,7 +140,6 @@ func HandleArticlePage(c *gin.Context) {
 		}
 	}
 	h["Article"] = artc
-	h["EnableHttps"] = runmode.EnableHttps
 	c.HTML(http.StatusOK, "homeLayout.html", h)
 }
 

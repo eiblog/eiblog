@@ -380,9 +380,9 @@ func responseNotice(c *gin.Context, typ, content, hl string) {
 		domain = domain[0:i]
 	}
 	if hl != "" {
-		c.SetCookie("notice_highlight", hl, 86400, "/", domain, runmode.EnableHttps, false)
+		c.SetCookie("notice_highlight", hl, 86400, "/", domain, true, false)
 	}
-	c.SetCookie("notice_type", typ, 86400, "/", domain, runmode.EnableHttps, false)
-	c.SetCookie("notice", fmt.Sprintf("[\"%s\"]", content), 86400, "/", domain, runmode.EnableHttps, false)
+	c.SetCookie("notice_type", typ, 86400, "/", domain, true, false)
+	c.SetCookie("notice", fmt.Sprintf("[\"%s\"]", content), 86400, "/", domain, true, false)
 	c.Redirect(http.StatusFound, c.Request.Referer())
 }
