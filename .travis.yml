@@ -24,7 +24,7 @@ script:
   - docker build -t registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog .   # 构建镜像
 
 after_success:
-  - if [ "$TRAVIS_BRANCH" == "master" ]; then                           # push到镜像仓库
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then
     docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD" registry.cn-hangzhou.aliyuncs.com;
     docker push registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog;
-    fi
+    fi                                                                  # push到镜像仓库
