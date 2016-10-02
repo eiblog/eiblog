@@ -66,8 +66,6 @@ func GetBase() gin.H {
 		"BlogName": Ei.BlogName,
 		"SubTitle": Ei.SubTitle,
 		"Twitter":  setting.Conf.Twitter,
-		"RSS":      setting.Conf.RSS,
-		"Search":   setting.Conf.Search,
 		"CopyYear": time.Now().Year(),
 		"BTitle":   Ei.BTitle,
 		"BeiAn":    Ei.BeiAn,

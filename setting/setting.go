@@ -22,29 +22,27 @@ var (
 )
 
 type Config struct {
-	StaticVersion int
-	RunMode       string
-	Trash         int
-	Clean         int
-	PageNum       int
-	PageSize      int
-	Length        int
-	Identifier    string
-	Favicon       string
-	StartID       int32
-	Static        string
-	SearchURL     string
-	Disqus        struct {
+	StaticVersion int      // 当前静态文件版本
+	RunMode       string   // 运行模式
+	Trash         int      // 回收箱文章保留时间
+	Clean         int      // 清理回收箱频率
+	PageNum       int      // 前端每页文章数量
+	PageSize      int      // 后台每页文章数量
+	Length        int      // 自动截取预览长度
+	Identifier    string   // 截取标示
+	Favicon       string   // icon地址
+	StartID       int32    // 文章起始id
+	Static        string   // cdn地址
+	SearchURL     string   // elasticsearch 地址
+	Disqus        struct { // 获取文章数量相关
 		ShortName string
 		PublicKey string
 		URL       string
 		Interval  int
 	}
-	Modes   map[string]RunMode
-	Twitter string
-	RSS     string
-	Search  string
-	Blogger struct {
+	Modes   map[string]RunMode // 运行模式
+	Twitter string             // twitter地址
+	Blogger struct {           // 初始化数据
 		BlogName  string
 		SubTitle  string
 		BeiAn     string
@@ -52,8 +50,8 @@ type Config struct {
 		Copyright string
 	}
 	Account struct {
-		Username    string
-		Password    string
+		Username    string // *
+		Password    string // *
 		Email       string
 		PhoneNumber string
 		Address     string
