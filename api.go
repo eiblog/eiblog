@@ -152,12 +152,12 @@ func apiPostAdd(c *gin.Context) {
 	var cid int
 	defer func() {
 		if !publish {
-			// {"success":1,"time":"10:40:46 AM","cid":"4"}
 			if err == nil {
 				c.JSON(http.StatusOK, gin.H{"success": SUCCESS, "time": time.Now().Format("15:04:05 PM"), "cid": cid})
-				return
+			} else {
+				logd.Error(err)
+				c.JSON(http.StatusOK, gin.H{"fail": FAIL, "time": time.Now().Format("15:04:05 PM"), "cid": cid})
 			}
-			logd.Error(err)
 		}
 		if err == nil {
 			c.Redirect(http.StatusFound, "/admin/manage-posts")
@@ -183,17 +183,18 @@ func apiPostAdd(c *gin.Context) {
 	t := CheckDate(date)
 	serieid := CheckSerieID(serie)
 	publish = CheckPublish(do)
-	if cid, err = strconv.Atoi(c.PostForm("cid")); err != nil || cid < 1 {
-		artc := &Article{
-			Title:      title,
-			Content:    text,
-			Slug:       slug,
-			CreateTime: t,
-			IsDraft:    !publish,
-			Author:     Ei.Username,
-			SerieID:    serieid,
-			Tags:       tags,
-		}
+	artc := &Article{
+		Title:      title,
+		Content:    text,
+		Slug:       slug,
+		CreateTime: t,
+		IsDraft:    !publish,
+		Author:     Ei.Username,
+		SerieID:    serieid,
+		Tags:       tags,
+	}
+	cid, err = strconv.Atoi(c.PostForm("cid"))
+	if err != nil || cid < 1 {
 		err = AddArticle(artc)
 		if err != nil {
 			logd.Error(err)
@@ -203,53 +204,44 @@ func apiPostAdd(c *gin.Context) {
 		if publish {
 			ElasticIndex(artc)
 		}
-	} else {
-		artc := QueryArticle(int32(cid))
-		if artc == nil {
-			err = errors.New("没有发现该文章")
-			return
-		}
-		if publish {
-			if Ei.MapArticles[artc.Slug] != nil {
-				i, a := GetArticle(artc.ID)
-				DelFromLinkedList(a)
-				Ei.Articles[i] = artc
-				if a.SerieID != serieid {
-					ManageSeriesArticle(a, false, DELETE)
-				}
-				if strings.Join(a.Tags, ",") != tag {
-					ManageTagsArticle(a, false, DELETE)
-				}
-				ManageArchivesArticle(a, false, DELETE)
-			} else {
-				Ei.Articles = append(Ei.Articles, artc)
-				artc.IsDraft = false
-			}
-			Ei.MapArticles[artc.Slug] = artc
-		}
-		artc.Title = title
-		artc.Slug = slug
-		artc.Content = text
-		artc.CreateTime = t
+		return
+	}
+	artc.ID = int32(cid)
+	if CheckBool(c.PostForm("update")) {
 		artc.UpdateTime = time.Now()
-		artc.SerieID = serieid
-		artc.Tags = tags
-		err = UpdateArticle(bson.M{"id": artc.ID}, artc)
-		if err != nil {
-			logd.Error(err)
-			return
+	}
+	i, a := GetArticle(artc.ID)
+	if a != nil {
+		artc.IsDraft = false
+		artc.Count = a.Count
+		artc.UpdateTime = a.UpdateTime
+	}
+	err = UpdateArticle(bson.M{"id": artc.ID}, artc)
+	if err != nil {
+		logd.Error(err)
+		return
+	}
+	if !artc.IsDraft {
+		if a != nil {
+			Ei.Articles = append(Ei.Articles[0:i], Ei.Articles[i+1:]...)
+			DelFromLinkedList(a)
+			ManageTagsArticle(a, false, DELETE)
+			ManageSeriesArticle(a, false, DELETE)
+			ManageArchivesArticle(a, false, DELETE)
+			delete(Ei.MapArticles, a.Slug)
+			a = nil
 		}
-		if publish {
-			sort.Sort(Ei.Articles)
-			GenerateExcerptAndRender(artc)
-			// elasticsearch 索引
-			ElasticIndex(artc)
-			if artc.ID >= setting.Conf.StartID {
-				ManageTagsArticle(artc, true, ADD)
-				ManageSeriesArticle(artc, true, ADD)
-				ManageArchivesArticle(artc, true, ADD)
-				AddToLinkedList(artc.ID)
-			}
+		Ei.MapArticles[artc.Slug] = artc
+		Ei.Articles = append(Ei.Articles, artc)
+		sort.Sort(Ei.Articles)
+		GenerateExcerptAndRender(artc)
+		// elasticsearch 索引
+		ElasticIndex(artc)
+		if artc.ID >= setting.Conf.StartID {
+			ManageTagsArticle(artc, true, ADD)
+			ManageSeriesArticle(artc, true, ADD)
+			ManageArchivesArticle(artc, true, ADD)
+			AddToLinkedList(artc.ID)
 		}
 	}
 }

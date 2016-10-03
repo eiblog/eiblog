@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"regexp"
 	"sort"
-	// "strings"
 	"sync"
 	"time"
 
@@ -262,24 +261,50 @@ func PageList(p, n int) (prev int, next int, artcs []*Article) {
 	return
 }
 
-func ManageTagsArticle(artc *Article, s bool, dos ...string) {
-	for _, do := range dos {
-		switch do {
-		case ADD:
-			for _, tag := range artc.Tags {
-				Ei.Tags[tag] = append(Ei.Tags[tag], artc)
-				if s {
-					sort.Sort(Ei.Tags[tag])
+func ManageTagsArticle(artc *Article, s bool, do string) {
+	switch do {
+	case ADD:
+		for _, tag := range artc.Tags {
+			Ei.Tags[tag] = append(Ei.Tags[tag], artc)
+			if s {
+				sort.Sort(Ei.Tags[tag])
+			}
+		}
+	case DELETE:
+		for _, tag := range artc.Tags {
+			for i, v := range Ei.Tags[tag] {
+				if v == artc {
+					Ei.Tags[tag] = append(Ei.Tags[tag][0:i], Ei.Tags[tag][i+1:]...)
+					if len(Ei.Tags[tag]) == 0 {
+						delete(Ei.Tags, tag)
+					}
+					return
 				}
 			}
-		case DELETE:
-			for _, tag := range artc.Tags {
-				for i, v := range Ei.Tags[tag] {
+		}
+	}
+}
+
+func ManageSeriesArticle(artc *Article, s bool, do string) {
+	switch do {
+	case ADD:
+		for i, serie := range Ei.Series {
+			if serie.ID == artc.SerieID {
+				Ei.Series[i].Articles = append(Ei.Series[i].Articles, artc)
+				if s {
+					sort.Sort(Ei.Series[i].Articles)
+					Ei.CH <- SERIES_MD
+					return
+				}
+			}
+		}
+	case DELETE:
+		for i, serie := range Ei.Series {
+			if serie.ID == artc.SerieID {
+				for j, v := range serie.Articles {
 					if v == artc {
-						Ei.Tags[tag] = append(Ei.Tags[tag][0:i], Ei.Tags[tag][i+1:]...)
-						if len(Ei.Tags[tag]) == 0 {
-							delete(Ei.Tags, tag)
-						}
+						Ei.Series[i].Articles = append(Ei.Series[i].Articles[0:j], Ei.Series[i].Articles[j+1:]...)
+						Ei.CH <- SERIES_MD
 						return
 					}
 				}
@@ -288,78 +313,40 @@ func ManageTagsArticle(artc *Article, s bool, dos ...string) {
 	}
 }
 
-func ManageSeriesArticle(artc *Article, s bool, dos ...string) {
-	for _, do := range dos {
-		switch do {
-		case ADD:
-			if artc.SerieID != 0 {
-				for i, serie := range Ei.Series {
-					if serie.ID == artc.SerieID {
-						Ei.Series[i].Articles = append(Ei.Series[i].Articles, artc)
-						if s {
-							sort.Sort(Ei.Series[i].Articles)
-							Ei.CH <- SERIES_MD
-							return
-						}
-					}
-				}
-			}
-		case DELETE:
-			if artc.SerieID != 0 {
-				for i, serie := range Ei.Series {
-					if serie.ID == artc.SerieID {
-						for j, v := range serie.Articles {
-							if v == artc {
-								Ei.Series[i].Articles = append(Ei.Series[i].Articles[0:j], Ei.Series[i].Articles[j+1:]...)
-								Ei.CH <- SERIES_MD
-								return
-							}
-						}
-					}
+func ManageArchivesArticle(artc *Article, s bool, do string) {
+	switch do {
+	case ADD:
+		add := false
+		y, m, _ := artc.CreateTime.Date()
+		for i, archive := range Ei.Archives {
+			ay, am, _ := archive.Time.Date()
+			if y == ay && m == am {
+				add = true
+				Ei.Archives[i].Articles = append(Ei.Archives[i].Articles, artc)
+				if s {
+					sort.Sort(Ei.Archives[i].Articles)
+					Ei.CH <- ARCHIVE_MD
+					break
 				}
 			}
 		}
-	}
-
-}
-
-func ManageArchivesArticle(artc *Article, s bool, dos ...string) {
-	for _, do := range dos {
-		switch do {
-		case ADD:
-			add := false
-			y, m, _ := artc.CreateTime.Date()
-			for i, archive := range Ei.Archives {
-				ay, am, _ := archive.Time.Date()
-				if y == ay && m == am {
-					add = true
-					Ei.Archives[i].Articles = append(Ei.Archives[i].Articles, artc)
-					if s {
-						sort.Sort(Ei.Archives[i].Articles)
+		if !add {
+			Ei.Archives = append(Ei.Archives, &Archive{Time: artc.CreateTime, Articles: SortArticles{artc}})
+		}
+	case DELETE:
+		for i, archive := range Ei.Archives {
+			ay, am, _ := archive.Time.Date()
+			if y, m, _ := artc.CreateTime.Date(); ay == y && am == m {
+				for j, v := range archive.Articles {
+					if v == artc {
+						Ei.Archives[i].Articles = append(Ei.Archives[i].Articles[0:j], Ei.Archives[i].Articles[j+1:]...)
 						Ei.CH <- ARCHIVE_MD
-						break
-					}
-				}
-			}
-			if !add {
-				Ei.Archives = append(Ei.Archives, &Archive{Time: artc.CreateTime, Articles: SortArticles{artc}})
-			}
-		case DELETE:
-			for i, archive := range Ei.Archives {
-				ay, am, _ := archive.Time.Date()
-				if y, m, _ := artc.CreateTime.Date(); ay == y && am == m {
-					for j, v := range archive.Articles {
-						if v == artc {
-							Ei.Archives[i].Articles = append(Ei.Archives[i].Articles[0:j], Ei.Archives[i].Articles[j+1:]...)
-							Ei.CH <- ARCHIVE_MD
-							return
-						}
+						return
 					}
 				}
 			}
 		}
 	}
-
 }
 
 // 渲染markdown操作和截取摘要操作
@@ -438,6 +425,7 @@ func DelArticles(ids ...int32) error {
 		if err != nil {
 			return err
 		}
+		artc = nil
 	}
 	Ei.CH <- ARCHIVE_MD
 	Ei.CH <- SERIES_MD

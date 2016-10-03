@@ -132,6 +132,8 @@ func HandleArticlePage(c *gin.Context) {
 		h["Copyright"] = Ei.Copyright
 		if !artc.UpdateTime.IsZero() {
 			h["Days"] = int(time.Now().Sub(artc.UpdateTime).Hours()) / 24
+		} else {
+			h["Days"] = int(time.Now().Sub(artc.CreateTime).Hours()) / 24
 		}
 		if artc.SerieID > 0 {
 			h["Serie"] = QuerySerie(artc.SerieID)

@@ -13,7 +13,7 @@ pagesize: 20
 # 自动截取预览, 字符数
 length: 200
 # 截取预览标识
-identifier: <!-- more -->
+identifier: <!--more-->
 # favicon
 favicon: //st.deepzz.com/static/img/favicon.ico
 # 起始ID，预留id不时之需, 不用管

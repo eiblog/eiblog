@@ -40,7 +40,7 @@ func CheckSerieID(sid string) int32 {
 }
 
 func CheckBool(str string) bool {
-	return str == "true"
+	return str == "true" || str == "1"
 }
 
 func CheckPublish(do string) bool {

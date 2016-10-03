@@ -61,7 +61,7 @@
                                 <td>
                                     <input type="checkbox" value="{{.ID}}" name="cid[]" />
                                 </td>
-                                <td><a href="/admin/manage-comments?cid={{.ID}}" class="balloon-button size-1">{{.Count}}</a></td>
+                                <td><a href="/post/{{.Slug}}.html#comments" class="balloon-button size-1">{{.Count}}</a></td>
                                 <td>
                                     <a href="/admin/write-post?cid={{.ID}}">{{.Title}}</a>
                                     <a target="_black" href="/post/{{.Slug}}.html" title="浏览 {{.Title}}"><i class="i-exlink"></i></a>
