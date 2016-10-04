@@ -355,7 +355,7 @@ var reg = regexp.MustCompile(setting.Conf.Identifier)
 func GenerateExcerptAndRender(artc *Article) {
 	index := reg.FindStringIndex(artc.Content)
 	if len(index) > 0 {
-		artc.Excerpt = artc.Content[0:index[0]]
+		artc.Excerpt = IgnoreHtmlTag(artc.Content[0:index[0]])
 	} else {
 		uc := []rune(artc.Content)
 		length := setting.Conf.Length

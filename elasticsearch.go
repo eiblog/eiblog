@@ -142,7 +142,7 @@ func ElasticsearchSimple(q string, size, from int) *ESSearchResult {
 func ElasticIndex(artc *Article) error {
 	mapping := map[string]interface{}{
 		"title":       artc.Title,
-		"content":     artc.Content,
+		"content":     IgnoreHtmlTag(artc.Content),
 		"slug":        artc.Slug,
 		"tags":        artc.Tags,
 		"create_time": artc.CreateTime,
