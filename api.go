@@ -277,13 +277,27 @@ func apiSerieAdd(c *gin.Context) {
 		responseNotice(c, NOTICE_NOTICE, "参数错误", "")
 		return
 	}
-	err := AddSerie(name, slug, desc)
-	if err != nil {
-		logd.Error(err)
-		responseNotice(c, NOTICE_NOTICE, err.Error(), "")
-		return
+	mid, err := strconv.Atoi(c.Query("mid"))
+	if err == nil && mid > 0 {
+		serie := QuerySerie(int32(mid))
+		if serie == nil {
+			responseNotice(c, NOTICE_NOTICE, "not found serie", "")
+			return
+		}
+		serie.Name = name
+		serie.Slug = slug
+		serie.Desc = desc
+		serie.ID = int32(mid)
+		UpdateSerie(serie)
+	} else {
+		err = AddSerie(name, slug, desc)
+		if err != nil {
+			logd.Error(err)
+			responseNotice(c, NOTICE_NOTICE, err.Error(), "")
+			return
+		}
 	}
-	responseNotice(c, NOTICE_SUCCESS, "添加成功", "")
+	responseNotice(c, NOTICE_SUCCESS, "操作成功", "")
 }
 
 // 暂未启用

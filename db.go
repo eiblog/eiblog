@@ -514,6 +514,12 @@ func AddSerie(name, slug, desc string) error {
 	return UpdateAccountField(bson.M{"$addToSet": bson.M{"blogger.series": serie}})
 }
 
+// 更新专题
+func UpdateSerie(serie *Serie) {
+	Ei.CH <- SERIES_MD
+	return db.Update(DB, COLLECTION_ACCOUNT, bson.M{"username": Ei.Username, "blogger.series.id": serie.ID}, bson.M{"$set": bson.M{"blogger.series.$": serie}})
+}
+
 // 删除专题
 func DelSerie(id int32) error {
 	for i, serie := range Ei.Series {

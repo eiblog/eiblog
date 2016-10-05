@@ -44,7 +44,7 @@
                         <ul>
                             {{range $k,$v:=.Series}}
                             <li>
-                                <input type="radio" id="serie-{{$v.ID}}" value="{{$v.ID}}" name="serie" {{with $.Edit}}{{if eq .SerieID $v.ID}}checked="true"{{end}}{{end}}/>
+                                <input type="checkbox" id="serie-{{$v.ID}}" value="{{$v.ID}}" name="serie" {{with $.Edit}}{{if eq .SerieID $v.ID}}checked="true"{{end}}{{end}}/>
                                 <label for="serie-{{$v.ID}}">{{$v.Name}}</label>
                             </li>
                             {{end}}
