@@ -515,7 +515,7 @@ func AddSerie(name, slug, desc string) error {
 }
 
 // 更新专题
-func UpdateSerie(serie *Serie) {
+func UpdateSerie(serie *Serie) error {
 	Ei.CH <- SERIES_MD
 	return db.Update(DB, COLLECTION_ACCOUNT, bson.M{"username": Ei.Username, "blogger.series.id": serie.ID}, bson.M{"$set": bson.M{"blogger.series.$": serie}})
 }

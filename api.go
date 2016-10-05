@@ -288,7 +288,12 @@ func apiSerieAdd(c *gin.Context) {
 		serie.Slug = slug
 		serie.Desc = desc
 		serie.ID = int32(mid)
-		UpdateSerie(serie)
+		err = UpdateSerie(serie)
+		if err != nil {
+			logd.Error(err)
+			responseNotice(c, NOTICE_NOTICE, err.Error(), "")
+			return
+		}
 	} else {
 		err = AddSerie(name, slug, desc)
 		if err != nil {
