@@ -353,6 +353,7 @@ func ManageArchivesArticle(artc *Article, s bool, do string) {
 var reg = regexp.MustCompile(setting.Conf.Identifier)
 
 func GenerateExcerptAndRender(artc *Article) {
+	artc.Content = string(renderPage([]byte(artc.Content)))
 	index := reg.FindStringIndex(artc.Content)
 	if len(index) > 0 {
 		artc.Excerpt = IgnoreHtmlTag(artc.Content[0:index[0]])
@@ -362,9 +363,8 @@ func GenerateExcerptAndRender(artc *Article) {
 		if len(uc) < length {
 			length = len(uc)
 		}
-		artc.Excerpt = string(uc[0:length])
+		artc.Excerpt = IgnoreHtmlTag(string(uc[0:length]))
 	}
-	artc.Content = string(renderPage([]byte(artc.Content)))
 }
 
 // 读取草稿箱
