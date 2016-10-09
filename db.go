@@ -21,7 +21,6 @@ const (
 	DB                 = "eiblog"
 	COLLECTION_ACCOUNT = "account"
 	COLLECTION_ARTICLE = "article"
-	COUNTER_TAG        = "tag"
 	COUNTER_SERIE      = "serie"
 	COUNTER_ARTICLE    = "article"
 	SERIES_MD          = "series_md"

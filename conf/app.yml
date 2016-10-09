@@ -22,6 +22,8 @@ startid: 11
 static: //st.deepzz.com
 # elasticsearch url
 searchurl: http://elasticsearch:9200
+# superfeedr shortname
+superfeedr: deepzz
 # 评论相关
 disqus:
   shortname: deepzz

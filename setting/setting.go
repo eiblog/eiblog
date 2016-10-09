@@ -34,6 +34,7 @@ type Config struct {
 	StartID       int32    // 文章起始id
 	Static        string   // cdn地址
 	SearchURL     string   // elasticsearch 地址
+	Superfeedr    string   // superfeedr
 	Disqus        struct { // 获取文章数量相关
 		ShortName string
 		PublicKey string
