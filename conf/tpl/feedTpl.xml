@@ -3,9 +3,9 @@
   <channel>
     <title>{{.Title}}</title>
     <link>https://{{.Domain}}</link>
+    <description>{{.SubTitle}}</description>
     <atom:link href="https://{{.Domain}}/rss.html" rel="self"/>
     <atom:link href="https://{{.Superfeedr}}.superfeedr.com/" rel="hub"/>
-    <description>{{.SubTitle}}</description>
     <language>zh-CN</language>
     <lastBuildDate>{{.BuildDate}}</lastBuildDate>  
     {{range .Artcs}}
