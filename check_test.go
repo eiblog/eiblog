@@ -23,7 +23,7 @@ func TestCheckDomain(t *testing.T) {
 
 	t.Log(CheckDomain(d))
 	t.Log(CheckDomain(d1))
-	t.Log(CheckDomain(d1))
-	t.Log(CheckDomain(d1))
+	t.Log(CheckDomain(d2))
+	t.Log(CheckDomain(d3))
 	t.Log(CheckDomain(d4))
 }

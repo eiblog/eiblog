@@ -62,7 +62,7 @@ func TestIndexDocument(t *testing.T) {
 }
 
 func TestIndexQuerySimple(t *testing.T) {
-	_, err := IndexQuerySimple(INDEX, TYPE, "JS")
+	_, err := IndexQuerySimple(INDEX, TYPE, 10, 1, "JS")
 	if err != nil {
 		t.Error(err)
 	}
