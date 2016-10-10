@@ -11,7 +11,7 @@ pagenum: 10
 # 管理界面
 pagesize: 20
 # 自动截取预览, 字符数
-length: 200
+length: 400
 # 截取预览标识
 identifier: <!--more-->
 # favicon

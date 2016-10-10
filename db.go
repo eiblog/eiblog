@@ -351,9 +351,20 @@ func ManageArchivesArticle(artc *Article, s bool, do string) {
 // 渲染markdown操作和截取摘要操作
 var reg = regexp.MustCompile(setting.Conf.Identifier)
 
+// header
+var regH = regexp.MustCompile("</nav></div>")
+
 func GenerateExcerptAndRender(artc *Article) {
-	index := reg.FindStringIndex(artc.Content)
-	if len(index) > 0 {
+	content := renderPage([]byte(artc.Content))
+	index := regH.FindIndex(content)
+	if index != nil {
+		artc.Header = string(content[0:index[1]])
+		artc.Content = string(content[index[1]:])
+	} else {
+		artc.Content = string(content)
+	}
+	index = reg.FindStringIndex(artc.Content)
+	if index != nil {
 		artc.Excerpt = IgnoreHtmlTag(artc.Content[0:index[0]])
 	} else {
 		uc := []rune(artc.Content)
@@ -363,7 +374,6 @@ func GenerateExcerptAndRender(artc *Article) {
 		}
 		artc.Excerpt = IgnoreHtmlTag(string(uc[0:length]))
 	}
-	artc.Content = string(renderPage([]byte(artc.Content)))
 }
 
 // 读取草稿箱

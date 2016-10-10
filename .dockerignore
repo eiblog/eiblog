@@ -9,4 +9,5 @@ vendor
 vendor/**
 *.go
 *.sh
+*.DS_Store
 setting

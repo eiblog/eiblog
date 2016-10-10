@@ -115,6 +115,8 @@ type Article struct {
 	Prev *Article `bson:"-"`
 	// 下篇文章
 	Next *Article `bson:"-"`
+	// Header
+	Header string `bson:"-"`
 	// 预览信息
 	Excerpt string `bson:"-"`
 }
