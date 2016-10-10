@@ -13,7 +13,7 @@ services:
       - /data/eiblog/conf/es/config:/usr/share/elasticsearch/config
       - /data/eiblog/conf/es/plugins:/usr/share/elasticsearch/plugins
       - /data/eiblog/esdata/data:/usr/share/elasticsearch/data
-      - /data/eiblog/conf/es/logs:/usr/share/elasticsearch/logs
+      - /data/eiblog/esdata/logs:/usr/share/elasticsearch/logs
     environment:    
       ES_JAVA_OPTS: "-Xms512m -Xmx512m"
     # 需注释掉
