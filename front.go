@@ -4,6 +4,7 @@ package main
 
 import (
 	"fmt"
+	"io/ioutil"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -206,7 +207,33 @@ func HandleSitemap(c *gin.Context) {
 }
 
 // 服务端推送谷歌统计
-func HandleBeacon(c *gin.Context) {}
+func HandleBeacon(c *gin.Context) {
+	ua := c.Request.UserAgent()
+	// TODO 过滤黑名单
+	go func() {
+		req, err := http.NewRequest("POST", "https://www.google-analytics.com/collect", strings.NewReader(c.Request.URL.RawQuery))
+		if err != nil {
+			logd.Error(err)
+			return
+		}
+		req.Header.Set("User-Agent", ua)
+		res, err := http.DefaultClient.Do(req)
+		if err != nil {
+			logd.Error(err)
+			return
+		}
+		defer res.Body.Close()
+		data, err := ioutil.ReadAll(res.Body)
+		if err != nil {
+			logd.Error(err)
+			return
+		}
+		if res.StatusCode/100 != 2 {
+			logd.Error(string(data))
+		}
+	}()
+	c.String(http.StatusAccepted, "accepted")
+}
 
 // 服务端获取评论详细
 func HandleDisqus(c *gin.Context) {

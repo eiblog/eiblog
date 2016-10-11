@@ -65,8 +65,6 @@ func init() {
 	{
 		// console
 		auth.GET("/profile", HandleProfile)
-		auth.GET("/plugins", HandlePlugins)
-		auth.GET("/themes", HandleThemes)
 		// write
 		auth.GET("/write-post", HandlePost)
 		// manage

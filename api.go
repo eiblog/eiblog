@@ -32,14 +32,19 @@ func init() {
 	APIs["password"] = apiPassword
 	// 删除文章
 	APIs["post-delete"] = apiPostDelete
+	// 添加文章
 	APIs["post-add"] = apiPostAdd
-	// 专题
+	// 删除专题
 	APIs["serie-delete"] = apiSerieDelete
+	// 添加专题
 	APIs["serie-add"] = apiSerieAdd
+	// 专题排序
 	APIs["serie-sort"] = apiSerieSort
-	// xx箱
+	// 删除草稿箱
 	APIs["draft-delete"] = apiDraftDelete
+	// 删除回收箱
 	APIs["trash-delete"] = apiTrashDelete
+	// 恢复回收箱
 	APIs["trash-recover"] = apiTrashRecover
 }
 

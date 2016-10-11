@@ -30,8 +30,6 @@
                 </li>
                 <ul class="child">
                     <li {{if eq .Path "/admin/profile"}}class="focus" {{end}}><a target="_self" href="/admin/profile">个人设置</a></li>
-                    <li {{if eq .Path "/admin/plugins"}}class="focus" {{end}}><a target="_self" href="/admin/plugins">插件</a></li>
-                    <li class="last {{if eq .Path "/admin/themes"}}focus{{end}}"><a target="_self" href="/admin/themes">外观</a></li>
                 </ul>
             </ul>
             <ul class="root {{if .Post}}focus{{end}}">

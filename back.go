@@ -88,24 +88,6 @@ func HandleProfile(c *gin.Context) {
 	c.HTML(http.StatusOK, "backLayout.html", h)
 }
 
-// 插件
-func HandlePlugins(c *gin.Context) {
-	h := GetBack()
-	h["Console"] = true
-	h["Path"] = c.Request.URL.Path
-	h["Title"] = "插件管理 | " + Ei.BTitle
-	c.HTML(http.StatusOK, "backLayout.html", h)
-}
-
-// 主题
-func HandleThemes(c *gin.Context) {
-	h := GetBack()
-	h["Console"] = true
-	h["Path"] = c.Request.URL.Path
-	h["Title"] = "主题管理 | " + Ei.BTitle
-	c.HTML(http.StatusOK, "backLayout.html", h)
-}
-
 // 写文章==>Write
 func HandlePost(c *gin.Context) {
 	h := GetBack()

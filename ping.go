@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -36,5 +35,7 @@ func (f *Superfeedr) PingFunc(urls ...string) {
 		logd.Error(err)
 		return
 	}
-	fmt.Println(string(data), res.StatusCode)
+	if res.StatusCode != 200 {
+		logd.Error(string(data))
+	}
 }
