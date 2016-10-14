@@ -140,11 +140,13 @@ func ElasticsearchSimple(q string, size, from int) *ESSearchResult {
 }
 
 func ElasticIndex(artc *Article) error {
+	img := PickFirstImage(artc.Content)
 	mapping := map[string]interface{}{
 		"title":       artc.Title,
 		"content":     IgnoreHtmlTag(artc.Content),
 		"slug":        artc.Slug,
 		"tags":        artc.Tags,
+		"img":         img,
 		"create_time": artc.CreateTime,
 	}
 	b, _ := json.Marshal(mapping)
@@ -300,6 +302,7 @@ type ESSearchResult struct {
 				Content    string    `json:"content"`
 				CreateTime time.Time `json:"create_time"`
 				Title      string    `json:"title"`
+				Img        string    `json:"img"`
 			} `json:"_source"`
 			Highlight struct {
 				Title   []string `json:"title"`

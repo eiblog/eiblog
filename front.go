@@ -159,7 +159,7 @@ func HandleSearchPage(c *gin.Context) {
 	}
 	if q != "" {
 		h["Word"] = q
-		h["HotWord"] = []string{}
+		h["HotWords"] = []string{"docker"}
 		var result *ESSearchResult
 		vals := c.Request.URL.Query()
 		reg := regexp.MustCompile(`^[a-z]+:\w+$`)

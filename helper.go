@@ -35,3 +35,12 @@ func IgnoreHtmlTag(src string) string {
 	re, _ = regexp.Compile("\\s{1,}")
 	return re.ReplaceAllString(src, "")
 }
+
+func PickFirstImage(html string) string {
+	re, _ := regexp.Compile(`data-src="(.*?)"`)
+	sli := re.FindAllStringSubmatch(html, 1)
+	if len(sli) > 0 && len(sli[0]) > 1 {
+		return sli[0][1]
+	}
+	return ""
+}
