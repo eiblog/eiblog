@@ -89,6 +89,11 @@ func HandleProfile(c *gin.Context) {
 }
 
 // 写文章==>Write
+type T struct {
+	ID   string `json:"id"`
+	Tags string `json:"tags"`
+}
+
 func HandlePost(c *gin.Context) {
 	h := GetBack()
 	id, err := strconv.Atoi(c.Query("cid"))
@@ -103,6 +108,11 @@ func HandlePost(c *gin.Context) {
 	h["Title"] = "撰写文章 | " + Ei.BTitle
 	h["Domain"] = setting.Conf.Mode.Domain
 	h["Series"] = Ei.Series
+	var tags []T
+	for tag, _ := range Ei.Tags {
+		tags = append(tags, T{tag, tag})
+	}
+	h["Tags"] = tags
 	c.HTML(http.StatusOK, "backLayout.html", h)
 }
 

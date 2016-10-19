@@ -14,7 +14,7 @@
                 </p>
                 <p class="mono url-slug">
                     <label for="slug" class="sr-only">网址缩略名</label>
-                    {{.Domain}}/post/<input type="text" id="slug" name="slug" autocomplete="off" {{with .Edit}}value="{{.Slug}}" {{end}} class="mono" />.html </p>
+                    https://{{.Domain}}/post/<input type="text" id="slug" name="slug" autocomplete="off" {{with .Edit}}value="{{.Slug}}" {{end}} class="mono" />.html </p>
                 <p>
                     <label for="text" class="sr-only">文章内容</label>
                     <textarea style="height: 350px" autocomplete="off" id="text" name="text" class="w-100 mono">{{with .Edit}}{{.Content}}{{end}}</textarea>
@@ -40,7 +40,7 @@
                         </p>
                     </section>
                     <section class="typecho-post-option category-option">
-                        <label class="typecho-label">分类</label>
+                        <label class="typecho-label">专题</label>
                         <ul>
                             {{range $k,$v:=.Series}}
                             <li>
@@ -136,7 +136,7 @@ $(document).ready(function() {
     $('#title').select();
 
     // text 自动拉伸
-    Typecho.editorResize('text', 'http://localhost/index.php/action/ajax?do=editorResize&_=53e23a1bd0daab03b05d9c23190904a4');
+    // Typecho.editorResize('text', 'http://localhost/index.php/action/ajax?do=editorResize&_=53e23a1bd0daab03b05d9c23190904a4');
 
     // tag autocomplete 提示
     var tags = $('#tags'),
@@ -158,19 +158,7 @@ $(document).ready(function() {
             });
         }
 
-        tags.tokenInput([{
-            "id": "sadfasdf",
-            "tags": "sadfasdf"
-        }, {
-            "id": "sdfsdfasd",
-            "tags": "sdfsdfasd"
-        }, {
-            "id": "sdfsdfasdf",
-            "tags": "sdfsdfasdf"
-        }, {
-            "id": "asdfasd",
-            "tags": "asdfasd"
-        }], {
+	tags.tokenInput({{.Tags}}, {
             propertyToSearch: 'tags',
             tokenValue: 'tags',
             searchDelay: 0,
@@ -283,7 +271,7 @@ $(document).ready(function() {
                     locked = false;
                 }, 'json');
             }
-        }, 10000);
+        }, 20000);
     }
 
     if (autoSaveOnce) {
@@ -349,15 +337,6 @@ $(document).ready(function() {
         } else {
             password.addClass('hidden');
         }
-    });
-
-    // 草稿删除确认
-    $('.edit-draft-notice a').click(function() {
-        if (confirm('您确认要删除这份草稿吗?')) {
-            window.location.href = $(this).attr('href');
-        }
-
-        return false;
     });
 });
 </script>
