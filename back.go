@@ -97,15 +97,18 @@ type T struct {
 func HandlePost(c *gin.Context) {
 	h := GetBack()
 	id, err := strconv.Atoi(c.Query("cid"))
-	if artc := QueryArticle(int32(id)); err == nil && id > 0 && artc != nil {
-		h["Title"] = "编辑文章 | " + Ei.BTitle
-		h["Edit"] = artc
-	} else {
+	if err == nil && id > 0 {
+		artc := QueryArticle(int32(id))
+		if artc != nil {
+			h["Title"] = "编辑文章 | " + Ei.BTitle
+			h["Edit"] = artc
+		}
+	}
+	if h["Title"] == "" {
 		h["Title"] = "撰写文章 | " + Ei.BTitle
 	}
 	h["Post"] = true
 	h["Path"] = c.Request.URL.Path
-	h["Title"] = "撰写文章 | " + Ei.BTitle
 	h["Domain"] = setting.Conf.Mode.Domain
 	h["Series"] = Ei.Series
 	var tags []T
@@ -126,7 +129,7 @@ func HandleDraftDelete(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "删除错误"})
 		return
 	}
-	c.JSON(http.StatusOK, nil)
+	c.Redirect(http.StatusFound, "/admin/write-post")
 }
 
 // 文章管理==>Manage

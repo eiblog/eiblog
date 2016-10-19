@@ -46,6 +46,8 @@ func init() {
 	APIs["trash-delete"] = apiTrashDelete
 	// 恢复回收箱
 	APIs["trash-recover"] = apiTrashRecover
+	// 上传文件
+	APIs["file-upload"] = apiFileUpload
 }
 
 func apiAccount(c *gin.Context) {
@@ -387,6 +389,10 @@ func apiTrashRecover(c *gin.Context) {
 		}
 	}
 	responseNotice(c, NOTICE_SUCCESS, "恢复成功", "")
+}
+
+func apiFileUpload(c *gin.Context) {
+
 }
 
 func responseNotice(c *gin.Context, typ, content, hl string) {

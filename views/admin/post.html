@@ -1,13 +1,12 @@
 {{define "admin-post"}}
 <div class="body container">
     <div class="typecho-page-title">
-        {{with .Eidt}}<h2>编辑 {{.Title}}</h2>{{end}}
-        <h2>撰写文章</h2>
+        {{if .Edit}}<h2>编辑 {{.Edit.Title}}</h2>{{else}}<h2>撰写文章</h2>{{end}}
     </div>
     <div class="row typecho-page-main typecho-post-area" role="form">
         <form action="/admin/api/post-add" method="post" name="write_post">
             <div class="col-mb-12 col-tb-9" role="main">
-                {{with .Eidt}}<cite class="edit-draft-notice">你正在编辑的是草稿, 你也可以 <a href="/admin/draft-delete?cid={{.ID}}">删除它</a></cite>{{end}}
+                {{if .Edit.IsDraft}}<cite class="edit-draft-notice">你正在编辑的是草稿, 你也可以 <a href="/admin/draft-delete?cid={{.Edit.ID}}">删除它</a></cite>{{end}}
                 <p class="title">
                     <label for="title" class="sr-only">标题</label>
                     <input type="text" id="title" name="title" autocomplete="off" {{with .Edit}}value="{{.Title}}"{{end}} placeholder="标题" class="w-100 text title" />
@@ -654,23 +653,7 @@ $(document).ready(function() {
             return false;
         });
     }
-
-    if (isMarkdown) {
-        initMarkdown();
-    } else {
-        var notice = $('<div class="message notice">这篇文章不是由Markdown语法创建的, 继续使用Markdown编辑它吗? ' + '<button class="btn btn-xs primary yes">是</button> ' + '<button class="btn btn-xs no">否</button></div>')
-            .hide().insertBefore(textarea).slideDown();
-
-        $('.yes', notice).click(function() {
-            notice.remove();
-            $('<input type="hidden" name="markdown" value="1" />').appendTo('.submit');
-            initMarkdown();
-        });
-
-        $('.no', notice).click(function() {
-            notice.remove();
-        });
-    }
+    initMarkdown();
 });
 </script>
 <script src="/static/admin/moxie.js"></script>
@@ -780,9 +763,9 @@ $(document).ready(function() {
     $('#tab-files').bind('init', function() {
         var uploader = new plupload.Uploader({
             browse_button: $('.upload-file').get(0),
-            url: 'http://localhost/index.php/action/upload?_=53e23a1bd0daab03b05d9c23190904a4',
+            url: '/admin/api/file-upload',
             runtimes: 'html5,flash,html4',
-            flash_swf_url: 'http://localhost/admin/js/Moxie.swf',
+            flash_swf_url: '/static/admin/js/Moxie.swf',
             drop_element: $('.upload-area').get(0),
             filters: {
                 max_file_size: '2mb',
