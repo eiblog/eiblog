@@ -3,7 +3,9 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"net/http"
 	"regexp"
@@ -31,6 +33,8 @@ func UserCookie(c *gin.Context) {
 	cookie, err := c.Request.Cookie("u")
 	if err != nil || cookie.Value == "" {
 		// TODO cookie操作
+		b := []byte(c.ClientIP() + time.Now().String())
+		c.SetCookie("u", fmt.Sprintf("%x", SHA1(b)), 86400*999, "/", "", true, true)
 	}
 }
 
@@ -52,15 +56,6 @@ func StaticVersion(c *gin.Context) (version int) {
 	return 0
 }
 
-func HandleNotFound(c *gin.Context) {
-	h := GetBase()
-	h["Version"] = StaticVersion(c)
-	h["Title"] = "Not Found"
-	h["NotFoundPage"] = true
-	h["Path"] = ""
-	c.HTML(http.StatusNotFound, "homeLayout.html", h)
-}
-
 func GetBase() gin.H {
 	return gin.H{
 		"Favicon":  setting.Conf.Favicon,
@@ -75,19 +70,28 @@ func GetBase() gin.H {
 	}
 }
 
+func HandleNotFound(c *gin.Context) {
+	h := GetBase()
+	h["Version"] = StaticVersion(c)
+	h["Title"] = "Not Found"
+	h["Path"] = ""
+	c.Status(http.StatusNotFound)
+	RenderHTMLFront(c, "notfound", h)
+}
+
 func HandleHomePage(c *gin.Context) {
 	h := GetBase()
 	h["Version"] = StaticVersion(c)
 	h["Title"] = Ei.BTitle + " | " + Ei.SubTitle
 	h["Path"] = c.Request.URL.Path
-	h["HomePage"] = true
 	h["CurrentPage"] = "blog-home"
 	pn, err := strconv.Atoi(c.Query("pn"))
 	if err != nil || pn < 1 {
 		pn = 1
 	}
 	h["Prev"], h["Next"], h["List"] = PageList(pn, setting.Conf.PageNum)
-	c.HTML(http.StatusOK, "homeLayout.html", h)
+	c.Status(http.StatusOK)
+	RenderHTMLFront(c, "home", h)
 }
 
 func HandleSeriesPage(c *gin.Context) {
@@ -95,10 +99,10 @@ func HandleSeriesPage(c *gin.Context) {
 	h["Version"] = StaticVersion(c)
 	h["Title"] = "专题 | " + Ei.BTitle
 	h["Path"] = c.Request.URL.Path
-	h["SeriesPage"] = true
 	h["CurrentPage"] = "series"
 	h["Article"] = Ei.PageSeries
-	c.HTML(http.StatusOK, "homeLayout.html", h)
+	c.Status(http.StatusOK)
+	RenderHTMLFront(c, "series", h)
 }
 
 func HandleArchivesPage(c *gin.Context) {
@@ -106,10 +110,10 @@ func HandleArchivesPage(c *gin.Context) {
 	h["Version"] = StaticVersion(c)
 	h["Title"] = "归档 | " + Ei.BTitle
 	h["Path"] = c.Request.URL.Path
-	h["ArchivesPage"] = true
 	h["CurrentPage"] = "archives"
 	h["Article"] = Ei.PageArchives
-	c.HTML(http.StatusOK, "homeLayout.html", h)
+	c.Status(http.StatusOK)
+	RenderHTMLFront(c, "archives", h)
 }
 
 func HandleArticlePage(c *gin.Context) {
@@ -124,12 +128,13 @@ func HandleArticlePage(c *gin.Context) {
 	h["Title"] = artc.Title + " | " + Ei.BTitle
 	h["Path"] = c.Request.URL.Path
 	h["CurrentPage"] = "post-" + artc.Slug
+	var name string
 	if path == "blogroll.html" {
-		h["BlogrollPage"] = true
+		name = "blogroll"
 	} else if path == "about.html" {
-		h["AboutPage"] = true
+		name = "about"
 	} else {
-		h["ArticlePage"] = true
+		name = "article"
 		h["Copyright"] = Ei.Copyright
 		if !artc.UpdateTime.IsZero() {
 			h["Days"] = int(time.Now().Sub(artc.UpdateTime).Hours()) / 24
@@ -141,7 +146,8 @@ func HandleArticlePage(c *gin.Context) {
 		}
 	}
 	h["Article"] = artc
-	c.HTML(http.StatusOK, "homeLayout.html", h)
+	c.Status(http.StatusOK)
+	RenderHTMLFront(c, name, h)
 }
 
 func HandleSearchPage(c *gin.Context) {
@@ -149,7 +155,6 @@ func HandleSearchPage(c *gin.Context) {
 	h["Version"] = StaticVersion(c)
 	h["Title"] = "站内搜索 | " + Ei.BTitle
 	h["Path"] = ""
-	h["SearchPage"] = true
 	h["CurrentPage"] = "search-post"
 
 	q := c.Query("q")
@@ -187,7 +192,8 @@ func HandleSearchPage(c *gin.Context) {
 			}
 		}
 	}
-	c.HTML(http.StatusOK, "homeLayout.html", h)
+	c.Status(http.StatusOK)
+	RenderHTMLFront(c, "search", h)
 }
 
 func HandleFeed(c *gin.Context) {
@@ -271,4 +277,18 @@ func HandleDisqus(c *gin.Context) {
 		},
 	}
 	c.JSON(http.StatusOK, ss)
+}
+
+func RenderHTMLFront(c *gin.Context, name string, data gin.H) {
+	var buf bytes.Buffer
+	err := Tmpl.ExecuteTemplate(&buf, name, data)
+	if err != nil {
+		panic(err)
+	}
+	data["LayoutContent"] = template.HTML(buf.String())
+	err = Tmpl.ExecuteTemplate(c.Writer, "homeLayout.html", data)
+	if err != nil {
+		panic(err)
+	}
+	c.Header("Content-Type", "text/html; charset=utf-8")
 }

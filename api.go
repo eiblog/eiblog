@@ -393,6 +393,18 @@ func apiTrashRecover(c *gin.Context) {
 
 func apiFileUpload(c *gin.Context) {
 
+	// file, header , err := c.Request.FormFile("upload")
+	// filename := header.Filename
+	// fmt.Println(header.Filename)
+	// out, err := os.Create("./tmp/"+filename+".png")
+	// if err != nil {
+	//     log.Fatal(err)
+	// }
+	// defer out.Close()
+	// _, err = io.Copy(out, file)
+	// if err != nil {
+	//     log.Fatal(err)
+	// }
 }
 
 func responseNotice(c *gin.Context, typ, content, hl string) {

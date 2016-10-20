@@ -2,7 +2,9 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
+	"html/template"
 	"net/http"
 	"strconv"
 	"time"
@@ -45,9 +47,8 @@ func HandleLogin(c *gin.Context) {
 		c.Redirect(http.StatusFound, "/admin/profile")
 		return
 	}
-	c.HTML(http.StatusOK, "login.html", gin.H{
-		"BTitle": Ei.BTitle,
-	})
+	c.Status(http.StatusOK)
+	RenderHTMLBack(c, "login.html", gin.H{"BTitle": Ei.BTitle})
 }
 
 func HandleLoginPost(c *gin.Context) {
@@ -55,12 +56,12 @@ func HandleLoginPost(c *gin.Context) {
 	pwd := c.PostForm("password")
 	// code := c.PostForm("code") // 二次验证
 	if user == "" || pwd == "" {
-		logd.Info("参数错误", user, pwd)
+		logd.Print("参数错误", user, pwd)
 		c.Redirect(http.StatusFound, "/admin/login")
 		return
 	}
 	if Ei.Username != user || !VerifyPasswd(Ei.Password, user, pwd) {
-		logd.Info("账号或密码错误", user, pwd)
+		logd.Print("账号或密码错误", user, pwd)
 		c.Redirect(http.StatusFound, "/admin/login")
 		return
 	}
@@ -84,8 +85,8 @@ func HandleProfile(c *gin.Context) {
 	h["Path"] = c.Request.URL.Path
 	h["Title"] = "个人配置 | " + Ei.BTitle
 	h["Account"] = Ei
-	h["Profile"] = true
-	c.HTML(http.StatusOK, "backLayout.html", h)
+	c.Status(http.StatusOK)
+	RenderHTMLBack(c, "admin-profile", h)
 }
 
 // 写文章==>Write
@@ -107,7 +108,6 @@ func HandlePost(c *gin.Context) {
 	if h["Title"] == "" {
 		h["Title"] = "撰写文章 | " + Ei.BTitle
 	}
-	h["Post"] = true
 	h["Path"] = c.Request.URL.Path
 	h["Domain"] = setting.Conf.Mode.Domain
 	h["Series"] = Ei.Series
@@ -116,7 +116,8 @@ func HandlePost(c *gin.Context) {
 		tags = append(tags, T{tag, tag})
 	}
 	h["Tags"] = tags
-	c.HTML(http.StatusOK, "backLayout.html", h)
+	c.Status(http.StatusOK)
+	RenderHTMLBack(c, "admin-post", h)
 }
 
 func HandleDraftDelete(c *gin.Context) {
@@ -149,7 +150,6 @@ func HandlePosts(c *gin.Context) {
 	h["Manage"] = true
 	h["Path"] = c.Request.URL.Path
 	h["Title"] = "文章管理 | " + Ei.BTitle
-	h["Posts"] = true
 	h["Series"] = Ei.Series
 	h["Serie"] = se
 	h["KW"] = kw
@@ -169,7 +169,8 @@ func HandlePosts(c *gin.Context) {
 		h["PP"].(map[int]string)[i+1] = vals.Encode()
 	}
 	h["Cur"] = pg
-	c.HTML(http.StatusOK, "backLayout.html", h)
+	c.Status(http.StatusOK)
+	RenderHTMLBack(c, "admin-posts", h)
 }
 
 // 专题列表
@@ -178,9 +179,9 @@ func HandleSeries(c *gin.Context) {
 	h["Manage"] = true
 	h["Path"] = c.Request.URL.Path
 	h["Title"] = "专题管理 | " + Ei.BTitle
-	h["Series"] = true
 	h["List"] = Ei.Series
-	c.HTML(http.StatusOK, "backLayout.html", h)
+	c.Status(http.StatusOK)
+	RenderHTMLBack(c, "admin-series", h)
 }
 
 func HandleSerie(c *gin.Context) {
@@ -194,8 +195,8 @@ func HandleSerie(c *gin.Context) {
 	}
 	h["Manage"] = true
 	h["Path"] = c.Request.URL.Path
-	h["Serie"] = true
-	c.HTML(http.StatusOK, "backLayout.html", h)
+	c.Status(http.StatusOK)
+	RenderHTMLBack(c, "admin-serie", h)
 }
 
 // 标签列表
@@ -204,9 +205,9 @@ func HandleTags(c *gin.Context) {
 	h["Manage"] = true
 	h["Path"] = c.Request.URL.Path
 	h["Title"] = "标签管理 | " + Ei.BTitle
-	h["Tags"] = true
 	h["List"] = Ei.Tags
-	c.HTML(http.StatusOK, "backLayout.html", h)
+	c.Status(http.StatusOK)
+	RenderHTMLBack(c, "admin-tags", h)
 }
 
 // 草稿箱
@@ -215,15 +216,15 @@ func HandleDraft(c *gin.Context) {
 	h["Manage"] = true
 	h["Path"] = c.Request.URL.Path
 	h["Title"] = "草稿箱 | " + Ei.BTitle
-	h["Draft"] = true
 	var err error
 	h["List"], err = LoadDraft()
 	if err != nil {
 		logd.Error(err)
-		c.HTML(http.StatusBadRequest, "backLayout.html", h)
-		return
+		c.Status(http.StatusBadRequest)
+	} else {
+		c.Status(http.StatusOK)
 	}
-	c.HTML(http.StatusOK, "backLayout.html", h)
+	RenderHTMLBack(c, "admin-draft", h)
 }
 
 // 回收箱
@@ -232,7 +233,6 @@ func HandleTrash(c *gin.Context) {
 	h["Manage"] = true
 	h["Path"] = c.Request.URL.Path
 	h["Title"] = "回收箱 | " + Ei.BTitle
-	h["Trash"] = true
 	var err error
 	h["List"], err = LoadTrash()
 	if err != nil {
@@ -240,7 +240,8 @@ func HandleTrash(c *gin.Context) {
 		c.HTML(http.StatusBadRequest, "backLayout.html", h)
 		return
 	}
-	c.HTML(http.StatusOK, "backLayout.html", h)
+	c.Status(http.StatusOK)
+	RenderHTMLBack(c, "admin-trash", h)
 }
 
 // 基本设置==>Setting
@@ -249,8 +250,8 @@ func HandleGeneral(c *gin.Context) {
 	h["Setting"] = true
 	h["Path"] = c.Request.URL.Path
 	h["Title"] = "基本设置 | " + Ei.BTitle
-	h["General"] = true
-	c.HTML(http.StatusOK, "backLayout.html", h)
+	c.Status(http.StatusOK)
+	RenderHTMLBack(c, "admin-general", h)
 }
 
 // 阅读设置
@@ -259,8 +260,8 @@ func HandleDiscussion(c *gin.Context) {
 	h["Setting"] = true
 	h["Path"] = c.Request.URL.Path
 	h["Title"] = "阅读设置 | " + Ei.BTitle
-	h["Discussion"] = true
-	c.HTML(http.StatusOK, "backLayout.html", h)
+	c.Status(http.StatusOK)
+	RenderHTMLBack(c, "admin-discussion", h)
 }
 
 // api
@@ -273,4 +274,26 @@ func HandleAPI(c *gin.Context) {
 		return
 	}
 	api(c)
+}
+
+func RenderHTMLBack(c *gin.Context, name string, data gin.H) {
+	if name == "login.html" {
+		err := Tmpl.ExecuteTemplate(c.Writer, name, data)
+		if err != nil {
+			panic(err)
+		}
+		c.Header("Content-Type", "text/html; charset=utf-8")
+		return
+	}
+	var buf bytes.Buffer
+	err := Tmpl.ExecuteTemplate(&buf, name, data)
+	if err != nil {
+		panic(err)
+	}
+	data["LayoutContent"] = template.HTML(buf.String())
+	err = Tmpl.ExecuteTemplate(c.Writer, "backLayout.html", data)
+	if err != nil {
+		panic(err)
+	}
+	c.Header("Content-Type", "text/html; charset=utf-8")
 }

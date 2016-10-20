@@ -13,7 +13,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var router *gin.Engine
+var (
+	router *gin.Engine
+	Tmpl   *template.Template
+)
 
 func init() {
 	if setting.Conf.RunMode == setting.PROD {
@@ -31,14 +34,15 @@ func init() {
 	})
 	router.Use(sessions.Sessions("su", store))
 	// 匹配模版
-	//router.LoadHTMLGlob("views/*.html")
-	if tmpl, err := template.New("").Funcs(tmpl.TplFuncMap).ParseGlob("views/*.*"); err == nil {
-		tmpl, err = tmpl.ParseGlob("views/admin/*.html")
-		if err != nil {
-			logd.Fatal(err)
+	Tmpl = template.New("eiblog").Funcs(tmpl.TplFuncMap)
+	files := ReadDir("views", func(name string) bool {
+		if name == ".DS_Store" {
+			return true
 		}
-		router.SetHTMLTemplate(tmpl)
-	} else {
+		return false
+	})
+	_, err := Tmpl.ParseFiles(files...)
+	if err != nil {
 		logd.Fatal(err)
 	}
 	// 开启静态文件

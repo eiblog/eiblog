@@ -65,7 +65,7 @@
         </div>
     </div>
     <div class="main">
-        {{if .Profile}}{{template "admin-profile" .}}{{else if .Post}}{{template "admin-post" .}}{{else if .Posts}}{{template "admin-posts" .}}{{else if .Series}}{{template "admin-series" .}}{{else if .Serie}}{{template "admin-serie" .}}{{else if .Tags}}{{template "admin-tags" .}}{{else if .General}}{{template "admin-general" .}}{{else if .Discussion}}{{template "admin-discussion" .}}{{else if .Draft}}{{template "admin-draft" .}}{{else if .Trash}}{{template "admin-trash" .}}{{end}}
+	    {{.LayoutContent}}
     </div>
     <div class="typecho-foot" role="contentinfo">
         <div class="copyright">

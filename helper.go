@@ -1,9 +1,12 @@
 package main
 
 import (
+	"crypto/sha1"
 	"crypto/sha256"
 	"fmt"
 	"io"
+	"io/ioutil"
+	"path"
 	"regexp"
 )
 
@@ -24,6 +27,28 @@ func EncryptPasswd(name, pass string) string {
 
 func VerifyPasswd(origin, name, input string) bool {
 	return origin == EncryptPasswd(name, input)
+}
+
+func SHA1(data []byte) [sha1.Size]byte {
+	return sha1.Sum(data)
+}
+
+func ReadDir(dir string, filter func(name string) bool) (files []string) {
+	fis, err := ioutil.ReadDir(dir)
+	if err != nil {
+		return
+	}
+	for _, fi := range fis {
+		if filter(fi.Name()) {
+			continue
+		}
+		if fi.IsDir() {
+			files = append(files, ReadDir(path.Join(dir, fi.Name()), filter)...)
+			continue
+		}
+		files = append(files, path.Join(dir, fi.Name()))
+	}
+	return
 }
 
 func IgnoreHtmlTag(src string) string {
