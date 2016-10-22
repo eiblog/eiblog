@@ -28,8 +28,12 @@ superfeedr: deepzz
 disqus:
   shortname: deepzz
   publickey: wdSgxRm9rdGAlLKFcFdToBe3GT4SibmV7Y8EjJQ0r4GWXeKtxpopMAeIeoI2dTEg
-  url: https://disqus.com/api/3.0/threads/set.json
+  postscount: https://disqus.com/api/3.0/threads/set.json
+  postslist: https://disqus.com/api/3.0/threads/listPosts.json
   interval: 5
+# 热搜词配置
+hotwords:
+  - docker
 # 运行模式
 mode:
   # you can fix certfile, keyfile, domain

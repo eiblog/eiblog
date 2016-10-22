@@ -36,14 +36,16 @@ type Config struct {
 	SearchURL     string   // elasticsearch 地址
 	Superfeedr    string   // superfeedr
 	Disqus        struct { // 获取文章数量相关
-		ShortName string
-		PublicKey string
-		URL       string
-		Interval  int
+		ShortName  string
+		PublicKey  string
+		PostsCount string
+		PostsList  string
+		Interval   int
 	}
-	Mode    RunMode  // 运行模式
-	Twitter string   // twitter地址
-	Blogger struct { // 初始化数据
+	HotWords []string // 热搜词
+	Mode     RunMode  // 运行模式
+	Twitter  string   // twitter地址
+	Blogger  struct { // 初始化数据
 		BlogName  string
 		SubTitle  string
 		BeiAn     string

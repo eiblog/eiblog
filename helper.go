@@ -8,6 +8,9 @@ import (
 	"io/ioutil"
 	"path"
 	"regexp"
+	"time"
+
+	"github.com/eiblog/utils/logd"
 )
 
 const (
@@ -68,4 +71,43 @@ func PickFirstImage(html string) string {
 		return sli[0][1]
 	}
 	return ""
+}
+
+// 2016-10-22T07:03:01
+const (
+	JUST_NOW    = "几秒前"
+	MINUTES_AGO = "%d分钟前"
+	HOURS_AGO   = "%d小时前"
+	DAYS_AGO    = "%d天前"
+	MONTH_AGO   = "%d月前"
+	YEARS_AGO   = "%d年前"
+)
+
+func ConvertStr(str string) string {
+	t, err := time.Parse("2006-01-02T15:04:05", str)
+	if err != nil {
+		logd.Error(err, str)
+		return JUST_NOW
+	}
+	now := time.Now()
+	year1, month1, day1 := t.Date()
+	year2, month2, day2 := now.Date()
+	if y := year2 - year1; y > 0 {
+		return fmt.Sprintf(YEARS_AGO, y)
+	}
+	if m := month2 - month1; m > 0 {
+		return fmt.Sprintf(MONTH_AGO, m)
+	}
+	if d := day2 - day1; d > 0 {
+		return fmt.Sprintf(DAYS_AGO, d)
+	}
+	hour1, minute1, _ := t.Clock()
+	hour2, minute2, _ := now.Clock()
+	if h := hour2 - hour1; h > 0 {
+		return fmt.Sprintf(HOURS_AGO, h)
+	}
+	if m := minute2 - minute1; m > 0 {
+		return fmt.Sprintf(MINUTES_AGO, m)
+	}
+	return JUST_NOW
 }

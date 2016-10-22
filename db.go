@@ -92,7 +92,7 @@ func init() {
 	// 启动定时器
 	go timer()
 	// 获取评论数量
-	go CommentsCount()
+	go PostsCount()
 }
 
 // 读取或初始化帐号信息

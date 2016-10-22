@@ -158,13 +158,12 @@ func HandleSearchPage(c *gin.Context) {
 	h["CurrentPage"] = "search-post"
 
 	q := c.Query("q")
-	start, err := strconv.Atoi(c.Query("start"))
-	if start < 1 || err != nil {
-		start = 1
-	}
 	if q != "" {
+		start, err := strconv.Atoi(c.Query("start"))
+		if start < 1 || err != nil {
+			start = 1
+		}
 		h["Word"] = q
-		h["HotWords"] = []string{"docker"}
 		var result *ESSearchResult
 		vals := c.Request.URL.Query()
 		reg := regexp.MustCompile(`^[a-z]+:\w+$`)
@@ -191,6 +190,8 @@ func HandleSearchPage(c *gin.Context) {
 				h["Next"] = vals.Encode()
 			}
 		}
+	} else {
+		h["HotWords"] = setting.Conf.HotWords
 	}
 	c.Status(http.StatusOK)
 	RenderHTMLFront(c, "search", h)
@@ -242,41 +243,58 @@ func HandleBeacon(c *gin.Context) {
 }
 
 // 服务端获取评论详细
+type DisqusComments struct {
+	ErrNo  int    `json:"errno"`
+	ErrMsg string `json:"errmsg"`
+	Data   struct {
+		Next     string           `json:"next"`
+		Total    int              `json:"total,omitempty"`
+		Comments []commentsDetail `json:"comments"`
+	} `json:"data"`
+}
+
+type commentsDetail struct {
+	Id           string `json:"id"`
+	Parent       int    `json:"parent"`
+	Name         string `json:"name"`
+	Url          string `json:"url"`
+	Avatar       string `json:"avatar"`
+	CreatedAt    string `json:"createdAt"`
+	CreatedAtStr string `json:"createdAtStr"`
+	Message      string `json:"message"`
+}
+
 func HandleDisqus(c *gin.Context) {
-	slug := c.Query("slug")
-	logd.Debug(slug)
-	// TODO comments
-	var ss = map[string]interface{}{
-		"errno":  0,
-		"errmsg": "",
-		"data": map[string]interface{}{
-			"next":  "",
-			"total": 3,
-			"comments": []map[string]interface{}{
-				map[string]interface{}{
-					"id":           "2361914870",
-					"name":         "Rekey Luo",
-					"parent":       0,
-					"url":          "https://disqus.com/by/rekeyluo/",
-					"avatar":       "//a.disquscdn.com/uploads/users/15860/7550/avatar92.jpg?1438917750",
-					"createdAt":    "2015-11-16T05:00:02",
-					"createdAtStr": "9 months ago",
-					"message":      "你最近对 http2 ssl 相关关注好多啊。",
-				},
-				map[string]interface{}{
-					"id":           "2361915528",
-					"name":         "Jerry Qu",
-					"parent":       0,
-					"url":          "https://disqus.com/by/JerryQu/",
-					"avatar":       "//a.disquscdn.com/uploads/users/1668/8837/avatar92.jpg?1472281172",
-					"createdAt":    "2015-11-16T05:01:05",
-					"createdAtStr": "9 months ago",
-					"message":      "嗯，最近对 web 性能优化这一块研究得比较多。",
-				},
-			},
-		},
+	slug := c.Param("slug")
+	cursor := c.Query("cursor")
+	dcs := DisqusComments{}
+	postsList := PostsList(slug, cursor)
+	if postsList != nil {
+		dcs.ErrNo = postsList.Code
+		if postsList.Cursor.HasNext {
+			dcs.Data.Next = postsList.Cursor.Next
+		}
+		if cursor == "" {
+			dcs.Data.Total = Ei.MapArticles[slug].Count
+		}
+		dcs.Data.Comments = make([]commentsDetail, len(postsList.Response))
+		for i, v := range postsList.Response {
+			dcs.Data.Comments[i] = commentsDetail{
+				Id:           v.Id,
+				Name:         v.Author.Name,
+				Parent:       v.Parent,
+				Url:          v.Author.ProfileUrl,
+				Avatar:       v.Author.Avatar.Cache,
+				CreatedAt:    v.CreatedAt,
+				CreatedAtStr: ConvertStr(v.CreatedAt),
+				Message:      v.Message,
+			}
+		}
+	} else {
+		dcs.ErrNo = FAIL
+		dcs.ErrMsg = "系统错误"
 	}
-	c.JSON(http.StatusOK, ss)
+	c.JSON(http.StatusOK, dcs)
 }
 
 func RenderHTMLFront(c *gin.Context, name string, data gin.H) {
