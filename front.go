@@ -32,7 +32,6 @@ func Filter() gin.HandlerFunc {
 func UserCookie(c *gin.Context) {
 	cookie, err := c.Request.Cookie("u")
 	if err != nil || cookie.Value == "" {
-		// TODO cookie操作
 		b := []byte(c.ClientIP() + time.Now().String())
 		c.SetCookie("u", fmt.Sprintf("%x", SHA1(b)), 86400*999, "/", "", true, true)
 	}
