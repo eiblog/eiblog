@@ -7,6 +7,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"regexp"
+	"strings"
 	"time"
 
 	"github.com/eiblog/eiblog/setting"
@@ -16,6 +18,10 @@ import (
 const (
 	INDEX = "eiblog"
 	TYPE  = "article"
+
+	ES_FILTER = `"filter":{"bool":{"must":[%s]}}`
+	ES_TERM   = `{"term":{"%s":"%s"}}`
+	ES_DATE   = `{"range":{"date":{"gte":"%s","lte": "%s","format": "yyyy-MM-dd||yyyy-MM||yyyy"}}}` // 2016-10||/M
 )
 
 var es *ElasticService
@@ -26,112 +32,63 @@ func init() {
 }
 
 func initIndex() {
-	mapping := map[string]interface{}{
-		"mappings": map[string]interface{}{
-			TYPE: map[string]interface{}{
-				"properties": map[string]interface{}{
-					"title": map[string]string{
-						"type":            "string",
-						"term_vector":     "with_positions_offsets",
-						"analyzer":        "ik_syno",
-						"search_analyzer": "ik_syno",
-					},
-					"content": map[string]string{
-						"type":            "string",
-						"term_vector":     "with_positions_offsets",
-						"analyzer":        "ik_syno",
-						"search_analyzer": "ik_syno",
-					},
-					"slug": map[string]string{
-						"type": "string",
-					},
-					"tags": map[string]string{
-						"type":  "string",
-						"index": "not_analyzed",
-					},
-					"create_time": map[string]string{
-						"type":  "date",
-						"index": "not_analyzed",
-					},
-				},
-			},
-		},
-	}
-	b, _ := json.Marshal(mapping)
-	err := CreateIndexAndMappings(INDEX, TYPE, b)
+	mappings := fmt.Sprintf(`{"mappings":{"%s":{"properties":{"content":{"analyzer":"ik_syno","search_analyzer":"ik_syno","term_vector":"with_positions_offsets","type":"string"},"date":{"index":"not_analyzed","type":"date"},"slug":{"type":"string"},"tag":{"index":"not_analyzed","type":"string"},"title":{"analyzer":"ik_syno","search_analyzer":"ik_syno","term_vector":"with_positions_offsets","type":"string"}}}}}`, TYPE)
+	err := CreateIndexAndMappings(INDEX, TYPE, []byte(mappings))
 	if err != nil {
 		logd.Fatal(err)
 	}
 }
 
-func Elasticsearch(kw string, size, from int) *ESSearchResult {
-	dsl := map[string]interface{}{
-		"query": map[string]interface{}{
-			"dis_max": map[string]interface{}{
-				"queries": []map[string]interface{}{
-					map[string]interface{}{
-						"match": map[string]interface{}{
-							"title": map[string]interface{}{
-								"query":                kw,
-								"minimum_should_match": "50%",
-								"boost":                4,
-							},
-						},
-					},
-					map[string]interface{}{
-						"match": map[string]interface{}{
-							"content": map[string]interface{}{
-								"query":                kw,
-								"minimum_should_match": "75%",
-								"boost":                4,
-							},
-						},
-					},
-					map[string]interface{}{
-						"match": map[string]interface{}{
-							"tags": map[string]interface{}{
-								"query":                kw,
-								"minimum_should_match": "100%",
-								"boost":                2,
-							},
-						},
-					},
-					map[string]interface{}{
-						"match": map[string]interface{}{
-							"slug": map[string]interface{}{
-								"query":                kw,
-								"minimum_should_match": "100%",
-								"boost":                1,
-							},
-						},
-					},
-				},
-				"tie_breaker": 0.3,
-			},
-		},
-		"highlight": map[string]interface{}{
-			"pre_tags":  []string{"<b>"},
-			"post_tags": []string{"</b>"},
-			"fields": map[string]interface{}{
-				"title":   map[string]string{},
-				"content": map[string]string{
-				// "fragment_size":       150,
-				// "number_of_fragments": "3",
-				},
-			},
-		},
+func Elasticsearch(qStr string, size, from int) *ESSearchResult {
+	// 分析查询字符串
+	reg := regexp.MustCompile(`(tag|slug|date):`)
+	indexs := reg.FindAllStringIndex(qStr, -1)
+	length := len(indexs)
+	var str, kw string
+	var filter []string
+	if length == 0 { // 全文搜索
+		kw = qStr
 	}
-	b, _ := json.Marshal(dsl)
-	docs, err := IndexQueryDSL(INDEX, TYPE, size, from, b)
-	if err != nil {
-		logd.Error(err)
-		return nil
+	// 字段搜索,检出 全文搜索
+	for i, index := range indexs {
+		if i == length-1 {
+			str = qStr[index[0]:]
+			if space := strings.Index(str, " "); space != -1 && space < len(str)-1 {
+				kw = str[space+1:]
+				str = str[:space]
+			}
+		} else {
+			str = strings.TrimSpace(qStr[index[0]:indexs[i+1][0]])
+		}
+		kv := strings.Split(str, ":")
+		switch kv[0] {
+		case "slug":
+			filter = append(filter, fmt.Sprintf(ES_TERM, kv[0], kv[1]))
+		case "tag":
+			filter = append(filter, fmt.Sprintf(ES_TERM, kv[0], kv[1]))
+		case "date":
+			var date string
+			switch len(kv[1]) {
+			case 4:
+				date = fmt.Sprintf(ES_DATE, kv[1], kv[1]+"||/y")
+			case 7:
+				date = fmt.Sprintf(ES_DATE, kv[1], kv[1]+"||/M")
+			case 10:
+				date = fmt.Sprintf(ES_DATE, kv[1], kv[1]+"||/d")
+			default:
+				break
+			}
+			filter = append(filter, date)
+		}
 	}
-	return docs
-}
-
-func ElasticsearchSimple(q string, size, from int) *ESSearchResult {
-	docs, err := IndexQuerySimple(INDEX, TYPE, size, from, q)
+	// 判断是否为空，选择搜索方式
+	var dsl string
+	if kw != "" {
+		dsl = strings.Replace(strings.Replace(`{"highlight":{"fields":{"content":{},"title":{}},"post_tags":["\u003c/b\u003e"],"pre_tags":["\u003cb\u003e"]},"query":{"dis_max":{"queries":[{"match":{"title":{"boost":4,"minimum_should_match":"50%","query":"$1"}}},{"match":{"content":{"boost":4,"minimum_should_match":"75%","query":"$1"}}},{"match":{"tag":{"boost":2,"minimum_should_match":"100%","query":"$1"}}},{"match":{"slug":{"boost":1,"minimum_should_match":"100%","query":"$1"}}}],"tie_breaker":0.3}},$2}`, "$1", kw, -1), "$2", fmt.Sprintf(ES_FILTER, strings.Join(filter, ",")), -1)
+	} else {
+		dsl = fmt.Sprintf("{"+ES_FILTER+"}", strings.Join(filter, ","))
+	}
+	docs, err := IndexQueryDSL(INDEX, TYPE, size, from, []byte(dsl))
 	if err != nil {
 		logd.Error(err)
 		return nil
@@ -142,12 +99,12 @@ func ElasticsearchSimple(q string, size, from int) *ESSearchResult {
 func ElasticIndex(artc *Article) error {
 	img := PickFirstImage(artc.Content)
 	mapping := map[string]interface{}{
-		"title":       artc.Title,
-		"content":     IgnoreHtmlTag(artc.Content),
-		"slug":        artc.Slug,
-		"tags":        artc.Tags,
-		"img":         img,
-		"create_time": artc.CreateTime,
+		"title":   artc.Title,
+		"content": IgnoreHtmlTag(artc.Content),
+		"slug":    artc.Slug,
+		"tag":     artc.Tags,
+		"img":     img,
+		"date":    artc.CreateTime,
 	}
 	b, _ := json.Marshal(mapping)
 	return IndexOrUpdateDocument(INDEX, TYPE, artc.ID, b)
@@ -245,9 +202,9 @@ func IndexOrUpdateDocument(index, typ string, id int32, doc []byte) (err error) 
 }
 
 type ESDeleteDocument struct {
-	_Index string `json:"_index"`
-	_Type  string `json:"_type"`
-	_ID    string `json:"_id"`
+	Index string `json:"_index"`
+	Type  string `json:"_type"`
+	ID    string `json:"_id"`
 }
 
 type ESDeleteResult struct {
@@ -260,7 +217,7 @@ type ESDeleteResult struct {
 func DeleteDocument(index, typ string, ids []string) error {
 	var buff bytes.Buffer
 	for _, id := range ids {
-		dd := &ESDeleteDocument{_Index: index, _Type: typ, _ID: id}
+		dd := &ESDeleteDocument{Index: index, Type: typ, ID: id}
 		m := map[string]*ESDeleteDocument{"delete": dd}
 		b, _ := json.Marshal(m)
 		buff.Write(b)
@@ -298,11 +255,11 @@ type ESSearchResult struct {
 		Hits  []struct {
 			ID     string `json:"_id"`
 			Source struct {
-				Slug       string    `json:"slug"`
-				Content    string    `json:"content"`
-				CreateTime time.Time `json:"create_time"`
-				Title      string    `json:"title"`
-				Img        string    `json:"img"`
+				Slug    string    `json:"slug"`
+				Content string    `json:"content"`
+				Date    time.Time `json:"date"`
+				Title   string    `json:"title"`
+				Img     string    `json:"img"`
 			} `json:"_source"`
 			Highlight struct {
 				Title   []string `json:"title"`
@@ -310,23 +267,6 @@ type ESSearchResult struct {
 			} `json:"highlight"`
 		} `json:"hits"`
 	} `json:"hits"`
-}
-
-func IndexQuerySimple(index, typ string, size, from int, q string) (*ESSearchResult, error) {
-	req, err := http.NewRequest("GET", es.ParseURL("/%s/%s/_search?size=%d&from=%d&q=%s", index, typ, size, from, q), nil)
-	if err != nil {
-		return nil, err
-	}
-	data, err := es.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	result := &ESSearchResult{}
-	err = json.Unmarshal(data.([]byte), result)
-	if err != nil {
-		return nil, err
-	}
-	return result, nil
 }
 
 func IndexQueryDSL(index, typ string, size, from int, dsl []byte) (*ESSearchResult, error) {

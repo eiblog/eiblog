@@ -60,7 +60,7 @@ func IgnoreHtmlTag(src string) string {
 	src = re.ReplaceAllString(src, "")
 
 	//去除换行符
-	re, _ = regexp.Compile("\\s{1,}")
+	re, _ = regexp.Compile("\\s{2,}")
 	return re.ReplaceAllString(src, "")
 }
 

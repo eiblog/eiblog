@@ -354,3 +354,159 @@ after_success:
 ```
 
 2、修改`build_docker.sh`文件中的`domain`为自己仓库地址。执行`./build_docker.sh`。
+
+### 资料备忘
+
+#### 创建mapping
+
+```
+	mapping := map[string]interface{}{
+		"mappings": map[string]interface{}{
+			TYPE: map[string]interface{}{
+				"properties": map[string]interface{}{
+					"title": map[string]string{
+						"type":            "string",
+						"term_vector":     "with_positions_offsets",
+						"analyzer":        "ik_syno",
+						"search_analyzer": "ik_syno",
+					},
+					"content": map[string]string{
+						"type":            "string",
+						"term_vector":     "with_positions_offsets",
+						"analyzer":        "ik_syno",
+						"search_analyzer": "ik_syno",
+					},
+					"slug": map[string]string{
+						"type": "string",
+					},
+					"tag": map[string]string{
+						"type":  "string",
+						"index": "not_analyzed",
+					},
+					"date": map[string]string{
+						"type":  "date",
+						"index": "not_analyzed",
+					},
+				},
+			},
+		},
+	}
+```
+
+#### DSL高亮查询
+
+```
+fehelperFeHelper：JSON格式化查看
+
+{"highlight":{"fields":{"content":{},"title":{}},"post_tags":["\u003c/b\u003e"],"pre_tags":["\u003cb\u003e"]},"query":{"dis_max":{"queries":[{"match":{"title":{"boost":4,"minimum_should_match":"50%","query":"天气"}}},{"match":{"content":{"boost":4,"minimum_should_match":"75%","query":"天气"}}},{"match":{"tag":{"boost":2,"minimum_should_match":"100%","query":"天气"}}},{"match":{"slug":{"boost":1,"minimum_should_match":"100%","query":"天气"}}}],"tie_breaker":0.3}},"filter":{"bool":{"must":[{"range":{"date":{"gte":"2016-10","lte": "2016-10||/M","format": "yyyy-MM-dd||yyyy-MM||yyyy"}}},{"term":{"tag":"tag3"}}]}}}
+格式化
+{
+    "highlight": {
+        "fields": {
+            "content": {},
+            "title": {}
+        },
+        "post_tags": [
+            ""
+        ],
+        "pre_tags": [
+            ""
+        ]
+    },
+    "query": {
+        "dis_max": {
+            "queries": [
+                {
+                    "match": {
+                        "title": {
+                            "boost": 4,
+                            "minimum_should_match": "50%",
+                            "query": "天气"
+                        }
+                    }
+                },
+                {
+                    "match": {
+                        "content": {
+                            "boost": 4,
+                            "minimum_should_match": "75%",
+                            "query": "天气"
+                        }
+                    }
+                },
+                {
+                    "match": {
+                        "tag": {
+                            "boost": 2,
+                            "minimum_should_match": "100%",
+                            "query": "天气"
+                        }
+                    }
+                },
+                {
+                    "match": {
+                        "slug": {
+                            "boost": 1,
+                            "minimum_should_match": "100%",
+                            "query": "天气"
+                        }
+                    }
+                }
+            ],
+            "tie_breaker": 0.3
+        }
+    },
+    "filter": {
+        "bool": {
+            "must": [
+                {
+                    "range": {
+                        "date": {
+                            "gte": "2016-10",
+                            "lte": "2016-10||/M",
+                            "format": "yyyy-MM-dd||yyyy-MM||yyyy"
+                        }
+                    }
+                },
+                {
+                    "term": {
+                        "tag": "tag3"
+                    }
+                }
+            ]
+        }
+    }
+}
+```
+
+#### term 查询
+
+```
+{
+    "query": {
+        "bool": {
+            "must": [
+                {
+                    "term": {
+                        "slug": "slug1"
+                    }
+                },{
+                	"term": {
+                		"tag": "tag1"
+                	}
+                }
+            ]
+        }
+    },
+    "filter": {
+        "range": {
+            "date": {
+                "gte": "2016-10",
+                "lte": "2016-10||/M",
+                "format": "yyyy-MM||yyyy"
+            }
+        }
+    }
+}
+```
+

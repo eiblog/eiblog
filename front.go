@@ -8,7 +8,6 @@ import (
 	"html/template"
 	"io/ioutil"
 	"net/http"
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
@@ -156,7 +155,7 @@ func HandleSearchPage(c *gin.Context) {
 	h["Path"] = ""
 	h["CurrentPage"] = "search-post"
 
-	q := c.Query("q")
+	q := strings.TrimSpace(c.Query("q"))
 	if q != "" {
 		start, err := strconv.Atoi(c.Query("start"))
 		if start < 1 || err != nil {
@@ -165,13 +164,7 @@ func HandleSearchPage(c *gin.Context) {
 		h["Word"] = q
 		var result *ESSearchResult
 		vals := c.Request.URL.Query()
-		reg := regexp.MustCompile(`^[a-z]+:\w+$`)
-		logd.Debug(reg.MatchString(q))
-		if reg.MatchString(q) {
-			result = ElasticsearchSimple(q, setting.Conf.PageNum, start-1)
-		} else {
-			result = Elasticsearch(q, setting.Conf.PageNum, start-1)
-		}
+		result = Elasticsearch(q, setting.Conf.PageNum, start-1)
 		if result != nil {
 			result.Took /= 1000
 			for i, v := range result.Hits.Hits {
