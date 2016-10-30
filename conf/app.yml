@@ -34,6 +34,11 @@ disqus:
 # 热搜词配置
 hotwords:
   - docker
+# 谷歌统计
+google:
+  tid: UA-77251712-1
+  v: "1"
+  t: pageview
 # 运行模式
 mode:
   # you can fix certfile, keyfile, domain

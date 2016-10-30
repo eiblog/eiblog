@@ -1,7 +1,6 @@
 package main
 
 import (
-	"crypto/sha1"
 	"crypto/sha256"
 	"fmt"
 	"io"
@@ -11,6 +10,7 @@ import (
 	"time"
 
 	"github.com/eiblog/utils/logd"
+	"github.com/eiblog/utils/uuid"
 )
 
 const (
@@ -32,8 +32,8 @@ func VerifyPasswd(origin, name, input string) bool {
 	return origin == EncryptPasswd(name, input)
 }
 
-func SHA1(data []byte) [sha1.Size]byte {
-	return sha1.Sum(data)
+func RandUUIDv4() string {
+	return uuid.NewV4().String()
 }
 
 func ReadDir(dir string, filter func(name string) bool) (files []string) {

@@ -43,9 +43,14 @@ type Config struct {
 		Interval   int
 	}
 	HotWords []string // 热搜词
-	Mode     RunMode  // 运行模式
-	Twitter  string   // twitter地址
-	Blogger  struct { // 初始化数据
+	Google   struct { // 谷歌统计
+		Tid string
+		V   string
+		T   string
+	}
+	Mode    RunMode  // 运行模式
+	Twitter string   // twitter地址
+	Blogger struct { // 初始化数据
 		BlogName  string
 		SubTitle  string
 		BeiAn     string

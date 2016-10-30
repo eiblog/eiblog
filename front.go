@@ -29,10 +29,9 @@ func Filter() gin.HandlerFunc {
 
 // 用户识别
 func UserCookie(c *gin.Context) {
-	cookie, err := c.Request.Cookie("u")
-	if err != nil || cookie.Value == "" {
-		b := []byte(c.ClientIP() + time.Now().String())
-		c.SetCookie("u", fmt.Sprintf("%x", SHA1(b)), 86400*999, "/", "", true, true)
+	cookie, err := c.Cookie("u")
+	if err != nil || cookie == "" {
+		c.SetCookie("u", RandUUIDv4(), 86400*730, "/", "", true, true)
 	}
 }
 
@@ -209,8 +208,17 @@ func HandleSitemap(c *gin.Context) {
 func HandleBeacon(c *gin.Context) {
 	ua := c.Request.UserAgent()
 	// TODO 过滤黑名单
+	vals := c.Request.URL.Query()
+	vals.Set("v", setting.Conf.Google.V)
+	vals.Set("tid", setting.Conf.Google.Tid)
+	vals.Set("t", setting.Conf.Google.T)
+	cookie, _ := c.Cookie("u")
+	vals.Set("cid", cookie)
+
+	vals.Set("dl", c.Request.Host+c.Request.RequestURI)
+	vals.Set("uip", c.ClientIP())
 	go func() {
-		req, err := http.NewRequest("POST", "https://www.google-analytics.com/collect", strings.NewReader(c.Request.URL.RawQuery))
+		req, err := http.NewRequest("POST", "https://www.google-analytics.com/collect", strings.NewReader(vals.Encode()))
 		if err != nil {
 			logd.Error(err)
 			return
@@ -231,7 +239,7 @@ func HandleBeacon(c *gin.Context) {
 			logd.Error(string(data))
 		}
 	}()
-	c.String(http.StatusAccepted, "accepted")
+	c.String(http.StatusNoContent, "accepted")
 }
 
 // 服务端获取评论详细
