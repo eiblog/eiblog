@@ -21,6 +21,7 @@ Nginx 代理
 * HTTPS证书：系统根据https设计，你需要准备一张有效的证书。
 * 服务器：当然是必需要有的，部署系统。
 * Disqus：disqus评论系统账号（shortname）和disque application key。
+* google-analystic: 谷歌分析
 
 ### 后续准备
 
