@@ -215,7 +215,7 @@ func HandleBeacon(c *gin.Context) {
 	cookie, _ := c.Cookie("u")
 	vals.Set("cid", cookie)
 
-	vals.Set("dl", c.Request.Host+c.Request.RequestURI)
+	vals.Set("dl", c.Request.Referer())
 	vals.Set("uip", c.ClientIP())
 	go func() {
 		req, err := http.NewRequest("POST", "https://www.google-analytics.com/collect", strings.NewReader(vals.Encode()))
