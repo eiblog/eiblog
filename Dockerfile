@@ -1,8 +1,8 @@
-FROM ubuntu:trusty
+FROM alpine
 MAINTAINER deepzz <deepzz.qi@gmail.com>
 
-RUN apt-get update  
-RUN apt-get install -y ca-certificates
+RUN apk update
+RUN apk add ca-certificates
 
 COPY . /eiblog
 EXPOSE 9000

@@ -51,7 +51,7 @@ mode:
   certfile: conf/certs/domain.pem
   keyfile: conf/certs/domain.key
   domain: deepzz.com
-# twitter地址: //twitter.com/chenqijing2
+# twitter地址: twitter.com/chenqijing2
 twitter: twitter.com/chenqijing2
 # 以下数据初始化用，可在后台修改
 account:
