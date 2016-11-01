@@ -55,6 +55,15 @@
                             <input id="tags" name="tags" type="text" {{with .Edit}}value="{{join .Tags ","}}"{{end}} class="w-100 text" />
                         </p>
                     </section>
+                    <section class="typecho-post-option category-option">
+                        <label class="typecho-label">其它选项</label>
+                        <ul>
+                            <li>
+                                <input type="checkbox" id="update" value="update" name="update" />
+                                <label for="update">变动很大(更新时间)?</label>
+                            </li>
+                        </ul>
+                    </section>
                 </div>
                 <!-- end #tab-advance -->
                 <div id="tab-files" class="tab-content hidden">

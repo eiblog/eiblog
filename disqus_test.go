@@ -5,5 +5,5 @@ import (
 )
 
 func TestDisqus(t *testing.T) {
-	CommentsCount()
+	PostsCount()
 }

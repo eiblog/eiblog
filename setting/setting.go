@@ -48,6 +48,12 @@ type Config struct {
 		V   string
 		T   string
 	}
+	Kodo struct { // 七牛CDN
+		Name      string
+		Domain    string
+		AccessKey string
+		SecretKey string
+	}
 	Mode    RunMode  // 运行模式
 	Twitter string   // twitter地址
 	Blogger struct { // 初始化数据

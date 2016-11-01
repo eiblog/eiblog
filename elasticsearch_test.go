@@ -61,13 +61,6 @@ func TestIndexDocument(t *testing.T) {
 	}
 }
 
-func TestIndexQuerySimple(t *testing.T) {
-	_, err := IndexQuerySimple(INDEX, TYPE, 10, 1, "JS")
-	if err != nil {
-		t.Error(err)
-	}
-}
-
 func TestIndexQueryDSL(t *testing.T) {
 	kw := "实现访问限制"
 	dsl := map[string]interface{}{

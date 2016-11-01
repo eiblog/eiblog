@@ -1,7 +1,5 @@
 # 运行模式 dev or prod
 runmode: prod
-# 静态文件版本
-staticversion: 2
 # 回收箱保留48小时
 trash: -48
 # 定时清理回收箱，%d小时
@@ -14,12 +12,8 @@ pagesize: 20
 length: 400
 # 截取预览标识
 identifier: <!--more-->
-# favicon
-favicon: //st.deepzz.com/static/img/favicon.ico
 # 起始ID，预留id不时之需, 不用管
 startid: 11
-# cdn: //domain.com
-static: //st.deepzz.com
 # elasticsearch url
 searchurl: http://elasticsearch:9200
 # superfeedr shortname
@@ -39,6 +33,14 @@ google:
   tid: UA-77251712-1
   v: "1"
   t: pageview
+# 静态文件版本
+staticversion: 2
+# 七牛CDN
+kodo:
+  name: eiblog
+  domain: st.deepzz.com
+  accesskey:
+  secretkey:
 # 运行模式
 mode:
   # you can fix certfile, keyfile, domain

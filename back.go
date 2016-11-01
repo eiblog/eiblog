@@ -75,7 +75,7 @@ func HandleLoginPost(c *gin.Context) {
 }
 
 func GetBack() gin.H {
-	return gin.H{"Author": Ei.Username}
+	return gin.H{"Author": Ei.Username, "Kodo": setting.Conf.Kodo}
 }
 
 // 个人配置

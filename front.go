@@ -63,7 +63,7 @@ func GetBase() gin.H {
 		"BTitle":   Ei.BTitle,
 		"BeiAn":    Ei.BeiAn,
 		"Domain":   setting.Conf.Mode.Domain,
-		"Static":   setting.Conf.Static,
+		"Kodo":     setting.Conf.Kodo,
 	}
 }
 
