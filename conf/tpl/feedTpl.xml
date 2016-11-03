@@ -14,7 +14,7 @@
       <link>https://{{$.Domain}}/post/{{.Slug}}.html</link>
       <comments>https://{{$.Domain}}/post/{{.Slug}}.html#comments</comments>
   	  <guid>https://{{$.Domain}}/post/{{.Slug}}.html</guid>
-      <description><![CDATA[<blockquote>{{.Content}}]]></description>
+      <description><![CDATA[<blockquote>{{.Content}}<p>本文链接：<a href="https://{{$.Domain}}/post/{{.Slug}}.html">https://{{$.Domain}}/post/{{.Slug}}.html</a>，<a href="https://{{$.Domain}}/post/{{.Slug}}.html#comments">参与评论 »</a></p>]]></description>
     </item>
     {{end}}
   </channel>
