@@ -20,12 +20,7 @@ type bucket struct {
 	secretKey string
 }
 
-var buckets = map[string]*bucket{
-	"avatar": &bucket{name: "yooohome-avatar", domain: "o9gich2l7.bkt.clouddn.com",
-		accessKey: "porNOigaMUjIcO9I5ePPGJmO1fchhqnlSI0oBrpY", secretKey: "l0EawgePDmXzMYBvC_7WALUvD69iDzMgay7rX77b"},
-	"topic": &bucket{name: "yooohome-topic", domain: "o9gie1fqp.bkt.clouddn.com",
-		accessKey: "porNOigaMUjIcO9I5ePPGJmO1fchhqnlSI0oBrpY", secretKey: "l0EawgePDmXzMYBvC_7WALUvD69iDzMgay7rX77b"},
-}
+var buckets = map[string]*bucket{}
 
 func getBucket(typ string) *bucket {
 	return buckets[typ]
