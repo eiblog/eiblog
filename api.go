@@ -179,6 +179,7 @@ func apiPostAdd(c *gin.Context) {
 	date := c.PostForm("date")
 	serie := c.PostForm("serie")
 	tag := c.PostForm("tags")
+	update := c.PostForm("update")
 	if title == "" || text == "" || slug == "" {
 		err = errors.New("参数错误")
 		return
@@ -222,6 +223,9 @@ func apiPostAdd(c *gin.Context) {
 		artc.IsDraft = false
 		artc.Count = a.Count
 		artc.UpdateTime = a.UpdateTime
+	}
+	if update != "" {
+		artc.UpdateTime = time.Now()
 	}
 	err = UpdateArticle(bson.M{"id": artc.ID}, artc)
 	if err != nil {
