@@ -1,27 +1,28 @@
 hash: 4b70e76a2e830e97033c06d0e5a90c3199985ff5070bdf8364b1feca63d5caa5
-updated: 2016-10-02T03:49:24.76719466+08:00
+updated: 2016-11-12T02:35:12.289411301+08:00
 imports:
 - name: github.com/boj/redistore
   version: fc113767cd6b051980f260d6dbe84b2740c46ab0
 - name: github.com/eiblog/blackfriday
-  version: 53e24c296953e3463c7e310dfab69f5e9ad0be62
+  version: c0ec111761ae784fe31cc076f2fa0e2d2216d623
 - name: github.com/eiblog/utils
-  version: ed3ca0d59259a3ca13b1a1970cec5bacd25c0414
+  version: 9ae244bfa2feec3e339a26190a56093fde200288
   subpackages:
   - logd
   - mgo
   - tmpl
+  - uuid
 - name: github.com/garyburd/redigo
-  version: ffa8d46ada782d81cfda81a0fbd9f45ceae448e8
+  version: 80f7de34463b0ed3d7c61303e5619efe1b227f92
   subpackages:
-  - redis
   - internal
+  - redis
 - name: github.com/gin-gonic/contrib
-  version: 547e518040cfb96576b507d2f26779ab9c6fc829
+  version: cf28f84316e50a05a59d174b37c26ad9a43a1201
   subpackages:
   - sessions
 - name: github.com/gin-gonic/gin
-  version: f931d1ea80ae95a6fc739213cdd9399bd2967fb6
+  version: bb159f9260a262fccbdbd6f37f8575d1e7e6aaa0
   subpackages:
   - binding
   - render
@@ -32,7 +33,7 @@ imports:
 - name: github.com/gorilla/context
   version: 08b5f424b9271eedf6f9f0ce86cb9396ed337a42
 - name: github.com/gorilla/securecookie
-  version: c13558c2b1c44da35e0eb043053609a5ba3a1f19
+  version: fa5329f913702981df43dcb2a380bac429c810b5
 - name: github.com/gorilla/sessions
   version: ca9ada44574153444b00d3fd9c8559e4cc95f896
 - name: github.com/manucorporat/sse
@@ -49,9 +50,28 @@ imports:
   version: 3f83fa5005286a7fe593b055f0d7771a7dce4655
   subpackages:
   - bson
+  - internal/json
   - internal/sasl
   - internal/scram
-  - internal/json
 - name: gopkg.in/yaml.v2
   version: a5b47d31c556af34a302ce5d659e6fea44d90de0
+- name: qiniupkg.com/api.v7
+  version: ad7023b87b2f5c169812da49fe44900be1c4e5c2
+  subpackages:
+  - api
+  - auth/qbox
+  - conf
+  - kodo
+  - kodocli
+- name: qiniupkg.com/x
+  version: f512abcf45ab4e2ba0fd4784c57b53d495997d66
+  subpackages:
+  - bytes.v7
+  - bytes.v7/seekable
+  - ctype.v7
+  - log.v7
+  - reqid.v7
+  - rpc.v7
+  - url.v7
+  - xlog.v7
 testImports: []

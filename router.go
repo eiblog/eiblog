@@ -21,7 +21,6 @@ var (
 func init() {
 	if setting.Conf.RunMode == setting.PROD {
 		gin.SetMode(gin.ReleaseMode)
-		// set log print level
 		logd.SetLevel(logd.Lerror)
 	}
 	router = gin.Default()

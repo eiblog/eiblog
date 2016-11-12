@@ -49,7 +49,7 @@ func upload(typ string, filepath string) {
 
 	file, err := os.Open(filepath)
 	if err != nil {
-		logd.Debugf("%s", err.Error())
+		logd.Debugf("%s\n", err.Error())
 		return
 	}
 	data, err := ioutil.ReadAll(file)
@@ -83,7 +83,7 @@ func upload(typ string, filepath string) {
 	res := uploader.PutFile(nil, &ret, token, key, filepath, &extra)
 	// 打印返回的信息
 	if res != nil {
-		logd.Debugf("failed to upload patch file: %v", res)
+		logd.Debugf("failed to upload patch file: %v\n", res)
 		return
 	}
 
