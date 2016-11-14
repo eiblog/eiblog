@@ -20,6 +20,9 @@ type Pinger interface {
 type superfeedr struct{}
 
 func (_ *superfeedr) PingFunc(slug string) {
+	if setting.Conf.FeedrURL == "" {
+		return
+	}
 	vals := url.Values{}
 	vals.Set("hub.mode", "publish")
 	vals.Add("hub.url", "https://"+setting.Conf.Mode.Domain+"/post/"+slug+".html")
@@ -58,6 +61,9 @@ type rpcValue struct {
 }
 
 func (p *pingRPC) PingFunc(slug string) {
+	if len(setting.Conf.PingRPCs) == 0 {
+		return
+	}
 	p.Params.Param[1].Value = "https://" + setting.Conf.Mode.Domain + "/post/" + slug + ".html"
 	buf := &bytes.Buffer{}
 	buf.WriteString(xml.Header)
