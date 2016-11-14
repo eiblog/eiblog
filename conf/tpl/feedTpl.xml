@@ -5,7 +5,7 @@
     <link>https://{{.Domain}}</link>
     <description>{{.SubTitle}}</description>
     <atom:link href="https://{{.Domain}}/rss.html" rel="self"/>
-    <atom:link href="https://{{.Superfeedr}}.superfeedr.com/" rel="hub"/>
+    <atom:link href="{{.FeedrURL}}" rel="hub"/>
     <language>zh-CN</language>
     <lastBuildDate>{{.BuildDate}}</lastBuildDate>  
     {{range .Artcs}}

@@ -16,8 +16,6 @@ identifier: <!--more-->
 startid: 11
 # elasticsearch url
 searchurl: http://elasticsearch:9200
-# superfeedr shortname
-superfeedr: deepzz
 # 评论相关
 disqus:
   shortname: deepzz
@@ -53,6 +51,14 @@ mode:
   domain: deepzz.com
 # twitter地址: twitter.com/chenqijing2
 twitter: twitter.com/chenqijing2
+# superfeedr url
+feedrurl: https://deepzz.superfeedr.com/
+# ping rpcs 地址
+pingrpcs:
+  - http://ping.baidu.com/ping/RPC2
+  - http://blogsearch.google.com/ping/RPC2
+  - http://rpc.pingomatic.com/
+
 # 以下数据初始化用，可在后台修改
 account:
   # *后台登录用户名

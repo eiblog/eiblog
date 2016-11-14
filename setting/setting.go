@@ -3,8 +3,6 @@ package setting
 
 import (
 	"io/ioutil"
-	"os"
-	"path"
 
 	"github.com/eiblog/utils/logd"
 	"gopkg.in/yaml.v2"
@@ -16,7 +14,6 @@ const (
 )
 
 var (
-	wd, _   = os.Getwd()
 	Conf    = new(Config)
 	BlackIP = make(map[string]bool)
 )
@@ -32,9 +29,7 @@ type Config struct {
 	Identifier    string   // 截取标示
 	Favicon       string   // icon地址
 	StartID       int32    // 文章起始id
-	Static        string   // cdn地址
 	SearchURL     string   // elasticsearch 地址
-	Superfeedr    string   // superfeedr
 	Disqus        struct { // 获取文章数量相关
 		ShortName  string
 		PublicKey  string
@@ -54,21 +49,23 @@ type Config struct {
 		AccessKey string
 		SecretKey string
 	}
-	Mode    RunMode  // 运行模式
-	Twitter string   // twitter地址
+	Mode     RunMode  // 运行模式
+	Twitter  string   // twitter地址
+	FeedrURL string   // superfeedr url
+	PingRPCs []string // ping rpc 地址
+	Account  struct {
+		Username    string // *
+		Password    string // *
+		Email       string
+		PhoneNumber string
+		Address     string
+	}
 	Blogger struct { // 初始化数据
 		BlogName  string
 		SubTitle  string
 		BeiAn     string
 		BTitle    string
 		Copyright string
-	}
-	Account struct {
-		Username    string // *
-		Password    string // *
-		Email       string
-		PhoneNumber string
-		Address     string
 	}
 }
 
@@ -84,13 +81,12 @@ type RunMode struct {
 
 func init() {
 	// 初始化配置
-	dir := wd + "/conf"
-	data, err := ioutil.ReadFile(path.Join(dir, "app.yml"))
+	data, err := ioutil.ReadFile("conf/app.yml")
 	checkError(err)
 	err = yaml.Unmarshal(data, Conf)
 	checkError(err)
 
-	data, err = ioutil.ReadFile(path.Join(dir, "blackip.yml"))
+	data, err = ioutil.ReadFile("conf/blackip.yml")
 	checkError(err)
 	err = yaml.Unmarshal(data, BlackIP)
 	checkError(err)

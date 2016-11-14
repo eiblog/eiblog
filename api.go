@@ -211,6 +211,7 @@ func apiPostAdd(c *gin.Context) {
 		cid = int(artc.ID)
 		if publish {
 			ElasticIndex(artc)
+			DoPings(slug)
 		}
 		return
 	}
@@ -248,6 +249,7 @@ func apiPostAdd(c *gin.Context) {
 		GenerateExcerptAndRender(artc)
 		// elasticsearch 索引
 		ElasticIndex(artc)
+		DoPings(slug)
 		if artc.ID >= setting.Conf.StartID {
 			ManageTagsArticle(artc, true, ADD)
 			ManageSeriesArticle(artc, true, ADD)
