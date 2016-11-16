@@ -19,7 +19,7 @@ type Pinger interface {
 // http://<your-hub-name>.superfeedr.com/
 type superfeedr struct{}
 
-func (_ *superfeedr) PingFunc(slug string) {
+func (*superfeedr) PingFunc(slug string) {
 	if setting.Conf.FeedrURL == "" {
 		return
 	}
@@ -37,8 +37,8 @@ func (_ *superfeedr) PingFunc(slug string) {
 		logd.Error(err)
 		return
 	}
-	if res.StatusCode != 200 {
-		logd.Error(string(data))
+	if res.StatusCode != 204 {
+		logd.Error(res.StatusCode, string(data))
 	}
 }
 
@@ -84,7 +84,6 @@ func (p *pingRPC) PingFunc(slug string) {
 			logd.Error(err)
 			continue
 		}
-		logd.Print(string(data))
 		if rep.StatusCode != 200 {
 			logd.Error(string(data))
 			continue

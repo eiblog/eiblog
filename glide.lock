@@ -1,12 +1,12 @@
 hash: 4b70e76a2e830e97033c06d0e5a90c3199985ff5070bdf8364b1feca63d5caa5
-updated: 2016-11-14T22:09:13.900837801+08:00
+updated: 2016-11-16T21:02:51.442531751+08:00
 imports:
 - name: github.com/boj/redistore
   version: fc113767cd6b051980f260d6dbe84b2740c46ab0
 - name: github.com/eiblog/blackfriday
   version: c0ec111761ae784fe31cc076f2fa0e2d2216d623
 - name: github.com/eiblog/utils
-  version: 3352fddbea01fcfeeb8d903b72f3b84da9780525
+  version: 06c7dc24b885333250d26e34d2932d4a7cfa8b46
   subpackages:
   - logd
   - mgo
@@ -61,11 +61,8 @@ imports:
   - api
   - auth/qbox
   - conf
+  - kodo
   - kodocli
-- name: qiniupkg.com/api.v7/conf
-  version: ad7023b87b2f5c169812da49fe44900be1c4e5c2
-- name: qiniupkg.com/api.v7/kodo
-  version: ad7023b87b2f5c169812da49fe44900be1c4e5c2
 - name: qiniupkg.com/x
   version: f512abcf45ab4e2ba0fd4784c57b53d495997d66
   subpackages:
