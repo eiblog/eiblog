@@ -91,6 +91,7 @@ func doOpensearch() {
 	params := map[string]string{
 		"BTitle":   Ei.BTitle,
 		"SubTitle": Ei.SubTitle,
+		"Domain":   setting.Conf.Mode.Domain,
 	}
 	f, err := os.OpenFile("static/opensearch.xml", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, os.ModePerm)
 	if err != nil {

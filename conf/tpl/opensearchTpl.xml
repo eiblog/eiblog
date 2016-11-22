@@ -2,5 +2,5 @@
 <OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
     <ShortName>{{.BTitle}}</ShortName>
     <Description>{{.SubTitle}}</Description>
-    <Url type="text/html" template="https://deepzz.com/search.html?q={searchTerms}" />
+    <Url type="text/html" template="https://{{.Domain}}/search.html?q={searchTerms}" />
 </OpenSearchDescription>
