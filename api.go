@@ -110,7 +110,7 @@ func apiPassword(c *gin.Context) {
 		responseNotice(c, NOTICE_NOTICE, "密码格式错误", "")
 		return
 	}
-	if !VerifyPasswd(Ei.Password, Ei.BlogName, od) {
+	if !VerifyPasswd(Ei.Password, Ei.UserName, od) {
 		responseNotice(c, NOTICE_NOTICE, "原始密码不正确", "")
 		return
 	}
