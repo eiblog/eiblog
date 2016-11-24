@@ -59,14 +59,14 @@ func apiAccount(c *gin.Context) {
 		responseNotice(c, NOTICE_NOTICE, "参数错误", "")
 		return
 	}
-	Ei.Email = e
-	Ei.PhoneN = pn
-	Ei.Address = ad
 	err := UpdateAccountField(bson.M{"$set": bson.M{"email": e, "phonen": pn, "address": ad}})
 	if err != nil {
 		responseNotice(c, NOTICE_NOTICE, err.Error(), "")
 		return
 	}
+	Ei.Email = e
+	Ei.PhoneN = pn
+	Ei.Address = ad
 	responseNotice(c, NOTICE_SUCCESS, "更新成功", "")
 }
 
@@ -81,17 +81,17 @@ func apiBlog(c *gin.Context) {
 		responseNotice(c, NOTICE_NOTICE, "参数错误", "")
 		return
 	}
+	err := UpdateAccountField(bson.M{"$set": bson.M{"blogger.blogname": bn, "blogger.btitle": bt, "blogger.beian": ba, "blogger.subtitle": st, "blogger.seriessay": ss, "blogger.archivessay": as}})
+	if err != nil {
+		responseNotice(c, NOTICE_NOTICE, err.Error(), "")
+		return
+	}
 	Ei.BlogName = bn
 	Ei.BTitle = bt
 	Ei.BeiAn = ba
 	Ei.SubTitle = st
 	Ei.SeriesSay = ss
 	Ei.ArchivesSay = as
-	err := UpdateAccountField(bson.M{"$set": bson.M{"blogger.blogname": bn, "blogger.btitle": bt, "blogger.beian": ba, "blogger.subtitle": st, "blogger.seriessay": ss, "blogger.archivessay": as}})
-	if err != nil {
-		responseNotice(c, NOTICE_NOTICE, err.Error(), "")
-		return
-	}
 	Ei.CH <- SERIES_MD
 	Ei.CH <- ARCHIVE_MD
 	responseNotice(c, NOTICE_SUCCESS, "更新成功", "")
@@ -110,11 +110,17 @@ func apiPassword(c *gin.Context) {
 		responseNotice(c, NOTICE_NOTICE, "密码格式错误", "")
 		return
 	}
-	if !VerifyPasswd(Ei.Password, Ei.UserName, od) {
+	if !VerifyPasswd(Ei.Password, Ei.Username, od) {
 		responseNotice(c, NOTICE_NOTICE, "原始密码不正确", "")
 		return
 	}
-	Ei.Password = EncryptPasswd(Ei.BlogName, nw)
+	newPwd := EncryptPasswd(Ei.Username, nw)
+	err := UpdateAccountField(bson.M{"$set": bson.M{"password": newPwd}})
+	if err != nil {
+		responseNotice(c, NOTICE_NOTICE, err.Error(), "")
+		return
+	}
+	Ei.Password = newPwd
 	responseNotice(c, NOTICE_SUCCESS, "更改成功", "")
 }
 
