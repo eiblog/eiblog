@@ -23,6 +23,8 @@ services:
   eiblog:
     image: registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog
     container_name: eiblog
+    extra_hosts:
+      - "disqus.com:23.235.33.134"
     volumes:
       - /data/eiblog/logdata:/eiblog/logdata
       - /data/eiblog/conf:/eiblog/conf
