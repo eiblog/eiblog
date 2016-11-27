@@ -274,9 +274,7 @@ func HandleDisqus(c *gin.Context) {
 		if postsList.Cursor.HasNext {
 			dcs.Data.Next = postsList.Cursor.Next
 		}
-		if cursor == "" {
-			dcs.Data.Total = Ei.MapArticles[slug].Count
-		}
+		dcs.Data.Total = Ei.MapArticles[slug].Count
 		dcs.Data.Comments = make([]commentsDetail, len(postsList.Response))
 		for i, v := range postsList.Response {
 			dcs.Data.Comments[i] = commentsDetail{
