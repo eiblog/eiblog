@@ -7,7 +7,7 @@ services:
       - /data/eiblog/mgodb:/data/db
     restart: always
   elasticsearch:
-    image: elasticsearch:2.4
+    image: elasticsearch:2.4.1
     container_name: eisearch
     volumes:
       - /data/eiblog/conf/es/config:/usr/share/elasticsearch/config
