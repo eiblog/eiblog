@@ -32,8 +32,8 @@ Nginx 代理
 ```
 static/img/bg04.jpg				#首页左侧背景图片，500*1200 左右
 static/img/blank.gif			#空白图片
-static/img/deepzz.jpg			#头像，256*256左右
-static/img/deepzz_small.jpg		#小头像，128*128左右
+static/img/avatar.jpg			#头像，256*256左右
+static/img/avatar_small.jpg		#小头像，128*128左右
 static/img/default_avatar.png	#评论默认图片，92*92左右
 static/img/favicon.ico			#网站icon，64*64左右
 static/js/disqus_52ef5a.js		#disqus.js，国内背墙，你懂的
