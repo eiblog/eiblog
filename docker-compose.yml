@@ -16,9 +16,6 @@ services:
       - /data/eiblog/esdata/logs:/usr/share/elasticsearch/logs
     environment:    
       ES_JAVA_OPTS: "-Xms512m -Xmx512m"
-    # 需注释掉
-    ports:
-      - "9200:9200"
     restart: always
   eiblog:
     image: registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog
