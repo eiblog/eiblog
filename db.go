@@ -73,7 +73,17 @@ func init() {
 	ms.Close()
 	ms, c = db.Connect(DB, COLLECTION_ARTICLE)
 	index = mgo.Index{
-		Key:        []string{"id", "slug"},
+		Key:        []string{"id"},
+		Unique:     true,
+		DropDups:   true,
+		Background: true,
+		Sparse:     true,
+	}
+	if err := c.EnsureIndex(index); err != nil {
+		logd.Fatal(err)
+	}
+	index = mgo.Index{
+		Key:        []string{"slug"},
 		Unique:     true,
 		DropDups:   true,
 		Background: true,
@@ -461,6 +471,7 @@ func AddToLinkedList(id int32) {
 		artc.Prev = Ei.Articles[i-1]
 		if Ei.Articles[i-1].Next != nil {
 			artc.Next = Ei.Articles[i-1].Next
+			Ei.Articles[i-1].Next.Prev = artc
 		}
 		Ei.Articles[i-1].Next = artc
 	}

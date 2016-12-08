@@ -194,14 +194,13 @@ func apiPostAdd(c *gin.Context) {
 	if tag != "" {
 		tags = strings.Split(tag, ",")
 	}
-	t := CheckDate(date)
 	serieid := CheckSerieID(serie)
 	publish = CheckPublish(do)
 	artc := &Article{
 		Title:      title,
 		Content:    text,
 		Slug:       slug,
-		CreateTime: t,
+		CreateTime: CheckDate(date),
 		IsDraft:    !publish,
 		Author:     Ei.Username,
 		SerieID:    serieid,
@@ -222,16 +221,20 @@ func apiPostAdd(c *gin.Context) {
 		return
 	}
 	artc.ID = int32(cid)
-	if CheckBool(c.PostForm("update")) {
-		artc.UpdateTime = time.Now()
-	}
 	i, a := GetArticle(artc.ID)
 	if a != nil {
 		artc.IsDraft = false
 		artc.Count = a.Count
 		artc.UpdateTime = a.UpdateTime
+		Ei.Articles = append(Ei.Articles[0:i], Ei.Articles[i+1:]...)
+		DelFromLinkedList(a)
+		ManageTagsArticle(a, false, DELETE)
+		ManageSeriesArticle(a, false, DELETE)
+		ManageArchivesArticle(a, false, DELETE)
+		delete(Ei.MapArticles, a.Slug)
+		a = nil
 	}
-	if update != "" {
+	if CheckBool(update) {
 		artc.UpdateTime = time.Now()
 	}
 	err = UpdateArticle(bson.M{"id": artc.ID}, artc)
@@ -240,15 +243,6 @@ func apiPostAdd(c *gin.Context) {
 		return
 	}
 	if !artc.IsDraft {
-		if a != nil {
-			Ei.Articles = append(Ei.Articles[0:i], Ei.Articles[i+1:]...)
-			DelFromLinkedList(a)
-			ManageTagsArticle(a, false, DELETE)
-			ManageSeriesArticle(a, false, DELETE)
-			ManageArchivesArticle(a, false, DELETE)
-			delete(Ei.MapArticles, a.Slug)
-			a = nil
-		}
 		Ei.MapArticles[artc.Slug] = artc
 		Ei.Articles = append(Ei.Articles, artc)
 		sort.Sort(Ei.Articles)

@@ -3,7 +3,7 @@ runmode: prod
 # 回收箱保留48小时
 trash: -48
 # 定时清理回收箱，%d小时
-clean: 12
+clean: 1
 # 首页展示文章数量
 pagenum: 10
 # 管理界面

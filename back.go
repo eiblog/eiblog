@@ -61,7 +61,7 @@ func HandleLoginPost(c *gin.Context) {
 		return
 	}
 	if Ei.Username != user || !VerifyPasswd(Ei.Password, user, pwd) {
-		logd.Print("账号或密码错误", user, pwd)
+		logd.Printf("账号或密码错误 %s, %s", user, pwd)
 		c.Redirect(http.StatusFound, "/admin/login")
 		return
 	}
@@ -105,7 +105,7 @@ func HandlePost(c *gin.Context) {
 			h["Edit"] = artc
 		}
 	}
-	if h["Title"] == "" {
+	if h["Title"] == nil {
 		h["Title"] = "撰写文章 | " + Ei.BTitle
 	}
 	h["Path"] = c.Request.URL.Path
