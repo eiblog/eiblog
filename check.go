@@ -26,7 +26,7 @@ func CheckPwd(pwd string) bool {
 }
 
 func CheckDate(date string) time.Time {
-	if t, err := time.Parse("2006-01-02 15:04", date); err == nil {
+	if t, err := time.ParseInLocation("2006-01-02 15:04", date, time.Local); err == nil {
 		return t
 	}
 	return time.Now()
