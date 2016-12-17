@@ -271,7 +271,7 @@ $(document).ready(function() {
                 locked = true;
 
                 autoSave.text('正在保存');
-                $.post(formAction, data + '&do=save', function(o) {
+                $.post(formAction, data + '&do=auto', function(o) {
                     savedData = data;
                     lastSaveTime = o.time;
                     cid = o.cid;

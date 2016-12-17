@@ -161,24 +161,31 @@ func apiPostDelete(c *gin.Context) {
 
 func apiPostAdd(c *gin.Context) {
 	var err error
-	var publish bool
+	var do string
 	var cid int
 	defer func() {
-		if !publish {
-			if err == nil {
-				c.JSON(http.StatusOK, gin.H{"success": SUCCESS, "time": time.Now().Format("15:04:05 PM"), "cid": cid})
-			} else {
-				logd.Error(err)
+		switch do {
+		case "auto": // 自动保存
+			if err != nil {
 				c.JSON(http.StatusOK, gin.H{"fail": FAIL, "time": time.Now().Format("15:04:05 PM"), "cid": cid})
+				return
 			}
-		}
-		if err == nil {
+			c.JSON(http.StatusOK, gin.H{"success": SUCCESS, "time": time.Now().Format("15:04:05 PM"), "cid": cid})
+		case "save": // 保存草稿
+			if err != nil {
+				responseNotice(c, NOTICE_NOTICE, err.Error(), "")
+				return
+			}
+			c.Redirect(http.StatusFound, "/admin/manage-draft")
+		case "publish": // 发布
+			if err != nil {
+				responseNotice(c, NOTICE_NOTICE, err.Error(), "")
+				return
+			}
 			c.Redirect(http.StatusFound, "/admin/manage-posts")
-			return
 		}
-		logd.Error(err)
 	}()
-	do := c.PostForm("do") // save or publish
+	do = c.PostForm("do") // auto or save or publish
 	slug := c.PostForm("slug")
 	title := c.PostForm("title")
 	text := c.PostForm("text")
@@ -195,13 +202,12 @@ func apiPostAdd(c *gin.Context) {
 		tags = strings.Split(tag, ",")
 	}
 	serieid := CheckSerieID(serie)
-	publish = CheckPublish(do)
 	artc := &Article{
 		Title:      title,
 		Content:    text,
 		Slug:       slug,
 		CreateTime: CheckDate(date),
-		IsDraft:    !publish,
+		IsDraft:    do != "publish",
 		Author:     Ei.Username,
 		SerieID:    serieid,
 		Tags:       tags,
@@ -214,7 +220,7 @@ func apiPostAdd(c *gin.Context) {
 			return
 		}
 		cid = int(artc.ID)
-		if publish {
+		if !artc.IsDraft {
 			ElasticIndex(artc)
 			DoPings(slug)
 		}
