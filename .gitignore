@@ -4,4 +4,7 @@ vendor
 vendor/**
 conf/ssl/domain.*
 eiblog
+static/feed.xml
+static/opensearch.xml
+static/sitemap.xml
 

@@ -2,6 +2,8 @@
 vendor
 setting
 conf
+static
+!static/tzdata
 Dockerfile
 glide.yaml
 glide.lock
