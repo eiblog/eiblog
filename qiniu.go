@@ -1,13 +1,12 @@
 package main
 
 import (
-	"crypto/md5"
+	"errors"
 	"fmt"
-	"io/ioutil"
-	"os"
-	"path"
+	"io"
+	"path/filepath"
 
-	"github.com/eiblog/utils/logd"
+	"github.com/eiblog/eiblog/setting"
 	"qiniupkg.com/api.v7/conf"
 	"qiniupkg.com/api.v7/kodo"
 	"qiniupkg.com/api.v7/kodocli"
@@ -18,12 +17,6 @@ type bucket struct {
 	domain    string
 	accessKey string
 	secretKey string
-}
-
-var buckets = map[string]*bucket{}
-
-func getBucket(typ string) *bucket {
-	return buckets[typ]
 }
 
 type PutRet struct {
@@ -40,31 +33,19 @@ func onProgress(fsize, uploaded int64) {
 	}
 }
 
-func upload(typ string, filepath string) {
-	bucket := getBucket(typ)
-	if bucket == nil {
-		logd.Debug("invalid type:", typ)
-		return
+func Upload(name string, size int64, data io.Reader) (string, error) {
+	if setting.Conf.Kodo.AccessKey == "" || setting.Conf.Kodo.SecretKey == "" {
+		return "", errors.New("qiniu config error")
 	}
 
-	file, err := os.Open(filepath)
-	if err != nil {
-		logd.Debugf("%s\n", err.Error())
-		return
-	}
-	data, err := ioutil.ReadAll(file)
-	file.Close()
-	chksum := fmt.Sprintf("%x", md5.Sum(data))
-	ext := path.Ext(filepath)
-
-	conf.ACCESS_KEY = bucket.accessKey
-	conf.SECRET_KEY = bucket.secretKey
+	conf.ACCESS_KEY = setting.Conf.Kodo.AccessKey
+	conf.SECRET_KEY = setting.Conf.Kodo.SecretKey
 	// 创建一个client
 	c := kodo.New(0, nil)
 
 	// 设置上传的策略
 	policy := &kodo.PutPolicy{
-		Scope:      bucket.name,
+		Scope:      setting.Conf.Kodo.Name,
 		Expires:    3600,
 		InsertOnly: 1,
 	}
@@ -75,18 +56,30 @@ func upload(typ string, filepath string) {
 	zone := 0
 	uploader := kodocli.NewUploader(zone, nil)
 
-	var ret PutRet
-	key := fmt.Sprintf("%s-%s%s", typ, chksum, ext)
-
-	fmt.Printf("Uploading .....")
-	var extra = kodocli.PutExtra{OnProgress: onProgress}
-	res := uploader.PutFile(nil, &ret, token, key, filepath, &extra)
-	// 打印返回的信息
-	if res != nil {
-		logd.Debugf("failed to upload patch file: %v\n", res)
-		return
+	ext := filepath.Ext(name)
+	var key string
+	switch ext {
+	case ".bmp", ".png", ".jpg", ".gif", ".ico":
+		key = "blog/img/" + name
+	case ".mov", ".mp4":
+		key = "blog/video/" + name
+	case ".go", ".js", ".css", ".cpp", ".php", ".rb", ".java", ".py", ".sql", ".lua", ".html", ".sh", ".xml", ".cs":
+		key = "blog/code/" + name
+	case ".txt", ".md", ".ini", ".yaml", ".yml", ".doc", ".ppt", ".pdf":
+		key = "blog/document/" + name
+	case ".zip", ".rar", ".tar", ".gz":
+		key = "blog/archive/" + name
+	default:
+		return "", errors.New("不支持的文件类型")
 	}
 
-	url := kodo.MakeBaseUrl(bucket.domain, key)
-	fmt.Printf("url: %s\n", url)
+	var ret PutRet
+	var extra = kodocli.PutExtra{OnProgress: onProgress}
+	err := uploader.Put(nil, &ret, token, key, data, size, &extra)
+	if err != nil {
+		return "", err
+	}
+
+	url := kodo.MakeBaseUrl(setting.Conf.Kodo.Domain, ret.Key)
+	return url, nil
 }

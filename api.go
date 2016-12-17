@@ -121,7 +121,7 @@ func apiPassword(c *gin.Context) {
 		return
 	}
 	Ei.Password = newPwd
-	responseNotice(c, NOTICE_SUCCESS, "更改成功", "")
+	responseNotice(c, NOTICE_SUCCESS, "更新成功", "")
 }
 
 func apiPostDelete(c *gin.Context) {
@@ -294,7 +294,7 @@ func apiSerieAdd(c *gin.Context) {
 	if err == nil && mid > 0 {
 		serie := QuerySerie(int32(mid))
 		if serie == nil {
-			responseNotice(c, NOTICE_NOTICE, "not found serie", "")
+			responseNotice(c, NOTICE_NOTICE, "专题不存在", "")
 			return
 		}
 		serie.Name = name
@@ -398,19 +398,26 @@ func apiTrashRecover(c *gin.Context) {
 }
 
 func apiFileUpload(c *gin.Context) {
-
-	// file, header , err := c.Request.FormFile("upload")
-	// filename := header.Filename
-	// fmt.Println(header.Filename)
-	// out, err := os.Create("./tmp/"+filename+".png")
-	// if err != nil {
-	//     log.Fatal(err)
-	// }
-	// defer out.Close()
-	// _, err = io.Copy(out, file)
-	// if err != nil {
-	//     log.Fatal(err)
-	// }
+	type Size interface {
+		Size() int64
+	}
+	file, header, err := c.Request.FormFile("upload")
+	if err != nil {
+		responseNotice(c, NOTICE_NOTICE, "上传失败", "")
+		return
+	}
+	s, ok := file.(Size)
+	if !ok {
+		responseNotice(c, NOTICE_NOTICE, "文件太大", "")
+		return
+	}
+	filename := strings.ToLower(header.Filename)
+	url, err := Upload(filename, s.Size(), file)
+	if err != nil {
+		responseNotice(c, NOTICE_NOTICE, "上传失败", "")
+		return
+	}
+	responseNotice(c, NOTICE_SUCCESS, url, "")
 }
 
 func responseNotice(c *gin.Context, typ, content, hl string) {

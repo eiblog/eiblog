@@ -1,5 +1,5 @@
 # 运行模式 dev or prod
-runmode: prod
+runmode: dev
 # 回收箱保留48小时
 trash: -48
 # 定时清理回收箱，%d小时
@@ -37,8 +37,8 @@ staticversion: 2
 kodo:
   name: eiblog
   domain: st.deepzz.com
-  accesskey:
-  secretkey:
+  accesskey: MB6AXl_Sj_mmFsL-Lt59Dml2Vmy2o8XMmiCbbSeC
+  secretkey: BIrMy0fsZ0_SHNceNXk3eDuo7WmVYzj2-zrmd5Tf
 # 运行模式
 mode:
   # you can fix certfile, keyfile, domain
