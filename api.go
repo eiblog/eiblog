@@ -430,7 +430,7 @@ func apiFileUpload(c *gin.Context) {
 	}
 	typ := c.Request.Header.Get("Content-Type")
 	c.JSON(http.StatusOK, gin.H{
-		"name":    filename,
+		"title":   filename,
 		"isImage": typ[:5] == "image",
 		"url":     url,
 		"bytes":   fmt.Sprintf("%dkb", s.Size()/1000),
@@ -445,7 +445,7 @@ func apiFileDelete(c *gin.Context) {
 		}
 		c.String(http.StatusOK, "删掉了吗？鬼知道。。。")
 	}()
-	name := c.PostForm("name")
+	name := c.PostForm("title")
 	if name == "" {
 		err = errors.New("参数错误")
 		return

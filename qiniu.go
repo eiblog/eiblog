@@ -9,6 +9,7 @@ import (
 	"github.com/eiblog/eiblog/setting"
 	"qiniupkg.com/api.v7/kodo"
 	"qiniupkg.com/api.v7/kodocli"
+	url "qiniupkg.com/x/url.v7"
 )
 
 var qiniu_cfg = &kodo.Config{
@@ -71,7 +72,7 @@ func FileUpload(name string, size int64, data io.Reader) (string, error) {
 		return "", err
 	}
 
-	url := kodo.MakeBaseUrl(setting.Conf.Kodo.Domain, ret.Key)
+	url := "https://" + setting.Conf.Kodo.Domain + "/" + url.Escape(key)
 	return url, nil
 }
 
