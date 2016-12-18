@@ -7,10 +7,15 @@ import (
 	"path/filepath"
 
 	"github.com/eiblog/eiblog/setting"
-	"qiniupkg.com/api.v7/conf"
 	"qiniupkg.com/api.v7/kodo"
 	"qiniupkg.com/api.v7/kodocli"
 )
+
+var qiniu_cfg = &kodo.Config{
+	AccessKey: setting.Conf.Kodo.AccessKey,
+	SecretKey: setting.Conf.Kodo.SecretKey,
+	Scheme:    "https",
+}
 
 type bucket struct {
 	name      string
@@ -33,15 +38,13 @@ func onProgress(fsize, uploaded int64) {
 	}
 }
 
-func Upload(name string, size int64, data io.Reader) (string, error) {
+func FileUpload(name string, size int64, data io.Reader) (string, error) {
 	if setting.Conf.Kodo.AccessKey == "" || setting.Conf.Kodo.SecretKey == "" {
 		return "", errors.New("qiniu config error")
 	}
 
-	conf.ACCESS_KEY = setting.Conf.Kodo.AccessKey
-	conf.SECRET_KEY = setting.Conf.Kodo.SecretKey
 	// 创建一个client
-	c := kodo.New(0, nil)
+	c := kodo.New(0, qiniu_cfg)
 
 	// 设置上传的策略
 	policy := &kodo.PutPolicy{
@@ -56,6 +59,42 @@ func Upload(name string, size int64, data io.Reader) (string, error) {
 	zone := 0
 	uploader := kodocli.NewUploader(zone, nil)
 
+	key := getKey(name)
+	if key == "" {
+		return "", errors.New("不支持的文件类型")
+	}
+
+	var ret PutRet
+	var extra = kodocli.PutExtra{OnProgress: onProgress}
+	err := uploader.Put(nil, &ret, token, key, data, size, &extra)
+	if err != nil {
+		return "", err
+	}
+
+	url := kodo.MakeBaseUrl(setting.Conf.Kodo.Domain, ret.Key)
+	return url, nil
+}
+
+func FileDelete(name string) error {
+	// new一个Bucket管理对象
+	c := kodo.New(0, qiniu_cfg)
+	p := c.Bucket(setting.Conf.Kodo.Name)
+
+	key := getKey(name)
+	if key == "" {
+		return errors.New("不支持的文件类型")
+	}
+
+	// 调用Delete方法删除文件
+	err := p.Delete(nil, key)
+	// 打印返回值以及出错信息
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func getKey(name string) string {
 	ext := filepath.Ext(name)
 	var key string
 	switch ext {
@@ -69,17 +108,6 @@ func Upload(name string, size int64, data io.Reader) (string, error) {
 		key = "blog/document/" + name
 	case ".zip", ".rar", ".tar", ".gz":
 		key = "blog/archive/" + name
-	default:
-		return "", errors.New("不支持的文件类型")
 	}
-
-	var ret PutRet
-	var extra = kodocli.PutExtra{OnProgress: onProgress}
-	err := uploader.Put(nil, &ret, token, key, data, size, &extra)
-	if err != nil {
-		return "", err
-	}
-
-	url := kodo.MakeBaseUrl(setting.Conf.Kodo.Domain, ret.Key)
-	return url, nil
+	return key
 }

@@ -48,6 +48,8 @@ func init() {
 	APIs["trash-recover"] = apiTrashRecover
 	// 上传文件
 	APIs["file-upload"] = apiFileUpload
+	// 删除文件
+	APIs["file-delete"] = apiFileDelete
 }
 
 func apiAccount(c *gin.Context) {
@@ -407,23 +409,48 @@ func apiFileUpload(c *gin.Context) {
 	type Size interface {
 		Size() int64
 	}
-	file, header, err := c.Request.FormFile("upload")
+	file, header, err := c.Request.FormFile("file")
 	if err != nil {
-		responseNotice(c, NOTICE_NOTICE, "上传失败", "")
+		logd.Error(err)
+		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
 	s, ok := file.(Size)
 	if !ok {
-		responseNotice(c, NOTICE_NOTICE, "文件太大", "")
+		logd.Error("assert failed")
+		c.String(http.StatusBadRequest, "false")
 		return
 	}
 	filename := strings.ToLower(header.Filename)
-	url, err := Upload(filename, s.Size(), file)
+	url, err := FileUpload(filename, s.Size(), file)
 	if err != nil {
-		responseNotice(c, NOTICE_NOTICE, "上传失败", "")
+		logd.Error(err)
+		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
-	responseNotice(c, NOTICE_SUCCESS, url, "")
+	typ := c.Request.Header.Get("Content-Type")
+	c.JSON(http.StatusOK, gin.H{
+		"name":    filename,
+		"isImage": typ[:5] == "image",
+		"url":     url,
+		"bytes":   fmt.Sprintf("%dkb", s.Size()/1000),
+	})
+}
+
+func apiFileDelete(c *gin.Context) {
+	var err error
+	defer func() {
+		if err != nil {
+			logd.Error(err)
+		}
+		c.String(http.StatusOK, "删掉了吗？鬼知道。。。")
+	}()
+	name := c.PostForm("name")
+	if name == "" {
+		err = errors.New("参数错误")
+		return
+	}
+	err = FileDelete(name)
 }
 
 func responseNotice(c *gin.Context, typ, content, hl string) {

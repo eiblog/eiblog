@@ -13,7 +13,7 @@ func TestUpload(t *testing.T) {
 		t.Fatal(err)
 	}
 	info, _ := file.Stat()
-	url, err := Upload(info.Name(), info.Size(), file)
+	url, err := FileUpload(info.Name(), info.Size(), file)
 	if err != nil {
 		t.Fatal(err)
 	}
