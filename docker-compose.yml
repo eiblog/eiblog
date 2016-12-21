@@ -29,6 +29,8 @@ services:
     links:
       - elasticsearch
       - mongodb
+    environment:
+      - GODEBUG=netdns=cgo
     ports:
       - "9000:9000"
     restart: always
