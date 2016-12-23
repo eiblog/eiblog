@@ -35,6 +35,7 @@ type Config struct {
 		PublicKey  string
 		PostsCount string
 		PostsList  string
+		PostCreate string
 		Interval   int
 	}
 	HotWords []string // 热搜词
@@ -49,8 +50,13 @@ type Config struct {
 		AccessKey string
 		SecretKey string
 	}
-	Mode     RunMode  // 运行模式
-	Twitter  string   // twitter地址
+	Mode    RunMode  // 运行模式
+	Twitter struct { // twitter信息
+		Card    string
+		Site    string
+		Image   string
+		Address string
+	}
 	FeedrURL string   // superfeedr url
 	PingRPCs []string // ping rpc 地址
 	Account  struct {

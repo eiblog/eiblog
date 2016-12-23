@@ -84,14 +84,14 @@ const (
 )
 
 func ConvertStr(str string) string {
-	t, err := time.Parse("2006-01-02T15:04:05", str)
+	t, err := time.ParseInLocation("2006-01-02T15:04:05", str, time.UTC)
 	if err != nil {
 		logd.Error(err, str)
 		return JUST_NOW
 	}
 	now := time.Now()
 	year1, month1, day1 := t.Date()
-	year2, month2, day2 := now.Date()
+	year2, month2, day2 := now.UTC().Date()
 	if y := year2 - year1; y > 0 {
 		return fmt.Sprintf(YEARS_AGO, y)
 	}

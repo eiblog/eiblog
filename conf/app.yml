@@ -22,6 +22,7 @@ disqus:
   publickey: wdSgxRm9rdGAlLKFcFdToBe3GT4SibmV7Y8EjJQ0r4GWXeKtxpopMAeIeoI2dTEg
   postscount: https://disqus.com/api/3.0/threads/set.json
   postslist: https://disqus.com/api/3.0/threads/listPosts.json
+  postcreate: https://disqus.com/api/3.0/posts/create.json
   interval: 5
 # 热搜词配置
 hotwords:
@@ -32,7 +33,7 @@ google:
   v: "1"
   t: pageview
 # 静态文件版本
-staticversion: 2
+staticversion: 1
 # 七牛CDN
 kodo:
   name: eiblog
@@ -50,7 +51,11 @@ mode:
   keyfile: conf/certs/domain.key
   domain: deepzz.com
 # twitter地址: twitter.com/chenqijing2
-twitter: twitter.com/chenqijing2
+twitter: 
+  card: summary
+  site: chenqijing2
+  image: st.deepzz.com/static/img/avatar.jpg
+  address: twitter.com/chenqijing2
 # superfeedr url
 feedrurl: https://deepzz.superfeedr.com/
 # ping rpcs 地址

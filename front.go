@@ -188,6 +188,25 @@ func HandleSearchPage(c *gin.Context) {
 	RenderHTMLFront(c, "search", h)
 }
 
+func HandleDisqusFrom(c *gin.Context) {
+	params := strings.Split(c.Param("slug"), "|")
+	if len(params) != 4 || params[1] == "" {
+		c.String(http.StatusOK, "出错啦。。。")
+		return
+	}
+	artc := Ei.MapArticles[params[0]]
+	data := gin.H{
+		"Title":  "发表评论 | " + Ei.BTitle,
+		"ATitle": artc.Title,
+		"Thread": params[1],
+	}
+	err := Tmpl.ExecuteTemplate(c.Writer, "disqus.html", data)
+	if err != nil {
+		panic(err)
+	}
+	c.Header("Content-Type", "text/html; charset=utf-8")
+}
+
 func HandleFeed(c *gin.Context) {
 	http.ServeFile(c.Writer, c.Request, "static/feed.xml")
 }
@@ -250,6 +269,7 @@ type DisqusComments struct {
 		Next     string           `json:"next"`
 		Total    int              `json:"total,omitempty"`
 		Comments []commentsDetail `json:"comments"`
+		Thread   string           `json:"thread"`
 	} `json:"data"`
 }
 
@@ -274,9 +294,12 @@ func HandleDisqus(c *gin.Context) {
 		if postsList.Cursor.HasNext {
 			dcs.Data.Next = postsList.Cursor.Next
 		}
-		dcs.Data.Total = Ei.MapArticles[slug].Count
+		dcs.Data.Total = len(postsList.Response)
 		dcs.Data.Comments = make([]commentsDetail, len(postsList.Response))
 		for i, v := range postsList.Response {
+			if dcs.Data.Thread == "" {
+				dcs.Data.Thread = v.Thread
+			}
 			dcs.Data.Comments[i] = commentsDetail{
 				Id:           v.Id,
 				Name:         v.Author.Name,
@@ -293,6 +316,39 @@ func HandleDisqus(c *gin.Context) {
 		dcs.ErrMsg = "系统错误"
 	}
 	c.JSON(http.StatusOK, dcs)
+}
+
+// [thread:[5279901489] parent:[] identifier:[post-troubleshooting-https] next:[] author_name:[你好] author_email:[chenqijing2@163.com] message:[fdsfdsf]]
+func HandleDisqusCreate(c *gin.Context) {
+	rep := gin.H{"errno": SUCCESS, "errmsg": ""}
+	defer c.JSON(http.StatusOK, rep)
+	msg := c.PostForm("message")
+	email := c.PostForm("author_email")
+	name := c.PostForm("author_name")
+	thread := c.PostForm("thread")
+	identifier := c.PostForm("identifier")
+	if msg == "" || email == "" || name == "" || thread == "" || identifier == "" {
+		rep["errno"] = FAIL
+		rep["errmsg"] = "参数错误"
+		return
+	}
+	pc := &PostCreate{
+		Message:     msg,
+		Parent:      c.PostForm("parent"),
+		Thread:      thread,
+		AuthorEmail: email,
+		AuthorName:  name,
+		IpAddress:   c.ClientIP(),
+	}
+
+	id := PostComment(pc)
+	if id == "" {
+		rep["errno"] = FAIL
+		rep["errmsg"] = "系统错误"
+		return
+	}
+	rep["errno"] = SUCCESS
+	rep["data"] = gin.H{"id": id}
 }
 
 func RenderHTMLFront(c *gin.Context, name string, data gin.H) {
