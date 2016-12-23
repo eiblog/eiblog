@@ -28,7 +28,7 @@ func init() {
 	store.Options(sessions.Options{
 		MaxAge:   86400 * 999,
 		Path:     "/",
-		Secure:   true,
+		Secure:   setting.Conf.RunMode == setting.PROD,
 		HttpOnly: true,
 	})
 	router.Use(sessions.Sessions("su", store))
