@@ -3,6 +3,7 @@ vendor
 setting
 conf
 static
+views
 !static/tzdata
 Dockerfile
 glide.yaml
