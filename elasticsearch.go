@@ -28,9 +28,7 @@ var es *ElasticService
 
 func init() {
 	es = &ElasticService{url: setting.Conf.SearchURL, c: new(http.Client)}
-	if setting.Conf.RunMode == setting.PROD {
-		initIndex()
-	}
+	initIndex()
 }
 
 func initIndex() {
