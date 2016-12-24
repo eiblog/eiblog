@@ -34,3 +34,4 @@ deploy:
   on:
     tags: true
     repo: eiblog/eiblog
+    all_branches: true
