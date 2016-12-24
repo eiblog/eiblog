@@ -3,8 +3,12 @@
 > 系统根据[https://imququ.com](https://imququ.com)一系列文章和方向进行搭建，期间获得了QuQu的很大帮助，在此表示感谢。
 
 用过其它博客系统，不喜欢，不够轻，不够快！自己做过共两款博客系统，完美主义的我（毕竟处女座）也实在是不想再在这件事情上过多纠结了。`Eiblog`应该是一个比较稳定的博客系统，且是博主以后使用的博客系统，稳定性和维护你是不用担心的，唯独该系统部署过程太过复杂，并且不推荐没有计算机知识的朋友搭建，希望你能知难而退，但最好不无功而返。该博客的个中优点（明显快，安全），等你体验。
+
+<!--more-->
+
 ### 介绍
 整个博客系统涉及到模块如下：
+
 * `MongoDB`，博客采用 mongodb 作为存储数据库。
 * `Elasticsearch`，采用`elasticsearch`作为博客的站内搜索，尽管占用内存稍高。
 * `Disqus`，作为博客评论系统，国内大部分被墙，故实现两种评论方式。
@@ -13,6 +17,7 @@
 * `七牛 CDN`，作为博客系统的静态文件存储，博文的图片附件什么上传至这里。
 
 相关技术有：
+
 * `Golang`，博客系统后端采用golang编写，并开源至[Eiblog](https://github.com/eiblog/eiblog)。
 * `HTML Javascript CSS`，博客系统的前端采用`html`和`jquery`编写，样式采用`CSS`。
 * `Glide`， golang 编写。作为博客系统的包依赖管理器，其开源地址是[Glide](https://github.com/Masterminds/glide)。
@@ -23,6 +28,7 @@
 * `Yaml`，博客系统的配置文件使用`yaml`，请悉知。
 
 作为博主之心血之作，`Eiblog`实现了什么功能，有什么特点，做了什么优化呢？
+
 1. 系统目前只有`首页`、`专题`、`归档`、`友链`、`关于`、`搜索`界面。相信已经可以满足大部分用户的需求。
 2. `.js`、`.css`等静态文件本地存储，小图片 base64 内置到 css 中，不会产生网络所带来的延迟，加速网页访问。版本控制方式，动态更新静态文件。
 3. 采用谷歌统计，并实现异步（将访问信息发给后端，后端提交给谷歌）统计，加速访问速度。
@@ -35,6 +41,7 @@
 10. 采用`elasticsearch`作为站内搜索，添加`google opensearch`功能，搜索更加自然。
 
 当然，在信息安全方面也没少下功夫，虽然我们只是一个小小的博客系统。
+
 1. `CDN`，使用七牛融合CDN，并`https`化，实现全站`https`。七牛可申请免费证书了。
 2. `CT`，证书透明度检测，提供一个开放的审计和监控系统。可以让任何域名所有者或者 CA 确定证书是否被错误签发或者被恶意使用，从而提高 HTTPS 网站的安全性。
 3. `OSCP`，在线证书状态协议。用来检验证书合法性的在线查询服务.
@@ -60,19 +67,22 @@
 好了，说了那么多，吹了那么多，我们实际来动手搭建一个`Eiblog`吧。
 
 ### 安装
+
+> 这部分正在规划，请稍等。
+
 1、`Eiblog`提供多个平台的压缩包下载，可到[Eiblog release](https://github.com/eiblog/eiblog/releases)选择相应版本和平台下载。也可通过：
-```
+``` sh
 $ curl -L https://github.com/eiblog/eiblog/archive/v0.1.0.zip`uname -s`-`uname -m`
 ```
 
 2、如果有幸你也是`Gopher`，相信你会亲自动手，你可以通过：
-```
+``` sh
 $ go get https://github.com/eiblog/eiblog
 ```
 进行源码编译二进制文件运行。
 
 3、如果你对`docker`技术也有研究的话，你也可以通过`docker`来安装：
-```
+``` sh
 $ docker pull 
 
 ```
@@ -84,7 +94,7 @@ $ docker pull
 本地测试需要搭建两个服务`mongodb`和`elasticsearch2.4.1`（可选，搜索服务不可用）。
 
 `Eiblog`默认会连接`hostname`为`eidb`和`eisearch`，因此你需要将信息填入`/etc/hosts`下。假如你搭建的`mongodb`地址为`127.0.0.1:27017`，`elasticsearch`地址为`192.168.99.100:9200`，如：
-```
+``` sh
 $ sudo vi /etc/hosts
 
 # 在末尾加上两行
@@ -92,9 +102,9 @@ $ sudo vi /etc/hosts
 192.168.99.100  eisearch
 ```
 
-#### MongoDB 和 Elasticsearch 搭建
+#### MongoDB 搭建
 1、`MongoDB`搭建，Mac 可通过`bew install mongo`进行安装，其它平台请查询资料。
-
+#### Elasticsearch 搭建
 2、`Elasticsearch`搭建，它的搭建要些许复杂。博主尚未接触如何直接安装，因此建议通过`docker`搭建。需要注意的是 es 自带的分析器对中文分词是不友好的，这里采用了`elasticsearch-analysis-ik`分词器。如果你想了解更多[Github](https://github.com/medcl/elasticsearch-analysis-ik)或则[实现博客站内搜索](https://imququ.com/post/elasticsearch.html)。
 
 * pull 镜像`docker pull elasticsearch:2.4.1`，必需使用该版本。
@@ -109,7 +119,7 @@ $ sudo vi /etc/hosts
   请将这四个目录映射至`eiblog`下的`conf`目录。如果你想查看详细，请查看`docker-compose.yml`文件。
 
 总结一下，`docker`运行 es 的命令为：
-```
+``` sh
 $ docker run -d --name eisearch \
     -p 9200:9200 \
     -e ES_JAVA_OPTS: "-Xms512m -Xmx512m" \
@@ -144,6 +154,7 @@ $ docker run -d --name eisearch \
 尽管大多数文件已经准备好。但有些默认的文件需要特别指出来，需要你在 CDN 上写特殊的路径。
 
 假如你的 CDN 域名为`st.example.com`，那么：
+
 * `favicon.ico`，其 URL 应该是`st.example.com/static/img/favicon.ico`。故你在 CDN 中的文件名为`static/img/favicon.ico`，以下如是。
 * `左侧背景图片`，`500*1200`左右，CDN 中文件名：`static/img/bg04.jpg`。如需更改，请在`eiblog/view/st_blog.css`中替换该名称。
 * `头像`，`160*160~256*256`之间，CDN 文件名：`static/img/avatar.jpg`。另外你需要将该图片 `Base64` 编码后替换掉`eiblog/views/st_blog.css`中合适位置的图片。
@@ -227,7 +238,7 @@ $ docker run -d --name eisearch \
 请确定你已经完成了上面所说的所有步骤，在本地已经测试成功。服务器上`MognoDB`和`Elasticsearch`已经安装并已经运行成功。
 
 首先，请将本地测试好的`conf`，`static`，`views`文件夹上传至服务器，建议存储到服务器`/data/eiblog`下。
-```
+``` sh
 $ tree /data/eiblog -L 1
 
 ├── conf
@@ -236,13 +247,13 @@ $ tree /data/eiblog -L 1
 ```
 
 然后，将镜像 PULL 到服务器本地。
-```
+``` sh
 # PULL下Eiblog镜像
 $ docker pull registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog
 ```
 
 最后，执行`docker run`命令，希望你能成功。
-```
+``` sh
 $ docker run -d --name eiblog --restart=always \
     --add-host disqus.com:23.235.33.134 \
     --link eidb --link eisearch \
@@ -265,7 +276,7 @@ $ docker run -d --name eiblog --restart=always \
 
 > 注意`conf/es/config/scripts`空文件夹是否存在
 
-```
+``` sh
 $ tree /data/eiblog -L 1
 
 ├── conf
@@ -278,7 +289,7 @@ docker-compose.yml
 ```
 
 然后，执行：
-```
+``` sh
 $ cd ~
 $ docker-compose up -d
 ```
