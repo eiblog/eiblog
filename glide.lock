@@ -1,5 +1,5 @@
 hash: 4b70e76a2e830e97033c06d0e5a90c3199985ff5070bdf8364b1feca63d5caa5
-updated: 2016-12-17T23:59:11.607037369+08:00
+updated: 2016-12-25T00:17:00.257473303+08:00
 imports:
 - name: github.com/boj/redistore
   version: fc113767cd6b051980f260d6dbe84b2740c46ab0
@@ -18,7 +18,7 @@ imports:
   - internal
   - redis
 - name: github.com/gin-gonic/contrib
-  version: 45b1fbf9c69a8b8905d20f665b559d03f932db84
+  version: 7b9bbbaec78850441ed357ac702e474b26c08f9b
   subpackages:
   - sessions
 - name: github.com/gin-gonic/gin
@@ -35,7 +35,7 @@ imports:
 - name: github.com/gorilla/securecookie
   version: fa5329f913702981df43dcb2a380bac429c810b5
 - name: github.com/gorilla/sessions
-  version: 52389059572b4736b2b7d899b0242ecc449c8779
+  version: 83c8db3bdc9be789e57e3756ffbcffd2d7d40176
 - name: github.com/manucorporat/sse
   version: ee05b128a739a0fb76c7ebd3ae4810c1de808d6d
 - name: github.com/mattn/go-isatty
