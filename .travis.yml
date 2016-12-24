@@ -2,9 +2,6 @@ sudo: required            # 超级权限
 
 dist: trusty              # 在ubuntu:trusty
 
-notifications:            # 每次构建的时候是否通知，如果不想收到通知邮箱（个人感觉邮件贼烦），那就设置false吧
-  email: false
-
 language: go              # 声明构建语言环境
 
 go:                       # 只构建最新版本
