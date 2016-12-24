@@ -1,29 +1,33 @@
 sudo: required            # 超级权限
+
 dist: trusty              # 在ubuntu:trusty
+
 notifications:            # 每次构建的时候是否通知，如果不想收到通知邮箱（个人感觉邮件贼烦），那就设置false吧
   email: false
+
 language: go              # 声明构建语言环境
+
 go:                       # 只构建最新版本
   - tip
+
 services:                  # docker环境
   - docker
+
 branches:                 # 限定项目分支
   only:
     - master
+
 before_install:
   - curl https://glide.sh/get | sh  # 安装glide包管理
+
 script:
   - glide up
   - GOOS=linux GOARCH=amd64 go build                                    # 编译版本
   - docker build -t registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog .   # 构建镜像
 
-after_success:
-  - if [ "$TRAVIS_BRANCH" == "master" ]; then
-    docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD" registry.cn-hangzhou.aliyuncs.com;
-    docker push registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog;
-    fi                                                                  # push到镜像仓库
 before_deploy:
-   - ./before_deploy.sh
+   - ./dist.sh
+     
 deploy:
   provider: releases
   api_key:
@@ -35,3 +39,9 @@ deploy:
     tags: true
     repo: eiblog/eiblog
     all_branches: true
+
+after_success:
+  - if [ "$TRAVIS_BRANCH" == "master" ]; then
+    docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD" registry.cn-hangzhou.aliyuncs.com;
+    docker push registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog;
+    fi
