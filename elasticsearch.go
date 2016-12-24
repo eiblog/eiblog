@@ -35,7 +35,7 @@ func initIndex() {
 	mappings := fmt.Sprintf(`{"mappings":{"%s":{"properties":{"content":{"analyzer":"ik_syno","search_analyzer":"ik_syno","term_vector":"with_positions_offsets","type":"string"},"date":{"index":"not_analyzed","type":"date"},"slug":{"type":"string"},"tag":{"index":"not_analyzed","type":"string"},"title":{"analyzer":"ik_syno","search_analyzer":"ik_syno","term_vector":"with_positions_offsets","type":"string"}}}}}`, TYPE)
 	err := CreateIndexAndMappings(INDEX, TYPE, []byte(mappings))
 	if err != nil {
-		logd.Fatal(err)
+		logd.Error(err)
 	}
 }
 
