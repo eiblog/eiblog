@@ -5,7 +5,7 @@ notifications:            # 每次构建的时候是否通知，如果不想收�
 language: go              # 声明构建语言环境
 go:                       # 只构建最新版本
   - tip
-service:                  # docker环境
+services:                  # docker环境
   - docker
 branches:                 # 限定项目分支
   only:
@@ -29,7 +29,7 @@ deploy:
   api_key:
     secure: AGW05sQuQfjy77+JprSV+ohti/VVgFuh7UOTV0+hwxqsOVXSoIQz/ZPOlHWPP1iiSiGGEalspm+UtKRvADcDfllUaEwo7kebfFeMx4X//qxFxQSQ5LJYx7qxsTDpuQ4CF8zifCtND3ynnUAdx0P6FFkxE/67kN2n4CrhIxYCUb8gNPzDDRuS0ZNBC4zzNldJo/vtatbvc2btuFfwKoClYf+xPLy5luLqDvKF+hdjJ8NuZl8BWkWxXE+kk8fW4iUn2IV0qtLRZ3FQUyAF2CumzxqZfViX+rYTXsfbabYY5nYG6opT4mUEF58T4X3uRV0e3Q6Fe73nmLh9cyAoQl1BTSJ1XiyV4eJJWcKEMY7DqJ646lzoUT449YwvTK57klcfBbShpcjFf2alVdEbr9jbEXrCkuWKnssO9VfufhYF6t9h22c79evpexpIbsoncPD+b+n712MzufREtUF4kpUdkIir5n9CgQl/l7S+fV+n+gME+mcA44K7iPXkC80UfxJiw83QizT39OQhExq6SPIwrbt2vlAkBpSLMUS9iAHtTJYUsmH1SsmrxGK3WromKysWeTRJbcAJls2k6V313sn4TuYBWiHTUfsUBhv+objDFA2TsfO+g0g1JsdfZb5EsKrqNvs/2ta1xlzdE0+/TLG/YNKIOPkHnXswAM3DZm3zEss=
   skip_cleanup: true
-  file: *.tar.gz
+  file: "*.tar.gz"
   file_glob: true
   on:
     tags: true
