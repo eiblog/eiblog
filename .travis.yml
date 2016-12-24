@@ -32,6 +32,6 @@ deploy:
   file: "*.tar.gz"
   file_glob: true
   on:
-    # tags: true
+    tags: true
     repo: eiblog/eiblog
     all_branches: true
