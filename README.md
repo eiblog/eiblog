@@ -54,13 +54,13 @@
 可以容易的看到[httpsecurityreport](https://httpsecurityreport.com/?report=deepzz.com)评分`96`，[ssllabs](https://www.ssllabs.com/ssltest/analyze.html?d=deepzz.com&latest)评分`A+`，堪称完美。这些安全的相关配置会在后面的部署过程中接触到。
 
 相关图片展示：
-![show-home](https://st.deepzz.com/blog/img/show-home1.png)
+![show-home](http://7xokm2.com1.z0.glb.clouddn.com/static/img/show-home1.png)
 
-![show-home2](https://st.deepzz.com/blog/img/show-home2.png)
+![show-home2](http://7xokm2.com1.z0.glb.clouddn.com/static/img/show-home2.png)
 
-![show-admin](https://st.deepzz.com/blog/img/show-admin.png)
+![show-admin](http://7xokm2.com1.z0.glb.clouddn.com/static/img/show-admin.png)
 
-![show-time](https://st.deepzz.com/blog/img/eiblog-time.png)
+![show-time](http://7xokm2.com1.z0.glb.clouddn.com/static/img/eiblog-time.png)
 
 > `注`：图片1，图片2是博客界面，图片3是后台界面，图片4是性能展示。
 
