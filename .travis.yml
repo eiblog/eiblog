@@ -10,9 +10,9 @@ go:                       # 只构建最新版本
 services:                  # docker环境
   - docker
 
-# branches:                 # 限定项目分支
-#   only:
-#     - master
+branches:                 # 限定项目分支
+  only:
+    - master
 
 before_install:
   - curl https://glide.sh/get | sh  # 安装glide包管理
@@ -23,7 +23,7 @@ script:
   - docker build -t registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog .   # 构建镜像
 
 after_success:
-  - if [ "$TRAVIS_BRANCH" == "master" ]; then
+  - if [ "$TRAVIS_BRANCH" =~ ^v[0-9](\.[0-9])+.*$ ]; then
     docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD" registry.cn-hangzhou.aliyuncs.com;
     docker push registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog;
     fi

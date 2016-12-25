@@ -67,12 +67,9 @@
 好了，说了那么多，吹了那么多，我们实际来动手搭建一个`Eiblog`吧。
 
 ### 安装
-
-> 这部分正在规划，请稍等。
-
 1、`Eiblog`提供多个平台的压缩包下载，可到[Eiblog release](https://github.com/eiblog/eiblog/releases)选择相应版本和平台下载。也可通过：
 ``` sh
-$ curl -L https://github.com/eiblog/eiblog/archive/v0.1.0.zip`uname -s`-`uname -m`
+$ curl -L https://github.com/eiblog/eiblog/releases/download/v0.1.0/eiblog-v0.1.0.`uname -s | tr '[A-Z]' '[a-z]'`-amd64.tar.gz > eiblog-v0.1.0.`uname -s | tr '[A-Z]' '[a-z]'`-amd64.tar.gz
 ```
 
 2、如果有幸你也是`Gopher`，相信你会亲自动手，你可以通过：
@@ -83,7 +80,7 @@ $ go get https://github.com/eiblog/eiblog
 
 3、如果你对`docker`技术也有研究的话，你也可以通过`docker`来安装：
 ``` sh
-$ docker pull 
+$ docker pull registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog
 
 ```
 镜像内部只提供了`eiblog`的二进制文件，因为其它内容定制化的需求过高。所以需要将`conf`、`static`、`views`目录映射出来，后面会具体说到。
