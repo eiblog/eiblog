@@ -26,7 +26,7 @@ func init() {
 	router = gin.Default()
 	store := sessions.NewCookieStore([]byte("eiblog321"))
 	store.Options(sessions.Options{
-		MaxAge:   86400 * 999,
+		MaxAge:   86400 * 7,
 		Path:     "/",
 		Secure:   setting.Conf.RunMode == setting.PROD,
 		HttpOnly: true,
