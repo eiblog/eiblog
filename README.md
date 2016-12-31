@@ -304,3 +304,5 @@ $ docker-compose up -d
 ### 成功搭建者博客
 
 * [https://razeencheng.com/](https://razeencheng.com/) - Razeen's Blog
+
+如果你的博客使用`Eiblog`搭建，你可以在[这里](https://github.com/eiblog/eiblog/issues/1)提交网址。
