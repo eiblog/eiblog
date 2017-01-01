@@ -92,17 +92,17 @@ func ConvertStr(str string) string {
 	now := time.Now()
 	y1, m1, d1 := t.Date()
 	y2, m2, d2 := now.UTC().Date()
-	h1, mi1, s1 := t.Clock()
-	h2, mi2, s2 := now.Clock()
-	if y := y2 - y1; y > 1 || m2-m1 >= 0 {
+	h1, mi1, _ := t.Clock()
+	h2, mi2, _ := now.Clock()
+	if y := y2 - y1; y > 1 {
 		return fmt.Sprintf(YEARS_AGO, y)
-	} else if m := y*12 + int(m2-m1); m > 1 || d2-d1 >= 0 {
+	} else if m := y*12 + int(m2-m1); m > 1 {
 		return fmt.Sprintf(MONTH_AGO, m)
-	} else if d := m*30 + d2 - d1; d > 1 || h2-h1 >= 0 {
+	} else if d := m*30 + d2 - d1; d > 1 {
 		return fmt.Sprintf(DAYS_AGO, d)
-	} else if h := d*24 + h2 - h1; h > 1 || mi2-mi1 >= 0 {
+	} else if h := d*24 + h2 - h1; h > 1 {
 		return fmt.Sprintf(HOURS_AGO, h)
-	} else if mi := h*60 + mi2 - mi1; mi > 1 || s2-s1 >= 0 {
+	} else if mi := h*60 + mi2 - mi1; mi > 1 {
 		return fmt.Sprintf(MINUTES_AGO, m)
 	}
 	return JUST_NOW
