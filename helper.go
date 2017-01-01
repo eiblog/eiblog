@@ -18,6 +18,21 @@ const (
 	FAIL
 )
 
+var monthToDays = map[time.Month]int{
+	time.January:   31,
+	time.February:  28,
+	time.March:     31,
+	time.April:     30,
+	time.May:       31,
+	time.June:      30,
+	time.July:      31,
+	time.August:    31,
+	time.September: 30,
+	time.October:   31,
+	time.November:  30,
+	time.December:  31,
+}
+
 // encrypt password
 func EncryptPasswd(name, pass string) string {
 	salt := "%$@w*)("
@@ -92,18 +107,29 @@ func ConvertStr(str string) string {
 	now := time.Now()
 	y1, m1, d1 := t.Date()
 	y2, m2, d2 := now.UTC().Date()
-	h1, mi1, _ := t.Clock()
-	h2, mi2, _ := now.Clock()
-	if y := y2 - y1; y > 1 {
+	h1, mi1, s1 := t.Clock()
+	h2, mi2, s2 := now.Clock()
+	if y := y2 - y1; y > 1 || (y == 1 && m2-m1 >= 0) {
 		return fmt.Sprintf(YEARS_AGO, y)
-	} else if m := y*12 + int(m2-m1); m > 1 {
+	} else if m := y*12 + int(m2-m1); m > 1 || (m == 1 && d2-d1 >= 0) {
 		return fmt.Sprintf(MONTH_AGO, m)
-	} else if d := m*30 + d2 - d1; d > 1 {
+	} else if d := m*dayIn(y1, m1) + d2 - d1; d > 1 || (d == 1 && h2-h1 >= 0) {
 		return fmt.Sprintf(DAYS_AGO, d)
-	} else if h := d*24 + h2 - h1; h > 1 {
+	} else if h := d*24 + h2 - h1; h > 1 || (h == 1 && mi2-mi1 >= 0) {
 		return fmt.Sprintf(HOURS_AGO, h)
-	} else if mi := h*60 + mi2 - mi1; mi > 1 {
+	} else if mi := h*60 + mi2 - mi1; mi > 1 || (mi == 1 && s2-s1 >= 0) {
 		return fmt.Sprintf(MINUTES_AGO, m)
 	}
 	return JUST_NOW
+}
+
+func dayIn(year int, m time.Month) int {
+	if m == time.February && isLeap(year) {
+		return 29
+	}
+	return monthToDays[m]
+}
+
+func isLeap(year int) bool {
+	return year%4 == 0 && (year%100 != 0 || year%400 == 0)
 }
