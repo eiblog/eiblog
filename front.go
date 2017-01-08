@@ -338,6 +338,7 @@ func HandleDisqusCreate(c *gin.Context) {
 		Thread:      thread,
 		AuthorEmail: email,
 		AuthorName:  name,
+		Identifier:  identifier,
 		IpAddress:   c.ClientIP(),
 	}
 

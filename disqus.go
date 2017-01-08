@@ -159,7 +159,6 @@ func PostComment(pc *PostCreate) string {
 		return ""
 	}
 	request.Header.Set("Referer", "https://disqus.com")
-	logd.Print(*request)
 	resp, err := http.DefaultClient.Do(request)
 	if err != nil {
 		logd.Error(err)
