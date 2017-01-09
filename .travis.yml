@@ -10,9 +10,9 @@ go:                       # 只构建最新版本
 services:                  # docker环境
   - docker
 
-branches:                 # 限定项目分支
-  only:
-    - master
+# branches:                 # 限定项目分支
+#   only:
+#     - master
 
 before_install:
   - curl https://glide.sh/get | sh  # 安装glide包管理
