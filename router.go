@@ -94,7 +94,7 @@ func Run() {
 	)
 	if setting.Conf.Mode.EnableHttp {
 		go func() {
-			logd.Info(fmt.Sprintf("http server Running on %d", setting.Conf.Mode.HttpPort))
+			logd.Infof("http server Running on %d\n", setting.Conf.Mode.HttpPort)
 			err = router.Run(fmt.Sprintf(":%d", setting.Conf.Mode.HttpPort))
 			if err != nil {
 				logd.Info("ListenAndServe: ", err)
@@ -105,7 +105,7 @@ func Run() {
 	}
 	if setting.Conf.Mode.EnableHttps {
 		go func() {
-			logd.Info(fmt.Sprintf("https server Running on %d", setting.Conf.Mode.HttpsPort))
+			logd.Infof("https server Running on %d\n", setting.Conf.Mode.HttpsPort)
 			err = router.RunTLS(fmt.Sprintf(":%d", setting.Conf.Mode.HttpsPort), setting.Conf.Mode.CertFile, setting.Conf.Mode.KeyFile)
 			if err != nil {
 				logd.Info("ListenAndServe: ", err)
