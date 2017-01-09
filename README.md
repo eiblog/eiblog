@@ -69,7 +69,7 @@
 ### 安装
 1、`Eiblog`提供多个平台的压缩包下载，可到[Eiblog release](https://github.com/eiblog/eiblog/releases)选择相应版本和平台下载。也可通过：
 ``` sh
-$ curl -L https://github.com/eiblog/eiblog/releases/download/v0.1.0/eiblog-v0.1.0.`uname -s | tr '[A-Z]' '[a-z]'`-amd64.tar.gz > eiblog-v0.1.0.`uname -s | tr '[A-Z]' '[a-z]'`-amd64.tar.gz
+$ curl -L https://github.com/eiblog/eiblog/releases/download/v1.0.0/eiblog-v1.0.0.`uname -s | tr '[A-Z]' '[a-z]'`-amd64.tar.gz > eiblog-v1.0.0.`uname -s | tr '[A-Z]' '[a-z]'`-amd64.tar.gz
 ```
 
 2、如果有幸你也是`Gopher`，相信你会亲自动手，你可以通过：
