@@ -100,7 +100,7 @@ $ sudo vi /etc/hosts
 ```
 
 #### MongoDB 搭建
-1、`MongoDB`搭建，Mac 可通过`bew install mongo`进行安装，其它平台请查询资料。
+1、`MongoDB`搭建，Mac 可通过`brew install mongo`进行安装，其它平台请查询资料。
 #### Elasticsearch 搭建
 2、`Elasticsearch`搭建，它的搭建要些许复杂。博主尚未接触如何直接安装，因此建议通过`docker`搭建。需要注意的是 es 自带的分析器对中文分词是不友好的，这里采用了`elasticsearch-analysis-ik`分词器。如果你想了解更多[Github](https://github.com/medcl/elasticsearch-analysis-ik)或则如何实现[博客站内搜索](https://imququ.com/post/elasticsearch.html)。
 

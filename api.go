@@ -298,7 +298,7 @@ func apiSerieAdd(c *gin.Context) {
 		responseNotice(c, NOTICE_NOTICE, "参数错误", "")
 		return
 	}
-	mid, err := strconv.Atoi(c.Query("mid"))
+	mid, err := strconv.Atoi(c.PostForm("mid"))
 	if err == nil && mid > 0 {
 		serie := QuerySerie(int32(mid))
 		if serie == nil {

@@ -35,6 +35,7 @@
                             此文字用于描述专题, 在有的主题中它会被显示.</p>
                     </li>
                 </ul>
+                <input type="hidden" name="mid" {{with .Edit}}value="{{.ID}}"{{end}} />
                 <ul class="typecho-option typecho-option-submit" id="typecho-option-item--6">
                     <li>
                         <button type="submit" class="btn primary">
