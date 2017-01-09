@@ -197,7 +197,7 @@ func IndexOrUpdateDocument(index, typ string, id int32, doc []byte) (err error) 
 	if err != nil {
 		return err
 	}
-	fmt.Println(string(data.([]byte)))
+	logd.Debug(string(data.([]byte)))
 	return nil
 }
 
