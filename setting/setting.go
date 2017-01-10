@@ -27,6 +27,7 @@ type Config struct {
 	PageSize      int      // 后台每页文章数量
 	Length        int      // 自动截取预览长度
 	Identifier    string   // 截取标示
+	Description   string   // 文章描述前缀
 	Favicon       string   // icon地址
 	StartID       int32    // 文章起始id
 	SearchURL     string   // elasticsearch 地址

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"regexp"
 	"sort"
+	"strings"
 	"sync"
 	"time"
 
@@ -365,6 +366,11 @@ var reg = regexp.MustCompile(setting.Conf.Identifier)
 var regH = regexp.MustCompile("</nav></div>")
 
 func GenerateExcerptAndRender(artc *Article) {
+	if strings.HasPrefix(artc.Content, setting.Conf.Description) {
+		index := strings.Index(artc.Content, "\r\n")
+		artc.Desc = IgnoreHtmlTag(artc.Content[len(setting.Conf.Description):index])
+	}
+
 	content := renderPage([]byte(artc.Content))
 	index := regH.FindIndex(content)
 	if index != nil {

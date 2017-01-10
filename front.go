@@ -71,6 +71,7 @@ func HandleNotFound(c *gin.Context) {
 	h := GetBase()
 	h["Version"] = StaticVersion(c)
 	h["Title"] = "Not Found"
+	h["Description"] = "404 Not Found"
 	h["Path"] = ""
 	c.Status(http.StatusNotFound)
 	RenderHTMLFront(c, "notfound", h)
@@ -80,6 +81,7 @@ func HandleHomePage(c *gin.Context) {
 	h := GetBase()
 	h["Version"] = StaticVersion(c)
 	h["Title"] = Ei.BTitle + " | " + Ei.SubTitle
+	h["Description"] = "博客首页，" + Ei.SubTitle
 	h["Path"] = c.Request.URL.Path
 	h["CurrentPage"] = "blog-home"
 	pn, err := strconv.Atoi(c.Query("pn"))
@@ -95,6 +97,7 @@ func HandleSeriesPage(c *gin.Context) {
 	h := GetBase()
 	h["Version"] = StaticVersion(c)
 	h["Title"] = "专题 | " + Ei.BTitle
+	h["Description"] = "专题列表，" + Ei.SubTitle
 	h["Path"] = c.Request.URL.Path
 	h["CurrentPage"] = "series"
 	h["Article"] = Ei.PageSeries
@@ -106,6 +109,7 @@ func HandleArchivesPage(c *gin.Context) {
 	h := GetBase()
 	h["Version"] = StaticVersion(c)
 	h["Title"] = "归档 | " + Ei.BTitle
+	h["Description"] = "博客归档，" + Ei.SubTitle
 	h["Path"] = c.Request.URL.Path
 	h["CurrentPage"] = "archives"
 	h["Article"] = Ei.PageArchives
@@ -128,9 +132,12 @@ func HandleArticlePage(c *gin.Context) {
 	var name string
 	if path == "blogroll.html" {
 		name = "blogroll"
+		h["Description"] = "友情连接，" + Ei.SubTitle
 	} else if path == "about.html" {
 		name = "about"
+		h["Description"] = "关于作者，" + Ei.SubTitle
 	} else {
+		h["Description"] = artc.Desc + "，" + Ei.SubTitle
 		name = "article"
 		h["Copyright"] = Ei.Copyright
 		if !artc.UpdateTime.IsZero() {
@@ -151,6 +158,7 @@ func HandleSearchPage(c *gin.Context) {
 	h := GetBase()
 	h["Version"] = StaticVersion(c)
 	h["Title"] = "站内搜索 | " + Ei.BTitle
+	h["Description"] = "站内搜索，" + Ei.SubTitle
 	h["Path"] = ""
 	h["CurrentPage"] = "search-post"
 

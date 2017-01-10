@@ -12,6 +12,8 @@ pagesize: 20
 length: 400
 # 截取预览标识
 identifier: <!--more-->
+# 文章描述前缀
+description: "Desc:"
 # 起始ID，预留id不时之需, 不用管
 startid: 11
 # elasticsearch url

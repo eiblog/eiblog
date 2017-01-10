@@ -119,6 +119,8 @@ type Article struct {
 	Header string `bson:"-"`
 	// 预览信息
 	Excerpt string `bson:"-"`
+	// 一句话描述，文章第一句
+	Desc string `bson:"-"`
 }
 
 type SortArticles []*Article
