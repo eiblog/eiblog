@@ -62,6 +62,8 @@
 
 ![show-time](http://7xokm2.com1.z0.glb.clouddn.com/static/img/eiblog-time.png)
 
+![eiblog-mem](http://7xokm2.com1.z0.glb.clouddn.com/img/eiblog-mem.png)
+
 > `注`：图片1，图片2是博客界面，图片3是后台界面，图片4是性能展示。
 
 好了，说了那么多，吹了那么多，我们实际来动手搭建一个`Eiblog`吧。
