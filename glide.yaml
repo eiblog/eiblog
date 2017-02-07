@@ -6,11 +6,20 @@ import:
   - logd
   - mgo
   - tmpl
+  - uuid
 - package: github.com/gin-gonic/contrib
   subpackages:
   - sessions
 - package: github.com/gin-gonic/gin
+  version: ~1.1.4
 - package: gopkg.in/mgo.v2
   subpackages:
   - bson
 - package: gopkg.in/yaml.v2
+- package: qiniupkg.com/api.v7
+  subpackages:
+  - kodo
+  - kodocli
+- package: qiniupkg.com/x
+  subpackages:
+  - url.v7

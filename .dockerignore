@@ -4,6 +4,7 @@ setting
 conf
 static
 views
+docs
 !static/tzdata
 Dockerfile
 glide.yaml
