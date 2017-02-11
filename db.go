@@ -369,6 +369,7 @@ func GenerateExcerptAndRender(artc *Article) {
 	if strings.HasPrefix(artc.Content, setting.Conf.Description) {
 		index := strings.Index(artc.Content, "\r\n")
 		artc.Desc = IgnoreHtmlTag(artc.Content[len(setting.Conf.Description):index])
+		artc.Content = artc.Content[index:]
 	}
 
 	content := renderPage([]byte(artc.Content))
