@@ -25,9 +25,11 @@ func init() {
 	if err != nil {
 		logd.Fatal(err)
 	}
-	doOpensearch()
 	go doFeed()
 	go doSitemap()
+	doOpensearch()
+	doRobots()
+	doCrossdomain()
 }
 
 func doFeed() {
@@ -47,7 +49,7 @@ func doFeed() {
 		"Artcs":     artcs,
 	}
 
-	f, err := os.OpenFile("static/feed.xml", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, os.ModePerm)
+	f, err := os.OpenFile("static/feed.xml", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
 		logd.Error(err)
 		return
@@ -68,7 +70,7 @@ func doSitemap() {
 		return
 	}
 	params := map[string]interface{}{"Artcs": Ei.Articles, "Domain": setting.Conf.Mode.Domain}
-	f, err := os.OpenFile("static/sitemap.xml", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, os.ModePerm)
+	f, err := os.OpenFile("static/sitemap.xml", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
 		logd.Error(err)
 		return
@@ -93,7 +95,51 @@ func doOpensearch() {
 		"SubTitle": Ei.SubTitle,
 		"Domain":   setting.Conf.Mode.Domain,
 	}
-	f, err := os.OpenFile("static/opensearch.xml", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, os.ModePerm)
+	f, err := os.OpenFile("static/opensearch.xml", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
+	if err != nil {
+		logd.Error(err)
+		return
+	}
+	defer f.Close()
+	err = tpl.Execute(f, params)
+	if err != nil {
+		logd.Error(err)
+		return
+	}
+}
+
+func doRobots() {
+	tpl := tpls.Lookup("robotsTpl.xml")
+	if tpl == nil {
+		logd.Error("not found robotsTpl.")
+		return
+	}
+	params := map[string]string{
+		"Domain": setting.Conf.Mode.Domain,
+	}
+	f, err := os.OpenFile("static/robots.txt", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
+	if err != nil {
+		logd.Error(err)
+		return
+	}
+	defer f.Close()
+	err = tpl.Execute(f, params)
+	if err != nil {
+		logd.Error(err)
+		return
+	}
+}
+
+func doCrossdomain() {
+	tpl := tpls.Lookup("crossdomainTpl.xml")
+	if tpl == nil {
+		logd.Error("not found crossdomainTpl.")
+		return
+	}
+	params := map[string]string{
+		"Domain": setting.Conf.Mode.Domain,
+	}
+	f, err := os.OpenFile("static/crossdomain.xml", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
 		logd.Error(err)
 		return
