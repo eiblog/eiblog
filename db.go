@@ -214,7 +214,7 @@ func generateTopic() {
 		Title:      "关于",
 		Slug:       "about",
 		CreateTime: time.Now(),
-		UpdateTime: time.Now(),
+		UpdateTime: time.Time{},
 	}
 	blogroll := &Article{
 		ID:         db.NextVal(DB, COUNTER_ARTICLE),
@@ -222,7 +222,7 @@ func generateTopic() {
 		Title:      "友情链接",
 		Slug:       "blogroll",
 		UpdateTime: time.Now(),
-		CreateTime: time.Now(),
+		CreateTime: time.Time{},
 	}
 	err := db.Insert(DB, COLLECTION_ARTICLE, blogroll)
 	if err != nil {
