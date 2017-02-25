@@ -18,6 +18,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+// 数据库及表名
 const (
 	DB                 = "eiblog"
 	COLLECTION_ACCOUNT = "account"
@@ -30,6 +31,7 @@ const (
 	DELETE             = "delete"
 )
 
+// blackfriday 配置
 const (
 	commonHtmlFlags = 0 |
 		blackfriday.HTML_TOC |
@@ -96,7 +98,7 @@ func init() {
 	ms.Close()
 	// 读取帐号信息
 	Ei = loadAccount()
-	// 获取文章
+	// 获取文章数据
 	Ei.Articles = loadArticles()
 	// 生成markdown文档
 	go generateMarkdown()
@@ -576,6 +578,7 @@ func QuerySerie(id int32) *Serie {
 	return nil
 }
 
+// 后台分页
 func PageListBack(se int, kw string, draft, del bool, p, n int) (max int, artcs []*Article) {
 	M := bson.M{}
 	if draft {
