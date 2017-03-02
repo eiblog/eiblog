@@ -119,8 +119,8 @@ func HandleArchivesPage(c *gin.Context) {
 
 func HandleArticlePage(c *gin.Context) {
 	path := c.Param("slug")
-	artc := Ei.MapArticles[path[0:strings.Index(path, ".")]]
-	if artc == nil {
+	index := strings.Index(path, ".")
+	if index < 0 || Ei.MapArticles[path[0:index]] == nil {
 		HandleNotFound(c)
 		return
 	}
