@@ -5,7 +5,7 @@ dist: trusty              # 在ubuntu:trusty
 language: go              # 声明构建语言环境
 
 go:                       # 只构建最新版本
-  - tip
+  - 1.8
 
 services:                  # docker环境
   - docker
