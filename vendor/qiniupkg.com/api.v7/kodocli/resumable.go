@@ -29,14 +29,14 @@ const (
 
 const (
 	defaultWorkers   = 4
-	defaultChunkSize = 256 * 1024 // 256k
+	defaultChunkSize = 1 * 1024 * 1024 // 1M
 	defaultTryTimes  = 3
 )
 
 type Settings struct {
 	TaskQsize int // 可选。任务队列大小。为 0 表示取 Workers * 4。
 	Workers   int // 并行 Goroutine 数目。
-	ChunkSize int // 默认的Chunk大小，不设定则为256k
+	ChunkSize int // 默认的Chunk大小，不设定则为1M
 	TryTimes  int // 默认的尝试次数，不设定则为3
 }
 

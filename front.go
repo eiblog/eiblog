@@ -251,6 +251,7 @@ func HandleBeacon(c *gin.Context) {
 			return
 		}
 		req.Header.Set("User-Agent", ua)
+		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 		res, err := http.DefaultClient.Do(req)
 		if err != nil {
 			logd.Error(err)
