@@ -1,4 +1,4 @@
-# EiBlog ![Build Status](https://travis-ci.org/eiblog/eiblog.svg?branch=master)](https://travis-ci.org/eiblog/eiblog) ![https://img.shields.io/badge/license-MIT-brightgreen.svg](LICENSE.md) ![https://img.shields.io/github/tag/eiblog/eiblog.svg](https://github.com/eiblog/eiblog/releases) 
+# EiBlog ![Build Status](https://travis-ci.org/eiblog/eiblog.svg?branch=master)(https://travis-ci.org/eiblog/eiblog) ![https://img.shields.io/badge/license-MIT-brightgreen.svg](LICENSE.md) ![https://img.shields.io/github/tag/eiblog/eiblog.svg](https://github.com/eiblog/eiblog/releases) 
 
 > 系统根据[https://imququ.com](https://imququ.com)一系列文章和方向进行搭建，期间获得了QuQu的很大帮助，在此表示感谢。
 
