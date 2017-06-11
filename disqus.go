@@ -17,6 +17,7 @@ import (
 type result struct {
 	Code     int
 	Response []struct {
+		Id          string
 		Posts       int
 		Identifiers []string
 	}
@@ -66,6 +67,7 @@ func PostsCount() {
 			artc := Ei.MapArticles[v.Identifiers[0][i+1:]]
 			if artc != nil {
 				artc.Count = v.Posts
+				artc.Thread = v.Id
 			}
 		}
 	}

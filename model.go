@@ -121,6 +121,8 @@ type Article struct {
 	Excerpt string `bson:"-"`
 	// 一句话描述，文章第一句
 	Desc string `bson:"-"`
+	// disqus thread
+	Thread string `bson:"-"`
 }
 
 type SortArticles []*Article

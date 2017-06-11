@@ -207,6 +207,7 @@ func HandleDisqusFrom(c *gin.Context) {
 		"Title":  "发表评论 | " + Ei.BTitle,
 		"ATitle": artc.Title,
 		"Thread": params[1],
+		"Slug":   artc.Slug,
 	}
 	err := Tmpl.ExecuteTemplate(c.Writer, "disqus.html", data)
 	if err != nil {
@@ -296,7 +297,11 @@ type commentsDetail struct {
 func HandleDisqus(c *gin.Context) {
 	slug := c.Param("slug")
 	cursor := c.Query("cursor")
+
 	dcs := DisqusComments{}
+	if artc := Ei.MapArticles[slug]; artc != nil {
+		dcs.Data.Thread = artc.Thread
+	}
 	postsList := PostsList(slug, cursor)
 	if postsList != nil {
 		dcs.ErrNo = postsList.Code
