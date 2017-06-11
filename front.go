@@ -277,7 +277,7 @@ type DisqusComments struct {
 	ErrMsg string `json:"errmsg"`
 	Data   struct {
 		Next     string           `json:"next"`
-		Total    int              `json:"total,omitempty"`
+		Total    int              `json:"total"`
 		Comments []commentsDetail `json:"comments"`
 		Thread   string           `json:"thread"`
 	} `json:"data"`
