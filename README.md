@@ -37,7 +37,7 @@
 
 2. 搭建`MongoDB`（必须）和`Elasticsearch`（可选）服务。
 
-3. 修改`/etc/hosts`文件，添加`MongoDB`数据库 IP 地址，如：`127.0.0.1       eidb`。
+3. 修改`/etc/hosts`文件，添加`MongoDB`数据库 IP 地址，如：`127.0.0.1       mongodb`。
 
 4. 执行`./eiblog`，运行博客系统。看到：
 ```

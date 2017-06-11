@@ -87,14 +87,14 @@ $ docker run -d --name eisearch \
 #### 文件准备
 尽管大多数文件已经准备好。但有些默认的文件需要特别指出来，需要你在 CDN 上写特殊的路径。
 
-假如你的 CDN 域名为`st.example.com`，那么：
+假如你的 CDN 域名为`st.example.com`，那么请确保你的 CDN 中已经上传以下文件：
 
-* `favicon.ico`，其 URL 应该是`st.example.com/static/img/favicon.ico`。故你在 CDN 中的文件名为`static/img/favicon.ico`，以下如是。
-* `左侧背景图片`，`500*1200`左右，CDN 中文件名：`static/img/bg04.jpg`。如需更改，请在`eiblog/view/st_blog.css`中替换该名称。
-* `头像`，`160*160~256*256`之间，CDN 文件名：`static/img/avatar.jpg`。另外你需要将该图片 `Base64` 编码后替换掉`eiblog/views/st_blog.css`中合适位置的图片。
+* `favicon.ico`，默认为`st.example.com/static/img/favicon.ico`。故你在 CDN 中的文件名为`static/img/favicon.ico`，以下如是。
+* `bg04.jpg`，左侧背景图片，`500*1200`左右，CDN 中文件名：`static/img/bg04.jpg`。如需更改，请在`eiblog/view/st_blog.css`中替换该名称。
+* `avatar.jpg`，左侧头像，`160*160~256*256`之间，CDN 文件名：`static/img/avatar.jpg`。另外你需要将该图片 `Base64` 编码后替换掉`eiblog/views/st_blog.css`中合适位置的图片。
 * `blank.gif`，CDN 文件名：`static/img/blank.gif`。该图片请从[这里](https://st.deepzz.com/static/img/blank.gif)下载并上传至你的 CDN。
-* `default_avatar.png`，CDN 文件名：`static/img/default_avatar.png`，请从[这里](https://st.deepzz.com/static/img/default_avatar.png)下载并上传至你的 CDN。
-* `disqus.js`，该文件名是会变的，每次更新如果没有提及就没有改变，更新说明在[这里](https://github.com/eiblog/eiblog/blob/master/CHANGELOG.md)。CDN 文件名格式是：`static/js/name.js`。在我写这篇文章是使用的是：`static/js/disqus_a9d3fd.js`，请从[这里](https://st.deepzz.com/static/js/disqus_a9d3fd.js)下载并上传至你的 CDN。
+* `default_avatar.png`，Disqus 默认头像，CDN 文件名：`static/img/default_avatar.png`，请从[这里](https://st.deepzz.com/static/img/default_avatar.png)下载并上传至你的 CDN。
+* `disqus.js`，该文件名是会变的，每次更新如果没有提及就没有改变，更新说明在[这里](https://github.com/eiblog/eiblog/blob/master/CHANGELOG.md)。CDN 文件名格式是：`static/js/disqus_xxx.js`。在我写这篇文章是使用的是：`static/js/disqus_a9d3fd.js`，请从[这里](https://st.deepzz.com/static/js/disqus_a9d3fd.js)下载并上传至你的 CDN。另外修改`eiblog/view/st_blog.js`中的`disqus_a9d3fd.js`。
 
 > `注意`：本人 CDN 做了防盗链处理，故请将这些资源上传至您的 CDN ，以免静态资源不能访问，请悉知。
 

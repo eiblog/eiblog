@@ -1,5 +1,15 @@
 # Eiblog Changelog
 
+## v1.1.3 (2017-05-12)
+* 更新 disqus_78bca4.js 到 disqus_921d24.js，具体请参考 docs/install.md
+* 更新 vendor
+
+## v1.1.2 (2017-03-08)
+* 解决添加文章描述错误的bug
+* 添加vendor目录
+* 添加文档docs目录
+* 删除多余注释
+
 ## v1.1.1 (2017-02-07)
 * 添加文章描述功能。
 * 修复评论`jQuery`文件引用错误。
