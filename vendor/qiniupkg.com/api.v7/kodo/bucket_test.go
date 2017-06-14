@@ -1,6 +1,7 @@
 package kodo
 
 import (
+	"context"
 	"math/rand"
 	"strconv"
 	"testing"
@@ -8,9 +9,9 @@ import (
 )
 
 var (
-	bkey     = "abatch"
-	bnewkey1 = "abatch/newkey1"
-	bnewkey2 = "abatch/newkey2"
+	batchTestKey     = "abatch"
+	batchTestNewKey1 = "abatch/newkey1"
+	batchTestNewKey2 = "abatch/newkey2"
 )
 
 func init() {
@@ -20,11 +21,11 @@ func init() {
 	}
 
 	rand.Seed(time.Now().UnixNano())
-	bkey += strconv.Itoa(rand.Int())
-	bnewkey1 += strconv.Itoa(rand.Int())
-	bnewkey2 += strconv.Itoa(rand.Int())
+	batchTestKey += strconv.Itoa(rand.Int())
+	batchTestNewKey1 += strconv.Itoa(rand.Int())
+	batchTestNewKey2 += strconv.Itoa(rand.Int())
 	// 删除 可能存在的 key
-	bucket.BatchDelete(nil, bkey, bnewkey1, bnewkey2)
+	bucket.BatchDelete(nil, batchTestKey, batchTestNewKey1, batchTestNewKey2)
 }
 
 func TestAll(t *testing.T) {
@@ -34,11 +35,11 @@ func TestAll(t *testing.T) {
 	}
 
 	//上传一个文件用用于测试
-	err := upFile("bucket_test.go", bkey)
+	err := upFile("bucket_test.go", batchTestKey)
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer bucket.Delete(nil, bkey)
+	defer bucket.Delete(nil, batchTestKey)
 
 	testBatchStat(t)
 	testBatchCopy(t)
@@ -46,11 +47,12 @@ func TestAll(t *testing.T) {
 	testBatchDelete(t)
 	testBatch(t)
 	testClient_MakeUptokenBucket(t)
+	testDeleteAfterDays(t)
 }
 
 func testBatchStat(t *testing.T) {
 
-	rets, err := bucket.BatchStat(nil, bkey, bkey, bkey)
+	rets, err := bucket.BatchStat(nil, batchTestKey, batchTestKey, batchTestKey)
 	if err != nil {
 		t.Fatal("bucket.BatchStat failed:", err)
 	}
@@ -59,7 +61,7 @@ func testBatchStat(t *testing.T) {
 		t.Fatal("BatchStat failed: len(rets) = ", 3)
 	}
 
-	stat, err := bucket.Stat(nil, bkey)
+	stat, err := bucket.Stat(nil, batchTestKey)
 	if err != nil {
 		t.Fatal("bucket.Stat failed:", err)
 	}
@@ -71,18 +73,18 @@ func testBatchStat(t *testing.T) {
 
 func testBatchMove(t *testing.T) {
 
-	stat0, err := bucket.Stat(nil, bkey)
+	stat0, err := bucket.Stat(nil, batchTestKey)
 	if err != nil {
 		t.Fatal("BathMove get stat failed:", err)
 	}
 
-	_, err = bucket.BatchMove(nil, KeyPair{bkey, bnewkey1}, KeyPair{bnewkey1, bnewkey2})
+	_, err = bucket.BatchMove(nil, KeyPair{batchTestKey, batchTestNewKey1}, KeyPair{batchTestNewKey1, batchTestNewKey2})
 	if err != nil {
 		t.Fatal("bucket.BatchMove failed:", err)
 	}
-	defer bucket.Move(nil, bnewkey2, bkey)
+	defer bucket.Move(nil, batchTestNewKey2, batchTestKey)
 
-	stat1, err := bucket.Stat(nil, bnewkey2)
+	stat1, err := bucket.Stat(nil, batchTestNewKey2)
 	if err != nil {
 		t.Fatal("BathMove get stat failed:", err)
 	}
@@ -94,16 +96,16 @@ func testBatchMove(t *testing.T) {
 
 func testBatchCopy(t *testing.T) {
 
-	_, err := bucket.BatchCopy(nil, KeyPair{bkey, bnewkey1}, KeyPair{bkey, bnewkey2})
+	_, err := bucket.BatchCopy(nil, KeyPair{batchTestKey, batchTestNewKey1}, KeyPair{batchTestKey, batchTestNewKey2})
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer bucket.Delete(nil, bnewkey1)
-	defer bucket.Delete(nil, bnewkey2)
+	defer bucket.Delete(nil, batchTestNewKey1)
+	defer bucket.Delete(nil, batchTestNewKey2)
 
-	stat0, _ := bucket.Stat(nil, bkey)
-	stat1, _ := bucket.Stat(nil, bnewkey1)
-	stat2, _ := bucket.Stat(nil, bnewkey2)
+	stat0, _ := bucket.Stat(nil, batchTestKey)
+	stat1, _ := bucket.Stat(nil, batchTestNewKey1)
+	stat2, _ := bucket.Stat(nil, batchTestNewKey2)
 	if stat0.Hash != stat1.Hash || stat0.Hash != stat2.Hash {
 		t.Fatal("BatchCopy failed : Copy err")
 	}
@@ -111,16 +113,16 @@ func testBatchCopy(t *testing.T) {
 
 func testBatchDelete(t *testing.T) {
 
-	bucket.Copy(nil, bkey, bnewkey1)
-	bucket.Copy(nil, bkey, bnewkey2)
+	bucket.Copy(nil, batchTestKey, batchTestNewKey1)
+	bucket.Copy(nil, batchTestKey, batchTestNewKey2)
 
-	_, err := bucket.BatchDelete(nil, bnewkey1, bnewkey2)
+	_, err := bucket.BatchDelete(nil, batchTestNewKey1, batchTestNewKey2)
 	if err != nil {
 		t.Fatal(err)
 	}
 
-	_, err1 := bucket.Stat(nil, bnewkey1)
-	_, err2 := bucket.Stat(nil, bnewkey2)
+	_, err1 := bucket.Stat(nil, batchTestNewKey1)
+	_, err2 := bucket.Stat(nil, batchTestNewKey2)
 
 	//这里 err1 != nil，否则文件没被成功删除
 	if err1 == nil || err2 == nil {
@@ -131,9 +133,9 @@ func testBatchDelete(t *testing.T) {
 func testBatch(t *testing.T) {
 
 	ops := []string{
-		URICopy(bucketName, bkey, bucketName, bnewkey1),
-		URIDelete(bucketName, bkey),
-		URIMove(bucketName, bnewkey1, bucketName, bkey),
+		URICopy(bucketName, batchTestKey, bucketName, batchTestNewKey1),
+		URIDelete(bucketName, batchTestKey),
+		URIMove(bucketName, batchTestNewKey1, bucketName, batchTestKey),
 	}
 
 	var rets []BatchItemRet
@@ -144,4 +146,22 @@ func testBatch(t *testing.T) {
 	if len(rets) != 3 {
 		t.Fatal("len(rets) != 3")
 	}
+}
+
+func testDeleteAfterDays(t *testing.T) {
+
+	ctx := context.Background()
+
+	err := bucket.DeleteAfterDays(ctx, batchTestNewKey1, 5)
+	if err == nil {
+		t.Fatal("Expect an error")
+	}
+
+	bucket.Copy(ctx, batchTestKey, batchTestNewKey1)
+
+	err = bucket.DeleteAfterDays(ctx, batchTestNewKey1, 5)
+	if err != nil {
+		t.Fatal(err)
+	}
+
 }

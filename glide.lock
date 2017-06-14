@@ -1,8 +1,8 @@
 hash: bd360fa297ed66950543990f9433cdcdf13c29dd99d9a01b49027e236b2cb9da
-updated: 2017-03-11T00:26:32.776134316+08:00
+updated: 2017-06-14T20:34:29.429161691+08:00
 imports:
 - name: github.com/boj/redistore
-  version: 3f631e1df8711f449f7b1796f5b8b7716e4319d0
+  version: 4562487a4bee9a7c272b72bfaeda4917d0a47ab9
 - name: github.com/eiblog/blackfriday
   version: c0ec111761ae784fe31cc076f2fa0e2d2216d623
 - name: github.com/eiblog/utils
@@ -13,12 +13,12 @@ imports:
   - tmpl
   - uuid
 - name: github.com/garyburd/redigo
-  version: 0d253a66e6e1349f4581d6d2b300ee434ee2da9f
+  version: 95d11dba2d44531bdb8022752b98912baafae03a
   subpackages:
   - internal
   - redis
 - name: github.com/gin-gonic/contrib
-  version: ffa12cf90b52a4af3ae604f6452e61f8218a517c
+  version: d4fc5a96cc0d29cb0e862bb1312dd6f4fedfcaee
   subpackages:
   - sessions
 - name: github.com/gin-gonic/gin
@@ -35,19 +35,19 @@ imports:
 - name: github.com/gorilla/securecookie
   version: e59506cc896acb7f7bf732d4fdf5e25f7ccd8983
 - name: github.com/gorilla/sessions
-  version: ba78acc856fe7c79891d516131b3d903cc8d9367
+  version: 8b6b4cd75f07f7ee036eb37b8127bd40ab1efc49
 - name: github.com/manucorporat/sse
   version: ee05b128a739a0fb76c7ebd3ae4810c1de808d6d
 - name: github.com/mattn/go-isatty
-  version: 57fdcb988a5c543893cc61bce354a6e24ab70022
+  version: fc9e8d8ef48496124e79ae0df75490096eccf6fe
 - name: github.com/shurcooL/sanitized_anchor_name
-  version: 1dba4b3954bc059efc3991ec364f9f9a35f597d2
+  version: 541ff5ee47f1dddf6a5281af78307d921524bcb5
 - name: golang.org/x/net
   version: f315505cf3349909cdf013ea56690da34e96a451
   subpackages:
   - context
 - name: golang.org/x/sys
-  version: 99f16d856c9836c42d24e7ab64ea72916925fa97
+  version: 0b25a408a50076fbbcae6b7ac0ea5fbb0b085e79
   subpackages:
   - unix
 - name: gopkg.in/go-playground/validator.v8
@@ -60,9 +60,9 @@ imports:
   - internal/sasl
   - internal/scram
 - name: gopkg.in/yaml.v2
-  version: a3f3340b5840cee44f372bddb5880fcbc419b46a
+  version: cd8b52f8269e0feb286dfeef29f8fe4d5b397e0b
 - name: qiniupkg.com/api.v7
-  version: 427efe34a76257db04b3b785e3b4d2fdb44cf9b9
+  version: 89344a711feec1d800c77a80d0865de936dc394d
   subpackages:
   - api
   - auth/qbox

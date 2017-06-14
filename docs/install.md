@@ -12,7 +12,7 @@ $ go get https://github.com/eiblog/eiblog
 
 3、如果你对`docker`技术也有研究的话，你也可以通过`docker`来安装：
 ``` sh
-$ docker pull registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog
+$ docker pull registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog:v1.2.0
 
 ```
 镜像内部只提供了`eiblog`的二进制文件，因为其它内容定制化的需求过高。所以需要将`conf`、`static`、`views`目录映射出来，后面会具体说到。
@@ -22,13 +22,13 @@ $ docker pull registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog
 
 本地测试需要搭建两个服务`mongodb`和`elasticsearch2.4.1`（可选，搜索服务不可用）。
 
-`Eiblog`默认会连接`hostname`为`eidb`和`eisearch`，因此你需要将信息填入`/etc/hosts`下。假如你搭建的`mongodb`地址为`127.0.0.1:27017`，`elasticsearch`地址为`192.168.99.100:9200`，如：
+`Eiblog`默认会连接`hostname`为`mongodb`和`elasticsearch`，因此你需要将信息填入`/etc/hosts`下。假如你搭建的`mongodb`地址为`127.0.0.1:27017`，`elasticsearch`地址为`192.168.99.100:9200`，如：
 ``` sh
 $ sudo vi /etc/hosts
 
 # 在末尾加上两行
-127.0.0.1       eidb
-192.168.99.100  eisearch
+172.42.0.1      mongodb
+192.168.99.100  elasticsearch
 ```
 
 #### MongoDB 搭建
@@ -94,9 +94,9 @@ $ docker run -d --name eisearch \
 * `avatar.jpg`，左侧头像，`160*160~256*256`之间，CDN 文件名：`static/img/avatar.jpg`。另外你需要将该图片 `Base64` 编码后替换掉`eiblog/views/st_blog.css`中合适位置的图片。
 * `blank.gif`，CDN 文件名：`static/img/blank.gif`。该图片请从[这里](https://st.deepzz.com/static/img/blank.gif)下载并上传至你的 CDN。
 * `default_avatar.png`，Disqus 默认头像，CDN 文件名：`static/img/default_avatar.png`，请从[这里](https://st.deepzz.com/static/img/default_avatar.png)下载并上传至你的 CDN。
-* `disqus.js`，该文件名是会变的，每次更新如果没有提及就没有改变，更新说明在[这里](https://github.com/eiblog/eiblog/blob/master/CHANGELOG.md)。CDN 文件名格式是：`static/js/disqus_xxx.js`。在我写这篇文章是使用的是：`static/js/disqus_a9d3fd.js`，请从[这里](https://st.deepzz.com/static/js/disqus_a9d3fd.js)下载并上传至你的 CDN。另外修改`eiblog/view/st_blog.js`中的`disqus_a9d3fd.js`。
+* `disqus.js`，通过 https://short_name.disqus.com/embed.js 下载，替换掉 short_name。CDN 文件名格式是：`static/js/disqus_xxx.js`。在我写这篇文章是使用的是：`static/js/disqus_a9d3fd.js`。另外修改`eiblog/views/st_blog.js`中的`disqus_a9d3fd.js`为你新文件的名称。
 
-> `注意`：本人 CDN 做了防盗链处理，故请将这些资源上传至您的 CDN ，以免静态资源不能访问，请悉知。
+> 注意：每次修改 views 内的以 `st_` 开头的文件，请将 `app.yml` 中的 staticversion 提高一个版本。 
 
 #### 配置说明
 走到这里，我相信只走到`60%`的路程。放弃还来得及。
@@ -128,8 +128,10 @@ $ docker run -d --name eisearch \
 │   ├── full_chained.pem
 │   └── session_ticket.key
 └── tpl                             # 模版文件
+    ├── crossdomainTpl.xml
     ├── feedTpl.xml
     ├── opensearchTpl.xml
+    ├── robotsTpl.xml
     └── sitemapTpl.xml
 
 ```
@@ -192,7 +194,8 @@ $ docker pull registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog
 ``` sh
 $ docker run -d --name eiblog --restart=always \
     --add-host disqus.com:23.235.33.134 \
-    --link eidb --link eisearch \
+    --add-host mongodb:172.42.0.1 \
+    --add-host elasticsearch:192.168.99.100 \
     -p 9000:9000 \
     -e GODEBUG=netdns=cgo \
     -v /data/eiblog/logdata:/eiblog/logdata \
@@ -210,7 +213,7 @@ $ docker run -d --name eiblog --restart=always \
 
 首先，请将本地测试好的`conf`，`static`，`views`，`docker-compose.yml`文件夹和文件上传至服务器。前三个文件夹建议存储到服务器`/data/eiblog`下，`docker-compose.yml`存放在你使用方便的地方。
 
-> 注意`conf/es/config/scripts`空文件夹是否存在
+> 注意检查`conf/es/config/scripts`空文件夹是否存在
 
 ``` sh
 $ tree /data/eiblog -L 1

@@ -75,6 +75,7 @@ type PutPolicy struct {
 	Checksum            string   `json:"checksum,omitempty"` // 格式：<HashName>:<HexHashValue>，目前支持 MD5/SHA1。
 	UpHosts             []string `json:"uphosts,omitempty"`
 	DeleteAfterDays     int      `json:"deleteAfterDays,omitempty"`
+	FileType            int      `json:"fileType,omitempty"`
 }
 
 func (p *Client) MakeUptoken(policy *PutPolicy) string {

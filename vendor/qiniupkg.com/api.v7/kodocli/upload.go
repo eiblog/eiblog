@@ -178,7 +178,10 @@ func (p Uploader) put(
 	lastLine := fmt.Sprintf("\r\n--%s--\r\n", writer.Boundary())
 	r := strings.NewReader(lastLine)
 
-	bodyLen := int64(b.Len()) + size + int64(len(lastLine))
+	bodyLen := int64(-1)
+	if size >= 0 {
+		bodyLen = int64(b.Len()) + size + int64(len(lastLine))
+	}
 	mr := io.MultiReader(&b, data, r)
 
 	contentType := writer.FormDataContentType()

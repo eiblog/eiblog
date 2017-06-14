@@ -1,5 +1,12 @@
 # Eiblog Changelog
 
+
+## v1.2.0 (2017-06-14)
+* 更新评论功能，基础评论 0 回复也可评论了。
+* disqus.js 文件由博主自行更新。
+* 更正描述 README.md 描述错误 [#4f996](https://github.com/eiblog/eiblog/commit/4f9965b6bdefe087dd0805c1840afcb2752cd155)。
+* docker 镜像版本化。
+
 ## v1.1.3 (2017-05-12)
 * 更新 disqus_78bca4.js 到 disqus_921d24.js，具体请参考 docs/install.md
 * 更新 vendor
