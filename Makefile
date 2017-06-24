@@ -6,7 +6,7 @@
 docker_registry?=registry.cn-hangzhou.aliyuncs.com
 acme?=~/.acme.sh
 acme.sh?=$(acme)/acme.sh
-config?=tmp/conf
+config?=/data/eiblog/conf
 
 
 test:
@@ -69,6 +69,9 @@ gencert:
 
 dhparams:
 	@openssl dhparam -out $(config)/ssl/dhparams.pem 2048
+
+ssticket:
+	@openssl rand 48 > $(config)/ssl/session_ticket.key
 
 clean:
 
