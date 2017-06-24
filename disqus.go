@@ -24,7 +24,9 @@ type result struct {
 }
 
 func PostsCount() {
-	if setting.Conf.Disqus.PostsCount == "" || setting.Conf.Disqus.PublicKey == "" || setting.Conf.Disqus.ShortName == "" {
+	if setting.Conf.Disqus.PostsCount == "" ||
+		setting.Conf.Disqus.PublicKey == "" ||
+		setting.Conf.Disqus.ShortName == "" {
 		return
 	}
 	baseUrl := setting.Conf.Disqus.PostsCount +
