@@ -19,19 +19,22 @@ var (
 )
 
 type Config struct {
-	StaticVersion int      // 当前静态文件版本
 	RunMode       string   // 运行模式
-	Trash         int      // 回收箱文章保留时间
-	Clean         int      // 清理回收箱频率
-	PageNum       int      // 前端每页文章数量
-	PageSize      int      // 后台每页文章数量
-	Length        int      // 自动截取预览长度
-	Identifier    string   // 截取标示
-	Description   string   // 文章描述前缀
-	Favicon       string   // icon地址
-	StartID       int32    // 文章起始id
-	SearchURL     string   // elasticsearch 地址
-	Disqus        struct { // 获取文章数量相关
+	StaticVersion int      // 当前静态文件版本
+	FeedrURL      string   // superfeedr url
+	HotWords      []string // 热搜词
+	PingRPCs      []string // ping rpc 地址
+	General       struct {
+		PageNum    int    // 前端每页文章数量
+		PageSize   int    // 后台每页文章数量
+		StartID    int32  // 文章起始id
+		DescPrefix string // 文章描述前缀
+		Identifier string // 文章截取标示
+		Length     int    // 文章自动截取预览长度
+		Trash      int    // 回收箱文章保留时间
+		Clean      int    // 清理回收箱频率
+	}
+	Disqus struct { // 获取文章数量相关
 		ShortName  string
 		PublicKey  string
 		PostsCount string
@@ -39,8 +42,7 @@ type Config struct {
 		PostCreate string
 		Interval   int
 	}
-	HotWords []string // 热搜词
-	Google   struct { // 谷歌统计
+	Google struct { // 谷歌统计
 		Tid string
 		V   string
 		T   string
@@ -51,39 +53,35 @@ type Config struct {
 		AccessKey string
 		SecretKey string
 	}
-	Mode    RunMode  // 运行模式
+	Mode struct { // 运行模式
+		EnableHttp  bool
+		HttpPort    int
+		EnableHttps bool
+		HttpsPort   int
+		CertFile    string
+		KeyFile     string
+		Domain      string
+	}
 	Twitter struct { // twitter信息
 		Card    string
 		Site    string
 		Image   string
 		Address string
 	}
-	FeedrURL string   // superfeedr url
-	PingRPCs []string // ping rpc 地址
-	Account  struct {
+	Account struct { // account 账户
 		Username    string // *
 		Password    string // *
 		Email       string
 		PhoneNumber string
 		Address     string
 	}
-	Blogger struct { // 初始化数据
+	Blogger struct { // blog info 博客信息
 		BlogName  string
 		SubTitle  string
 		BeiAn     string
 		BTitle    string
 		Copyright string
 	}
-}
-
-type RunMode struct {
-	EnableHttp  bool
-	HttpPort    int
-	EnableHttps bool
-	HttpsPort   int
-	CertFile    string
-	KeyFile     string
-	Domain      string
 }
 
 func init() {

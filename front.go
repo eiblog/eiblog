@@ -55,7 +55,6 @@ func StaticVersion(c *gin.Context) (version int) {
 
 func GetBase() gin.H {
 	return gin.H{
-		"Favicon":  setting.Conf.Favicon,
 		"BlogName": Ei.BlogName,
 		"SubTitle": Ei.SubTitle,
 		"Twitter":  setting.Conf.Twitter,
@@ -88,7 +87,7 @@ func HandleHomePage(c *gin.Context) {
 	if err != nil || pn < 1 {
 		pn = 1
 	}
-	h["Prev"], h["Next"], h["List"] = PageList(pn, setting.Conf.PageNum)
+	h["Prev"], h["Next"], h["List"] = PageList(pn, setting.Conf.General.PageNum)
 	c.Status(http.StatusOK)
 	RenderHTMLFront(c, "home", h)
 }
@@ -171,7 +170,7 @@ func HandleSearchPage(c *gin.Context) {
 		h["Word"] = q
 		var result *ESSearchResult
 		vals := c.Request.URL.Query()
-		result = Elasticsearch(q, setting.Conf.PageNum, start-1)
+		result = Elasticsearch(q, setting.Conf.General.PageNum, start-1)
 		if result != nil {
 			result.Took /= 1000
 			for i, v := range result.Hits.Hits {
@@ -180,12 +179,12 @@ func HandleSearchPage(c *gin.Context) {
 				}
 			}
 			h["SearchResult"] = result
-			if start-setting.Conf.PageNum > 0 {
-				vals.Set("start", fmt.Sprint(start-setting.Conf.PageNum))
+			if start-setting.Conf.General.PageNum > 0 {
+				vals.Set("start", fmt.Sprint(start-setting.Conf.General.PageNum))
 				h["Prev"] = vals.Encode()
 			}
-			if result.Hits.Total >= start+setting.Conf.PageNum {
-				vals.Set("start", fmt.Sprint(start+setting.Conf.PageNum))
+			if result.Hits.Total >= start+setting.Conf.General.PageNum {
+				vals.Set("start", fmt.Sprint(start+setting.Conf.General.PageNum))
 				h["Next"] = vals.Encode()
 			}
 		}

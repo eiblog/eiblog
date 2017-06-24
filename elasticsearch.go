@@ -11,7 +11,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/eiblog/eiblog/setting"
 	"github.com/eiblog/utils/logd"
 )
 
@@ -27,7 +26,7 @@ const (
 var es *ElasticService
 
 func init() {
-	es = &ElasticService{url: setting.Conf.SearchURL, c: new(http.Client)}
+	es = &ElasticService{url: "http://elasticsearch:9200", c: new(http.Client)}
 	initIndex()
 }
 

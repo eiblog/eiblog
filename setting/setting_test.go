@@ -2,11 +2,15 @@
 package setting
 
 import (
-	"fmt"
+	"encoding/json"
 	"testing"
 )
 
 func TestInit(t *testing.T) {
-	init()
-	fmt.Printf("%v\n", *Conf)
+	data, err := json.Marshal(Conf)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	t.Log(string(data))
 }

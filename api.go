@@ -258,7 +258,7 @@ func apiPostAdd(c *gin.Context) {
 		// elasticsearch 索引
 		ElasticIndex(artc)
 		DoPings(slug)
-		if artc.ID >= setting.Conf.StartID {
+		if artc.ID >= setting.Conf.General.StartID {
 			ManageTagsArticle(artc, true, ADD)
 			ManageSeriesArticle(artc, true, ADD)
 			ManageArchivesArticle(artc, true, ADD)

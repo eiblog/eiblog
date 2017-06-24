@@ -32,7 +32,6 @@ func PostsCount() {
 		"&forum=" + setting.Conf.Disqus.ShortName + "&"
 	var count, index int
 	for index < len(Ei.Articles) {
-		logd.Debugf("count=====%d, index=======%d, length=======%d, bool=========%t\n", count, index, len(Ei.Articles), index < len(Ei.Articles) && count < 50)
 		var threads []string
 		for ; index < len(Ei.Articles) && count < 50; index++ {
 			artc := Ei.Articles[index]

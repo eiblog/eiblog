@@ -154,7 +154,7 @@ func HandlePosts(c *gin.Context) {
 	h["Serie"] = se
 	h["KW"] = kw
 	var max int
-	max, h["List"] = PageListBack(se, kw, false, false, pg, setting.Conf.PageSize)
+	max, h["List"] = PageListBack(se, kw, false, false, pg, setting.Conf.General.PageSize)
 	if pg < max {
 		vals.Set("page", fmt.Sprint(pg+1))
 		h["Next"] = vals.Encode()

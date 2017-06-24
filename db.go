@@ -149,13 +149,13 @@ func loadArticles() (artcs SortArticles) {
 		GenerateExcerptAndRender(v)
 		Ei.MapArticles[v.Slug] = v
 		// 分析文章
-		if v.ID < setting.Conf.StartID {
+		if v.ID < setting.Conf.General.StartID {
 			continue
 		}
 		if i > 0 {
 			v.Prev = artcs[i-1]
 		}
-		if artcs[i+1].ID >= setting.Conf.StartID {
+		if artcs[i+1].ID >= setting.Conf.General.StartID {
 			v.Next = artcs[i+1]
 		}
 		ManageTagsArticle(v, false, ADD)
@@ -244,7 +244,7 @@ func renderPage(md []byte) []byte {
 func PageList(p, n int) (prev int, next int, artcs []*Article) {
 	var l int
 	for l = len(Ei.Articles); l > 0; l-- {
-		if Ei.Articles[l-1].ID >= setting.Conf.StartID {
+		if Ei.Articles[l-1].ID >= setting.Conf.General.StartID {
 			break
 		}
 	}
@@ -362,15 +362,15 @@ func ManageArchivesArticle(artc *Article, s bool, do string) {
 }
 
 // 渲染markdown操作和截取摘要操作
-var reg = regexp.MustCompile(setting.Conf.Identifier)
+var reg = regexp.MustCompile(setting.Conf.General.Identifier)
 
 // header
 var regH = regexp.MustCompile("</nav></div>")
 
 func GenerateExcerptAndRender(artc *Article) {
-	if strings.HasPrefix(artc.Content, setting.Conf.Description) {
+	if strings.HasPrefix(artc.Content, setting.Conf.General.DescPrefix) {
 		index := strings.Index(artc.Content, "\r\n")
-		artc.Desc = IgnoreHtmlTag(artc.Content[len(setting.Conf.Description):index])
+		artc.Desc = IgnoreHtmlTag(artc.Content[len(setting.Conf.General.DescPrefix):index])
 		artc.Content = artc.Content[index:]
 	}
 
@@ -387,7 +387,7 @@ func GenerateExcerptAndRender(artc *Article) {
 		artc.Excerpt = IgnoreHtmlTag(artc.Content[0:index[0]])
 	} else {
 		uc := []rune(artc.Content)
-		length := setting.Conf.Length
+		length := setting.Conf.General.Length
 		if len(uc) < length {
 			length = len(uc)
 		}
@@ -413,7 +413,7 @@ func LoadTrash() (artcs SortArticles, err error) {
 func AddArticle(artc *Article) error {
 	// 分配ID, 占位至起始id
 	for {
-		if id := db.NextVal(DB, COUNTER_ARTICLE); id < setting.Conf.StartID {
+		if id := db.NextVal(DB, COUNTER_ARTICLE); id < setting.Conf.General.StartID {
 			continue
 		} else {
 			artc.ID = id
@@ -473,10 +473,10 @@ func DelFromLinkedList(artc *Article) {
 
 func AddToLinkedList(id int32) {
 	i, artc := GetArticle(id)
-	if i == 0 && Ei.Articles[i+1].ID >= setting.Conf.StartID {
+	if i == 0 && Ei.Articles[i+1].ID >= setting.Conf.General.StartID {
 		artc.Next = Ei.Articles[i+1]
 		Ei.Articles[i+1].Prev = artc
-	} else if i > 0 && Ei.Articles[i-1].ID >= setting.Conf.StartID {
+	} else if i > 0 && Ei.Articles[i-1].ID >= setting.Conf.General.StartID {
 		artc.Prev = Ei.Articles[i-1]
 		if Ei.Articles[i-1].Next != nil {
 			artc.Next = Ei.Articles[i-1].Next
@@ -498,10 +498,10 @@ func GetArticle(id int32) (int, *Article) {
 
 // 定时清除回收箱文章
 func timer() {
-	delT := time.NewTicker(time.Duration(setting.Conf.Clean) * time.Hour)
+	delT := time.NewTicker(time.Duration(setting.Conf.General.Clean) * time.Hour)
 	for {
 		<-delT.C
-		db.Remove(DB, COLLECTION_ARTICLE, bson.M{"deletetime": bson.M{"$gt": time.Time{}, "$lt": time.Now().Add(time.Duration(setting.Conf.Trash) * time.Hour)}})
+		db.Remove(DB, COLLECTION_ARTICLE, bson.M{"deletetime": bson.M{"$gt": time.Time{}, "$lt": time.Now().Add(time.Duration(setting.Conf.General.Trash) * time.Hour)}})
 	}
 }
 

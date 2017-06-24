@@ -1,23 +1,38 @@
 # 运行模式 dev or prod
 runmode: dev
-# 回收箱保留48小时
-trash: -48
-# 定时清理回收箱，%d小时
-clean: 1
-# 首页展示文章数量
-pagenum: 10
-# 管理界面
-pagesize: 20
-# 自动截取预览, 字符数
-length: 400
-# 截取预览标识
-identifier: <!--more-->
-# 文章描述前缀
-description: "Desc:"
-# 起始ID，预留id不时之需, 不用管
-startid: 11
-# elasticsearch url
-searchurl: http://elasticsearch:9200
+# 静态文件版本
+staticversion: 1
+# superfeedr url
+feedrurl: https://deepzz.superfeedr.com/
+# 热搜词配置
+hotwords:
+  - docker
+  - mongodb
+  - curl
+  - dns
+# ping rpcs 地址
+pingrpcs:
+  - http://ping.baidu.com/ping/RPC2
+  - http://blogsearch.google.com/ping/RPC2
+  - http://rpc.pingomatic.com/
+# 一般配置
+general:
+  # 首页展示文章数量
+  pagenum: 10
+  # 管理界面
+  pagesize: 20
+  # 起始ID，预留id不时之需, 不用管
+  startid: 11
+  # 文章描述前缀
+  descprefix: "Desc:"
+  # 截取预览标识
+  identifier: <!--more-->
+  # 自动截取预览, 字符数
+  length: 400
+  # 回收箱保留48小时
+  trash: -48
+  # 定时清理回收箱，每 %d 小时
+  clean: 1
 # 评论相关
 disqus:
   shortname: deepzz
@@ -26,16 +41,11 @@ disqus:
   postslist: https://disqus.com/api/3.0/threads/listPosts.json
   postcreate: https://disqus.com/api/3.0/posts/create.json
   interval: 5
-# 热搜词配置
-hotwords:
-  - docker
 # 谷歌统计
 google:
   tid: UA-77251712-1
   v: "1"
   t: pageview
-# 静态文件版本
-staticversion: 1
 # 七牛CDN
 kodo:
   name: eiblog
@@ -44,7 +54,6 @@ kodo:
   secretkey: BIrMy0fsZ0_SHNceNXk3eDuo7WmVYzj2-zrmd5Tf
 # 运行模式
 mode:
-  # 默认开启HTTP
   enablehttp: true
   httpport: 9000
   enablehttps: false
@@ -58,13 +67,6 @@ twitter:
   site: chenqijing2
   image: st.deepzz.com/static/img/avatar.jpg
   address: twitter.com/chenqijing2
-# superfeedr url
-feedrurl: https://deepzz.superfeedr.com/
-# ping rpcs 地址
-pingrpcs:
-  - http://ping.baidu.com/ping/RPC2
-  - http://blogsearch.google.com/ping/RPC2
-  - http://rpc.pingomatic.com/
 
 # 以下数据项供初始化使用，仅首次运行有效。
 # 若需要修改，请到博客后台操作。
