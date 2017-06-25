@@ -1,3 +1,4 @@
+.PHONY: test build deploy dist gencert dhparams ssticket makedir clean
 # use aliyun dns api to auto renew cert.
 # env:
 #   export Ali_Key="sdfsdfsdfljlbjkljlkjsdfoiwje"
@@ -22,7 +23,7 @@ deploy:build
 dist:
 	@./dist.sh
 
-gencert:
+gencert:makedir
 	@echo $(Ali_Key) $(Ali_Secret)
 	@if [ ! -n "$(sans)" ]; then \
       printf "Need one argument [sans=params]\n"; \
@@ -40,23 +41,21 @@ gencert:
 
 	@echo "generate rsa cert..."
 	@$(acme.sh) --force --issue --dns dns_ali \
-	  $(sans) --log
+	  $(sans) --log --renew-hook "ct-submit ctlog.api.venafi.com < $(config)/ssl/domain.rsa.pem > $(config)/scts/rsa/venafi.sct && \
+	  ct-submit ctlog.wosign.com < $(config)/ssl/domain.rsa.pem > $(config)/scts/rsa/wosign.sct"
 	@$(acme.sh) --install-cert -d $(cn) \
       --key-file       $(config)/ssl/domain.rsa.key \
       --fullchain-file $(config)/ssl/domain.rsa.pem \
       --reloadcmd      "service nginx force-reload"
-	@ct-submit ctlog.api.venafi.com < $(config)/ssl/domain.rsa.pem > $(config)/scts/rsa/venafi.sct && \
-	  ct-submit ctlog-gen2.api.venafi.com < $(config)/ssl/domain.rsa.pem > $(config)/scts/rsa/venafi2.sct
 
 	@echo "generate ecc cert..."
 	@$(acme.sh) --force --issue --dns dns_ali \
-	  $(sans) -k ec-256 --log
+	  $(sans) -k ec-256 --log --renew-hook "ct-submit ctlog.api.venafi.com < $(config)/ssl/domain.ecc.pem > $(config)/scts/ecc/venafi.sct && \
+	  ct-submit ctlog.wosign.com < $(config)/ssl/domain.ecc.pem > $(config)/scts/ecc/wosign.sct"
 	@$(acme.sh) --install-cert -d $(cn) --ecc \
       --key-file       $(config)/ssl/domain.ecc.key \
       --fullchain-file $(config)/ssl/domain.ecc.pem \
       --reloadcmd      "service nginx force-reload"
-	@ct-submit ctlog.api.venafi.com < $(config)/ssl/domain.ecc.pem > $(config)/scts/ecc/venafi.sct && \
-	  ct-submit ctlog-gen2.api.venafi.com < $(config)/ssl/domain.ecc.pem > $(config)/scts/ecc/venafi2.sct
 
 # fullchained:
 # 	@if [ ! -n "$(cn)" ]; then \
@@ -72,6 +71,9 @@ dhparams:
 
 ssticket:
 	@openssl rand 48 > $(config)/ssl/session_ticket.key
+
+makedir:
+	@mkdir -p $(config)/ssl $(config)/scts/rsa $(config)/scts/ecc
 
 clean:
 
