@@ -35,14 +35,17 @@ type Config struct {
 		Clean      int    // 清理回收箱频率
 	}
 	Disqus struct { // 获取文章数量相关
-		ShortName  string
-		PublicKey  string
-		PostsCount string
-		PostsList  string
-		PostCreate string
-		Interval   int
+		ShortName   string
+		PublicKey   string
+		AccessToken string
+		PostsCount  string
+		PostsList   string
+		PostCreate  string
+		PostApprove string
+		Interval    int
 	}
 	Google struct { // 谷歌统计
+		URL string
 		Tid string
 		V   string
 		T   string

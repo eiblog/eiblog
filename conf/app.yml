@@ -37,12 +37,15 @@ general:
 disqus:
   shortname: deepzz
   publickey: wdSgxRm9rdGAlLKFcFdToBe3GT4SibmV7Y8EjJQ0r4GWXeKtxpopMAeIeoI2dTEg
+  accesstoken: 50023908f39f4607957e909b495326af
   postscount: https://disqus.com/api/3.0/threads/set.json
   postslist: https://disqus.com/api/3.0/threads/listPosts.json
   postcreate: https://disqus.com/api/3.0/posts/create.json
+  postapprove: https://disqus.com/api/3.0/posts/approve.json
   interval: 5
 # 谷歌统计
 google:
+  url: https://www.google-analytics.com/collect
   tid: UA-77251712-1
   v: "1"
   t: pageview

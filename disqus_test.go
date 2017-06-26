@@ -23,3 +23,7 @@ func TestPostComment(t *testing.T) {
 	}
 	t.Log("post success")
 }
+
+func TestApprovePost(t *testing.T) {
+	ApprovePost()
+}

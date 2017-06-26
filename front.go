@@ -245,7 +245,7 @@ func HandleBeacon(c *gin.Context) {
 	vals.Set("dl", c.Request.Referer())
 	vals.Set("uip", c.ClientIP())
 	go func() {
-		req, err := http.NewRequest("POST", "https://www.google-analytics.com/collect", strings.NewReader(vals.Encode()))
+		req, err := http.NewRequest("POST", setting.Conf.Google.URL, strings.NewReader(vals.Encode()))
 		if err != nil {
 			logd.Error(err)
 			return
@@ -301,8 +301,12 @@ func HandleDisqus(c *gin.Context) {
 	if artc := Ei.MapArticles[slug]; artc != nil {
 		dcs.Data.Thread = artc.Thread
 	}
-	postsList := PostsList(slug, cursor)
-	if postsList != nil {
+	postsList, err := PostsList(slug, cursor)
+	if err != nil {
+		logd.Error(err)
+		dcs.ErrNo = FAIL
+		dcs.ErrMsg = "系统错误"
+	} else {
 		dcs.ErrNo = postsList.Code
 		if postsList.Cursor.HasNext {
 			dcs.Data.Next = postsList.Cursor.Next
@@ -324,9 +328,6 @@ func HandleDisqus(c *gin.Context) {
 				Message:      v.Message,
 			}
 		}
-	} else {
-		dcs.ErrNo = FAIL
-		dcs.ErrMsg = "系统错误"
 	}
 	c.JSON(http.StatusOK, dcs)
 }
@@ -355,8 +356,16 @@ func HandleDisqusCreate(c *gin.Context) {
 		IpAddress:   c.ClientIP(),
 	}
 
-	id := PostComment(pc)
-	if id == "" {
+	id, err := PostComment(pc)
+	if err != nil {
+		logd.Error(err)
+		rep["errno"] = FAIL
+		rep["errmsg"] = "系统错误"
+		return
+	}
+	err = PostApprove(id)
+	if err != nil {
+		logd.Error(err)
 		rep["errno"] = FAIL
 		rep["errmsg"] = "系统错误"
 		return
