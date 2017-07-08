@@ -48,7 +48,6 @@ func BlackFilter(c *gin.Context) bool {
 
 // 重定向
 func Redirect(c *gin.Context) bool {
-	fmt.Println("scheme=======", c.Request.URL.Scheme)
 	if setting.Conf.Mode.EnableHttps && c.Request.ProtoMajor == 1 {
 		var port string
 		if strings.Contains(c.Request.Host, ":") {

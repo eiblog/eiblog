@@ -27,7 +27,6 @@ services:
     volumes:
       - /data/eiblog/logdata:/eiblog/logdata
       - /data/eiblog/conf:/eiblog/conf
-      - /data/eiblog/static:/eiblog/static
     links:
       - elasticsearch
       - mongodb

@@ -4,6 +4,7 @@ vendor
 setting
 docs
 static/*.*
+!static/favicon.ico
 **/.DS_Store
 Dockerfile
 glide.yaml
