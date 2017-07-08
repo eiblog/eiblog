@@ -9,6 +9,7 @@ import (
 	"github.com/eiblog/eiblog/setting"
 	"github.com/eiblog/utils/logd"
 	"github.com/eiblog/utils/tmpl"
+	"github.com/gin-gonic/autotls"
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
@@ -104,15 +105,27 @@ func Run() {
 		}()
 	}
 	if setting.Conf.Mode.EnableHttps {
-		go func() {
-			logd.Infof("https server Running on %d\n", setting.Conf.Mode.HttpsPort)
-			err = router.RunTLS(fmt.Sprintf(":%d", setting.Conf.Mode.HttpsPort), setting.Conf.Mode.CertFile, setting.Conf.Mode.KeyFile)
-			if err != nil {
-				logd.Info("ListenAndServe: ", err)
-				time.Sleep(100 * time.Microsecond)
-				endRunning <- true
-			}
-		}()
+		if setting.Conf.Mode.AutoCert {
+			go func() {
+				logd.Info("https server Running on 443")
+				err = autotls.Run(router, setting.Conf.Mode.Domains...)
+				if err != nil {
+					logd.Info("ListenAndServe: ", err)
+					time.Sleep(100 * time.Microsecond)
+					endRunning <- true
+				}
+			}()
+		} else {
+			go func() {
+				logd.Infof("https server Running on %d\n", setting.Conf.Mode.HttpsPort)
+				err = router.RunTLS(fmt.Sprintf(":%d", setting.Conf.Mode.HttpsPort), setting.Conf.Mode.CertFile, setting.Conf.Mode.KeyFile)
+				if err != nil {
+					logd.Info("ListenAndServe: ", err)
+					time.Sleep(100 * time.Microsecond)
+					endRunning <- true
+				}
+			}()
+		}
 	}
 	<-endRunning
 }

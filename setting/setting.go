@@ -9,8 +9,8 @@ import (
 )
 
 const (
-	DEV  = "dev"
-	PROD = "prod"
+	DEV  = "dev"  // 该模式会输出 debug 等信息
+	PROD = "prod" // 该模式用于生产环境
 )
 
 var (
@@ -63,7 +63,8 @@ type Config struct {
 		HttpsPort   int
 		CertFile    string
 		KeyFile     string
-		Domain      string
+		AutoCert    bool
+		Domains     []string
 	}
 	Twitter struct { // twitter信息
 		Card    string

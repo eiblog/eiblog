@@ -18,7 +18,7 @@ func TestPingRPC(t *testing.T) {
 	}
 	pr.Params.Param = [4]rpcValue{
 		rpcValue{Value: Ei.BTitle},
-		rpcValue{Value: "https://" + setting.Conf.Mode.Domain},
+		rpcValue{Value: "https://" + setting.Conf.Mode.Domains[0]},
 		rpcValue{Value: "https://deepzz.com/post/gdb-debug.html"},
 		rpcValue{Value: "https://deepzz.com/rss.html"},
 	}

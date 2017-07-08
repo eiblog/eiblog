@@ -109,7 +109,7 @@ func HandlePost(c *gin.Context) {
 		h["Title"] = "撰写文章 | " + Ei.BTitle
 	}
 	h["Path"] = c.Request.URL.Path
-	h["Domain"] = setting.Conf.Mode.Domain
+	h["Domain"] = setting.Conf.Mode.Domains[0]
 	h["Series"] = Ei.Series
 	var tags []T
 	for tag, _ := range Ei.Tags {

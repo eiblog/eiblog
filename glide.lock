@@ -1,5 +1,5 @@
 hash: bd360fa297ed66950543990f9433cdcdf13c29dd99d9a01b49027e236b2cb9da
-updated: 2017-07-08T12:15:52.531289524+08:00
+updated: 2017-07-08T14:52:31.866715976+08:00
 imports:
 - name: github.com/boj/redistore
   version: 4562487a4bee9a7c272b72bfaeda4917d0a47ab9
@@ -8,7 +8,7 @@ imports:
 - name: github.com/eiblog/blackfriday
   version: c0ec111761ae784fe31cc076f2fa0e2d2216d623
 - name: github.com/eiblog/utils
-  version: ad2f63940c4f16d0dbfc3f4df59e8cb7af0f80ec
+  version: 5699bde749ca1053867528834492263f841620ad
   subpackages:
   - logd
   - mgo

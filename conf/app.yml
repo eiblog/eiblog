@@ -15,7 +15,7 @@ pingrpcs:
   - http://ping.baidu.com/ping/RPC2
   - http://blogsearch.google.com/ping/RPC2
   - http://rpc.pingomatic.com/
-# 一般配置
+# 常规配置
 general:
   # 首页展示文章数量
   pagenum: 10
@@ -57,13 +57,17 @@ kodo:
   secretkey: BIrMy0fsZ0_SHNceNXk3eDuo7WmVYzj2-zrmd5Tf
 # 运行模式
 mode:
+  # http server
   enablehttp: true
   httpport: 9000
-  enablehttps: false
-  httpsport: 443
-  certfile: conf/certs/domain.pem
-  keyfile: conf/certs/domain.key
-  domain: deepzz.com
+  # https server
+  enablehttps: true
+  autocert: true
+  httpsport: 9001
+  certfile: conf/ssl/domain.rsa.pem
+  keyfile: conf/ssl/domain.rsa.key
+  domains:
+    - deepzz.com
 # twitter地址: twitter.com/chenqijing2
 twitter: 
   card: summary
@@ -71,8 +75,7 @@ twitter:
   image: st.deepzz.com/static/img/avatar.jpg
   address: twitter.com/chenqijing2
 
-# 以下数据项供初始化使用，仅首次运行有效。
-# 若需要修改，请到博客后台操作。
+# 数据初始化操作，可到博客后台修改
 account:
   # *后台登录用户名
   username: deepzz
