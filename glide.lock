@@ -1,8 +1,10 @@
 hash: bd360fa297ed66950543990f9433cdcdf13c29dd99d9a01b49027e236b2cb9da
-updated: 2017-06-14T20:34:29.429161691+08:00
+updated: 2017-07-08T12:15:52.531289524+08:00
 imports:
 - name: github.com/boj/redistore
   version: 4562487a4bee9a7c272b72bfaeda4917d0a47ab9
+- name: github.com/deepzz0/logd
+  version: 2bbe53d047054777f3a171cdfc6dca7aa9f8af78
 - name: github.com/eiblog/blackfriday
   version: c0ec111761ae784fe31cc076f2fa0e2d2216d623
 - name: github.com/eiblog/utils
@@ -13,7 +15,7 @@ imports:
   - tmpl
   - uuid
 - name: github.com/garyburd/redigo
-  version: 95d11dba2d44531bdb8022752b98912baafae03a
+  version: 57f1cd7de6175c96b423e7ac2534ff2b39e2ef79
   subpackages:
   - internal
   - redis
@@ -47,7 +49,7 @@ imports:
   subpackages:
   - context
 - name: golang.org/x/sys
-  version: 0b25a408a50076fbbcae6b7ac0ea5fbb0b085e79
+  version: 739734461d1c916b6c72a63d7efda2b27edb369f
   subpackages:
   - unix
 - name: gopkg.in/go-playground/validator.v8
@@ -62,7 +64,7 @@ imports:
 - name: gopkg.in/yaml.v2
   version: cd8b52f8269e0feb286dfeef29f8fe4d5b397e0b
 - name: qiniupkg.com/api.v7
-  version: 89344a711feec1d800c77a80d0865de936dc394d
+  version: 33f18792da10ba96109ee98a0c7fe53cd6a8a65a
   subpackages:
   - api
   - auth/qbox

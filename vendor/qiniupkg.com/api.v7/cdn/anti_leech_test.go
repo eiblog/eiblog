@@ -1,15 +1,12 @@
 package cdn
 
 import (
-	"net/url"
 	"testing"
 )
 
 func TestCreateTimestampAntiLeech(t *testing.T) {
 	type args struct {
-		host              string
-		fileName          string
-		queryStr          url.Values
+		urlStr              string
 		encryptKey        string
 		durationInSeconds int64
 	}
@@ -21,11 +18,7 @@ func TestCreateTimestampAntiLeech(t *testing.T) {
 		{
 			name: "antileech_1",
 			args: args{
-				host:     "http://www.abc.com",
-				fileName: "abc.jpg",
-				queryStr: url.Values{
-					"x": {"9"},
-				},
+				urlStr:     "http://www.abc.com/abc.jpg?stat",
 				encryptKey:        "abc",
 				durationInSeconds: 20,
 			},
@@ -34,7 +27,7 @@ func TestCreateTimestampAntiLeech(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, err := CreateTimestampAntileechURL(tt.args.host, tt.args.fileName, tt.args.queryStr, tt.args.encryptKey, tt.args.durationInSeconds)
+			_, err := CreateTimestampAntileechURL(tt.args.urlStr, tt.args.encryptKey, tt.args.durationInSeconds)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("CreateTimestampAntiLeech() error = %v, wantErr %v", err, tt.wantErr)
 				return
