@@ -3,6 +3,7 @@ conf
 vendor
 setting
 docs
+static/*.*
 **/.DS_Store
 Dockerfile
 glide.yaml
