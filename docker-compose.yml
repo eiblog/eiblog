@@ -28,7 +28,6 @@ services:
       - /data/eiblog/logdata:/eiblog/logdata
       - /data/eiblog/conf:/eiblog/conf
       - /data/eiblog/static:/eiblog/static
-      - /data/eiblog/views:/eiblog/views
     links:
       - elasticsearch
       - mongodb

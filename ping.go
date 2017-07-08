@@ -25,7 +25,7 @@ func (*superfeedr) PingFunc(slug string) {
 	}
 	vals := url.Values{}
 	vals.Set("hub.mode", "publish")
-	vals.Add("hub.url", "https://"+setting.Conf.Mode.Domains[0]+"/post/"+slug+".html")
+	vals.Add("hub.url", "https://"+setting.Conf.Mode.Domain+"/post/"+slug+".html")
 	res, err := http.PostForm(setting.Conf.FeedrURL, vals)
 	if err != nil {
 		logd.Error(err)
@@ -64,7 +64,7 @@ func (p *pingRPC) PingFunc(slug string) {
 	if len(setting.Conf.PingRPCs) == 0 {
 		return
 	}
-	p.Params.Param[1].Value = "https://" + setting.Conf.Mode.Domains[0] + "/post/" + slug + ".html"
+	p.Params.Param[1].Value = "https://" + setting.Conf.Mode.Domain + "/post/" + slug + ".html"
 	buf := &bytes.Buffer{}
 	buf.WriteString(xml.Header)
 	enc := xml.NewEncoder(buf)
@@ -98,9 +98,9 @@ func init() {
 	pr := &pingRPC{MethodName: "weblogUpdates.extendedPing"}
 	pr.Params.Param = [4]rpcValue{
 		0: rpcValue{Value: Ei.BTitle},
-		1: rpcValue{Value: "https://" + setting.Conf.Mode.Domains[0]},
+		1: rpcValue{Value: "https://" + setting.Conf.Mode.Domain},
 		2: rpcValue{},
-		3: rpcValue{Value: "https://" + setting.Conf.Mode.Domains[0] + "/rss.html"},
+		3: rpcValue{Value: "https://" + setting.Conf.Mode.Domain + "/rss.html"},
 	}
 	Pings = append(Pings, pr)
 }

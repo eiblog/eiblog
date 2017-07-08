@@ -16,14 +16,10 @@ func TestPostComment(t *testing.T) {
 		AuthorName:  "deepzz",
 	}
 
-	id := PostComment(pc)
-	if id == "" {
-		t.Error("post failed")
+	id, err := PostComment(pc)
+	if err != nil {
+		t.Error(err)
 		return
 	}
-	t.Log("post success")
-}
-
-func TestApprovePost(t *testing.T) {
-	ApprovePost()
+	t.Log("post success", id)
 }

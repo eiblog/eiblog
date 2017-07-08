@@ -1,4 +1,4 @@
-*.DS_Store
+**/.DS_Store
 *.exe
 conf/ssl/domain.*
 eiblog

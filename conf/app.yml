@@ -62,12 +62,11 @@ mode:
   httpport: 9000
   # https server
   enablehttps: true
-  autocert: true
+  autocert: false
   httpsport: 9001
   certfile: conf/ssl/domain.rsa.pem
   keyfile: conf/ssl/domain.rsa.key
-  domains:
-    - deepzz.com
+  domain: deepzz.com
 # twitter地址: twitter.com/chenqijing2
 twitter: 
   card: summary

@@ -20,11 +20,45 @@ import (
 func Filter() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// 过滤黑名单
-		BlackFilter(c)
+		if BlackFilter(c) {
+			c.Abort()
+			return
+		}
+		// 重定向
+		if Redirect(c) {
+			c.Abort()
+			return
+		}
 		// 用户cookie，用于统计
 		UserCookie(c)
 		c.Next()
 	}
+}
+
+// 黑名单过滤
+func BlackFilter(c *gin.Context) bool {
+	ip := c.ClientIP()
+	if setting.BlackIP[ip] {
+		c.String(http.StatusForbidden, "Your IP is blacklisted.")
+		return true
+	}
+
+	return false
+}
+
+// 重定向
+func Redirect(c *gin.Context) bool {
+	fmt.Println("scheme=======", c.Request.URL.Scheme)
+	if setting.Conf.Mode.EnableHttps && c.Request.ProtoMajor == 1 {
+		var port string
+		if strings.Contains(c.Request.Host, ":") {
+			port = fmt.Sprintf(":%d", setting.Conf.Mode.HttpsPort)
+		}
+		c.Redirect(http.StatusMovedPermanently, "https://"+setting.Conf.Mode.Domain+port+c.Request.RequestURI)
+		return true
+	}
+
+	return false
 }
 
 // 用户识别
@@ -32,15 +66,6 @@ func UserCookie(c *gin.Context) {
 	cookie, err := c.Cookie("u")
 	if err != nil || cookie == "" {
 		c.SetCookie("u", RandUUIDv4(), 86400*730, "/", "", true, true)
-	}
-}
-
-// 黑名单过滤
-func BlackFilter(c *gin.Context) {
-	ip := c.ClientIP()
-	if setting.BlackIP[ip] {
-		c.Abort()
-		c.String(http.StatusForbidden, "Your IP is blacklisted.")
 	}
 }
 
@@ -61,7 +86,7 @@ func GetBase() gin.H {
 		"CopyYear":  time.Now().Year(),
 		"BTitle":    Ei.BTitle,
 		"BeiAn":     Ei.BeiAn,
-		"Domain":    setting.Conf.Mode.Domains[0],
+		"Domain":    setting.Conf.Mode.Domain,
 		"Kodo":      setting.Conf.Kodo,
 		"ShortName": setting.Conf.Disqus.ShortName,
 	}
@@ -230,6 +255,14 @@ func HandleRobots(c *gin.Context) {
 
 func HandleSitemap(c *gin.Context) {
 	http.ServeFile(c.Writer, c.Request, "static/sitemap.xml")
+}
+
+func HandleCrossDomain(c *gin.Context) {
+	http.ServeFile(c.Writer, c.Request, "static/crossdomain.xml")
+}
+
+func HandleFavicon(c *gin.Context) {
+	http.ServeFile(c.Writer, c.Request, "static/favicon.ico")
 }
 
 // 服务端推送谷歌统计

@@ -2,15 +2,11 @@
 package setting
 
 import (
-	"encoding/json"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestInit(t *testing.T) {
-	data, err := json.Marshal(Conf)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	t.Log(string(data))
+	assert.NotNil(t, Conf)
 }

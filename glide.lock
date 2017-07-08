@@ -1,5 +1,5 @@
 hash: bd360fa297ed66950543990f9433cdcdf13c29dd99d9a01b49027e236b2cb9da
-updated: 2017-07-08T14:52:31.866715976+08:00
+updated: 2017-07-08T19:25:55.246137015+08:00
 imports:
 - name: github.com/boj/redistore
   version: 4562487a4bee9a7c272b72bfaeda4917d0a47ab9
@@ -15,10 +15,12 @@ imports:
   - tmpl
   - uuid
 - name: github.com/garyburd/redigo
-  version: 57f1cd7de6175c96b423e7ac2534ff2b39e2ef79
+  version: 9f3a0116c9f72c5a56f958206a43dc881b502c37
   subpackages:
   - internal
   - redis
+- name: github.com/gin-gonic/autotls
+  version: 9261e1c52a0eb595c531ff77c06cdfb6fdb111a4
 - name: github.com/gin-gonic/contrib
   version: d4fc5a96cc0d29cb0e862bb1312dd6f4fedfcaee
   subpackages:
@@ -44,6 +46,11 @@ imports:
   version: fc9e8d8ef48496124e79ae0df75490096eccf6fe
 - name: github.com/shurcooL/sanitized_anchor_name
   version: 541ff5ee47f1dddf6a5281af78307d921524bcb5
+- name: golang.org/x/crypto
+  version: a48ac81e47fd6f9ed1258f3b60ae9e75f93cb7ed
+  subpackages:
+  - acme
+  - acme/autocert
 - name: golang.org/x/net
   version: f315505cf3349909cdf013ea56690da34e96a451
   subpackages:

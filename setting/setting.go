@@ -64,7 +64,7 @@ type Config struct {
 		CertFile    string
 		KeyFile     string
 		AutoCert    bool
-		Domains     []string
+		Domain      string
 	}
 	Twitter struct { // twitter信息
 		Card    string

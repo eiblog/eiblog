@@ -63,6 +63,8 @@ func init() {
 	router.GET("/opensearch.xml", HandleOpenSearch)
 	router.GET("/sitemap.xml", HandleSitemap)
 	router.GET("/robots.txt", HandleRobots)
+	router.GET("/crossdomain.xml", HandleCrossDomain)
+	router.GET("/favicon.ico", HandleFavicon)
 	// 后台相关
 	admin := router.Group("/admin")
 	admin.GET("/login", HandleLogin)
@@ -95,10 +97,10 @@ func Run() {
 	)
 	if setting.Conf.Mode.EnableHttp {
 		go func() {
-			logd.Infof("http server Running on %d\n", setting.Conf.Mode.HttpPort)
+			logd.Printf("http server Running on %d\n", setting.Conf.Mode.HttpPort)
 			err = router.Run(fmt.Sprintf(":%d", setting.Conf.Mode.HttpPort))
 			if err != nil {
-				logd.Info("ListenAndServe: ", err)
+				logd.Error("ListenAndServe: ", err)
 				time.Sleep(100 * time.Microsecond)
 				endRunning <- true
 			}
@@ -107,20 +109,21 @@ func Run() {
 	if setting.Conf.Mode.EnableHttps {
 		if setting.Conf.Mode.AutoCert {
 			go func() {
-				logd.Info("https server Running on 443")
-				err = autotls.Run(router, setting.Conf.Mode.Domains...)
+				logd.Print("https server Running on 443")
+				err = autotls.Run(router, setting.Conf.Mode.Domain)
 				if err != nil {
-					logd.Info("ListenAndServe: ", err)
+					logd.Error("ListenAndServe: ", err)
 					time.Sleep(100 * time.Microsecond)
 					endRunning <- true
 				}
 			}()
 		} else {
 			go func() {
-				logd.Infof("https server Running on %d\n", setting.Conf.Mode.HttpsPort)
-				err = router.RunTLS(fmt.Sprintf(":%d", setting.Conf.Mode.HttpsPort), setting.Conf.Mode.CertFile, setting.Conf.Mode.KeyFile)
+				logd.Printf("https server Running on %d\n", setting.Conf.Mode.HttpsPort)
+				err = router.RunTLS(fmt.Sprintf(":%d", setting.Conf.Mode.HttpsPort),
+					setting.Conf.Mode.CertFile, setting.Conf.Mode.KeyFile)
 				if err != nil {
-					logd.Info("ListenAndServe: ", err)
+					logd.Error("ListenAndServe: ", err)
 					time.Sleep(100 * time.Microsecond)
 					endRunning <- true
 				}

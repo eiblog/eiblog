@@ -43,7 +43,7 @@ func doFeed() {
 	params := map[string]interface{}{
 		"Title":     Ei.BTitle,
 		"SubTitle":  Ei.SubTitle,
-		"Domain":    setting.Conf.Mode.Domains[0],
+		"Domain":    setting.Conf.Mode.Domain,
 		"FeedrURL":  setting.Conf.FeedrURL,
 		"BuildDate": buildDate.Format(time.RFC1123Z),
 		"Artcs":     artcs,
@@ -69,7 +69,7 @@ func doSitemap() {
 		logd.Error("not found sitemapTpl.")
 		return
 	}
-	params := map[string]interface{}{"Artcs": Ei.Articles, "Domain": setting.Conf.Mode.Domains[0]}
+	params := map[string]interface{}{"Artcs": Ei.Articles, "Domain": setting.Conf.Mode.Domain}
 	f, err := os.OpenFile("static/sitemap.xml", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
 		logd.Error(err)
@@ -93,7 +93,7 @@ func doOpensearch() {
 	params := map[string]string{
 		"BTitle":   Ei.BTitle,
 		"SubTitle": Ei.SubTitle,
-		"Domain":   setting.Conf.Mode.Domains[0],
+		"Domain":   setting.Conf.Mode.Domain,
 	}
 	f, err := os.OpenFile("static/opensearch.xml", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
@@ -115,7 +115,7 @@ func doRobots() {
 		return
 	}
 	params := map[string]string{
-		"Domain": setting.Conf.Mode.Domains[0],
+		"Domain": setting.Conf.Mode.Domain,
 	}
 	f, err := os.OpenFile("static/robots.txt", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
@@ -137,7 +137,7 @@ func doCrossdomain() {
 		return
 	}
 	params := map[string]string{
-		"Domain": setting.Conf.Mode.Domains[0],
+		"Domain": setting.Conf.Mode.Domain,
 	}
 	f, err := os.OpenFile("static/crossdomain.xml", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
