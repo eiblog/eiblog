@@ -1,5 +1,5 @@
 hash: bd360fa297ed66950543990f9433cdcdf13c29dd99d9a01b49027e236b2cb9da
-updated: 2017-07-09T03:33:16.672898431+08:00
+updated: 2017-07-11T23:49:28.770307187+08:00
 imports:
 - name: github.com/boj/redistore
   version: 4562487a4bee9a7c272b72bfaeda4917d0a47ab9
@@ -44,10 +44,27 @@ imports:
   version: ee05b128a739a0fb76c7ebd3ae4810c1de808d6d
 - name: github.com/mattn/go-isatty
   version: fc9e8d8ef48496124e79ae0df75490096eccf6fe
+- name: github.com/qiniu/api.v7
+  version: 9c12a67868f8f94d6a75dd6bb59b095db8d40d77
+  subpackages:
+  - api
+  - auth/qbox
+  - conf
+  - kodocli
+- name: github.com/qiniu/x
+  version: f512abcf45ab4e2ba0fd4784c57b53d495997d66
+  subpackages:
+  - bytes.v7
+  - bytes.v7/seekable
+  - ctype.v7
+  - log.v7
+  - rpc.v7
+  - url.v7
+  - xlog.v7
 - name: github.com/shurcooL/sanitized_anchor_name
   version: 541ff5ee47f1dddf6a5281af78307d921524bcb5
 - name: golang.org/x/crypto
-  version: a48ac81e47fd6f9ed1258f3b60ae9e75f93cb7ed
+  version: dd85ac7e6a88fc6ca420478e934de5f1a42dd3c6
   subpackages:
   - acme
   - acme/autocert
@@ -56,7 +73,7 @@ imports:
   subpackages:
   - context
 - name: golang.org/x/sys
-  version: 739734461d1c916b6c72a63d7efda2b27edb369f
+  version: abf9c25f54453410d0c6668e519582a9e1115027
   subpackages:
   - unix
 - name: gopkg.in/go-playground/validator.v8
@@ -71,24 +88,17 @@ imports:
 - name: gopkg.in/yaml.v2
   version: cd8b52f8269e0feb286dfeef29f8fe4d5b397e0b
 - name: qiniupkg.com/api.v7
-  version: 33f18792da10ba96109ee98a0c7fe53cd6a8a65a
+  version: 9c12a67868f8f94d6a75dd6bb59b095db8d40d77
   subpackages:
-  - api
-  - auth/qbox
-  - conf
   - kodo
   - kodocli
 - name: qiniupkg.com/x
   version: f512abcf45ab4e2ba0fd4784c57b53d495997d66
   subpackages:
   - bytes.v7
-  - bytes.v7/seekable
-  - ctype.v7
   - log.v7
   - reqid.v7
-  - rpc.v7
   - url.v7
-  - xlog.v7
 testImports:
 - name: github.com/davecgh/go-spew
   version: 5215b55f46b2b919f50a1df0eaa5886afe4e3b3d
