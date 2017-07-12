@@ -1,5 +1,5 @@
 hash: bd360fa297ed66950543990f9433cdcdf13c29dd99d9a01b49027e236b2cb9da
-updated: 2017-07-11T23:49:28.770307187+08:00
+updated: 2017-07-13T01:29:28.226895963+08:00
 imports:
 - name: github.com/boj/redistore
   version: 4562487a4bee9a7c272b72bfaeda4917d0a47ab9
@@ -8,7 +8,7 @@ imports:
 - name: github.com/eiblog/blackfriday
   version: c0ec111761ae784fe31cc076f2fa0e2d2216d623
 - name: github.com/eiblog/utils
-  version: 5699bde749ca1053867528834492263f841620ad
+  version: ddfd888542f9a093000f71c3709009c1440a0789
   subpackages:
   - logd
   - mgo
@@ -86,7 +86,7 @@ imports:
   - internal/sasl
   - internal/scram
 - name: gopkg.in/yaml.v2
-  version: cd8b52f8269e0feb286dfeef29f8fe4d5b397e0b
+  version: 1be3d31502d6eabc0dd7ce5b0daab022e14a5538
 - name: qiniupkg.com/api.v7
   version: 9c12a67868f8f94d6a75dd6bb59b095db8d40d77
   subpackages:

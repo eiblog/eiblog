@@ -25,8 +25,8 @@ func init() {
 	if err != nil {
 		logd.Fatal(err)
 	}
-	go doFeed()
-	go doSitemap()
+	doFeed()
+	doSitemap()
 	doOpensearch()
 	doRobots()
 	doCrossdomain()

@@ -61,7 +61,7 @@ mode:
   enablehttp: true
   httpport: 9000
   # https server
-  enablehttps: true
+  enablehttps: false
   autocert: false
   httpsport: 9001
   certfile: conf/ssl/domain.rsa.pem
