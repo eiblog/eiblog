@@ -1,5 +1,11 @@
 # Eiblog Changelog
 
+## v1.3.0 (暂定)
+* 更改 app.yml 配置项，将大部分配置归在 general 常规配置下。注意，部署时请先更新 app.yml。
+* 静态文件采用动态渲染，即用户不再需要管理 view、static 目录。
+* 通过 acme.sh 使用双证书啦，可到 Makefile 查看相关信息。
+* 使用 autocert 自动生成证书功能，从此再也不用担心证书过期，移步 [证书更新](https://github.com/eiblog/eiblog/blob/master/docs/autocert.md)。
+* 开启配置项 enablehttps， 将自动重定向 http 到 https 啦。
 
 ## v1.2.0 (2017-06-14)
 * 更新评论功能，基础评论 0 回复也可评论了。

@@ -87,6 +87,7 @@ $ docker run -d --name eisearch \
 博主是一个有强迫症的人，一些文件的路径我使用了固定的路径，请大家见谅。假如你的 cdn 域名为 `st.example.com`，你需要确定这些文件已经在你的 cdn 中，它们路径分别是：
 
 * `favicon.ico`，默认为 `st.example.com/static/img/favicon.ico`。故你在 cdn 中的文件名为 `static/img/favicon.ico`，以下如是。
+  * 你还可以将 favicon.ico 复制到 static 文件夹下，这样通过 `https://example.com/favicon.ico` 也是能够访问的。docker 用户需要自行重新打包镜像。
 * `bg04.jpg`，左侧背景图片，`500*1200` 左右，cdn 文件名：`static/img/bg04.jpg`。如需更改，请在 `eiblog/view/st_blog.css` 中替换该名称。
 * `avatar.jpg`，左侧头像，`160*160~256*256`之间，cdn 文件名：`static/img/avatar.jpg`。
 * `blank.gif`，cdn 文件名：`static/img/blank.gif`。该图片请从 [这里](https://st.deepzz.com/static/img/blank.gif) 下载并上传至你的 cdn。

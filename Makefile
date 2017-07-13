@@ -15,10 +15,10 @@ test:
 build:
 	@echo "go build..."
 	@CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build && \
-	  docker build -t $(docker_registry)/deepzz/eiblog .
+	  docker build -t $(docker_registry)/deepzz/eiblog:latest .
 
 deploy:build
-	@docker push $(docker_registry)/deepzz/eiblog
+	@docker push $(docker_registry)/deepzz/eiblog:latest
 
 dist:
 	@./dist.sh
