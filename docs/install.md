@@ -86,13 +86,14 @@ $ docker run -d --name eisearch \
 #### 文件准备
 博主是一个有强迫症的人，一些文件的路径我使用了固定的路径，请大家见谅。假如你的 cdn 域名为 `st.example.com`，你需要确定这些文件已经在你的 cdn 中，它们路径分别是：
 
-* `favicon.ico`，默认为 `st.example.com/static/img/favicon.ico`。故你在 cdn 中的文件名为 `static/img/favicon.ico`，以下如是。
-  * 你还可以将 favicon.ico 复制到 static 文件夹下，这样通过 `https://example.com/favicon.ico` 也是能够访问的。docker 用户需要自行重新打包镜像。
-* `bg04.jpg`，左侧背景图片，`500*1200` 左右，cdn 文件名：`static/img/bg04.jpg`。如需更改，请在 `eiblog/view/st_blog.css` 中替换该名称。
-* `avatar.jpg`，左侧头像，`160*160~256*256`之间，cdn 文件名：`static/img/avatar.jpg`。
-* `blank.gif`，cdn 文件名：`static/img/blank.gif`。该图片请从 [这里](https://st.deepzz.com/static/img/blank.gif) 下载并上传至你的 cdn。
-* `default_avatar.png`，Disqus 默认头像，cdn 文件名：`static/img/default_avatar.png`，请从 [这里](https://st.deepzz.com/static/img/default_avatar.png) 下载并上传至你的 cdn。
-* `disqus.js`，该文件是专属的，通过 https://short_name.disqus.com/embed.js 下载，替换掉 short_name。，cdn 文件名格式是：`static/js/disqus_xxx.js`。在我写这篇文章是使用的是：`static/js/disqus_a9d3fd.js`。另外修改 `eiblog/views/st_blog.js` 中的`disqus_a9d3fd.js` 为你新文件的名称，提升一个静态文件版本（请看配置文件说明）。
+| 文件                 | 地址                                       | 描述                                       |
+| ------------------ | ---------------------------------------- | ---------------------------------------- |
+| favicon.ico        | st.example.com/static/img/favicon.ico    | cdn 中的文件名为 `static/img/favicon.ico`。你也可以复制 favicon.ico 到 static 文件夹下，通过 example.com/favicon.ico 也是能够访问到。docker 用户可能需要重新打包镜像。 |
+| bg04.jpg           | st.example.com/static/img/bg04.jpg       | 首页左侧的大背景图，需要更名请到 views/st_blog.css 修改。   |
+| avatar.jpg         | st.example.com/static/img/avatar.jpg     | 头像                                       |
+| blank.gif          | st.example.com/static/img/blank.gif      | 空白图片，[下载](https://st.deepzz.com/static/img/blank.gif) |
+| default_avatar.png | st.example.com/static/img/default_avatar.png | disqus 默认图片，[下载](https://st.deepzz.com/static/img/default_avatar.png) |
+| disqus.js          | st.example.com/static/js/disqus_xxx.js   | disqus 文件，你可以通过 https://short_name.disqus.com/embed.js 下载你的专属文件，并上传到七牛。更新配置文件 app.yml。 |
 
 > 注意：每次修改 views 内的以 `st_` 开头的文件，请将 `app.yml` 中的 staticversion 提高一个版本。 cdn 提到的文件下载，请复制链接进行下载，因为博主使用了防盗链功能。
 
@@ -136,40 +137,15 @@ $ docker run -d --name eisearch \
     ├── robotsTpl.xml
     └── sitemapTpl.xml
 ```
-1、app.yml，整个程序的配置文件，里面已经列出了所有配置项的说明，这里不再阐述。 
-2、blackip.yml，如果没有使用 `Nginx`，博客内置 `ip` 过滤系统。 
-3、`es` 全名 `elasticsearch`，非常强大的分布式搜索引擎，`github` 用的就是它。里面的配置基本不用修改，但 `es/analysis/synonym.txt` 是同义词，你可以照着已有的随意增加。
-```
-├── es
-│   ├── config
-│   │   ├── analysis
-│   │   │   └── synonym.txt                 # 同义词配置
-│   │   ├── elasticsearch.yml               # 分词器配置
-│   │   ├── logging.yml                     # 日志配置
-│   │   └── scripts                         # 脚本
-│   └── plugins                             # 中文分词插件
-│       └── ik1.10.0
-│
-```
-
-> `注意`，scripts 文件夹虽然是空的，但必需存在，不然 elasticsearch 报错。
-
-4、`nginx`，系统采用 `nginx` 作为代理(相信博客系统也不会独占一台服务器～)。请使用 `nginx.conf` 替换原 `nginx` 的配置。博客系统的配置文件是 `domain/eiblog.conf`，或则重命名(只要是满足`*.conf`)。`eiblog.conf`文件里面学问是最多的。或许你想一一弄懂，或许…。
-
-> 注意本配置需要更新 nginx 到最新版，openssl 更新到1.0.2j，具体请到 Jerry Qu 的 [本博客 Nginx 配置之完整篇](https://imququ.com/post/my-nginx-conf.html) 查看，了解详情。
-
-5、`scts`，存放 ct 文件。
-
-6、`ssl`，这里存放了所有证书相关的内容。
-```
-├── dhparams.pem                # 参见eiblog/conf/nginx/domain/deepzz.conf
-├── domain.key                  # 证书私钥，一般颁发者处下载
-├── domain.pem                  # 证书链，一般从证书颁发者那可以直接下载到
-├── full_chained.pem            # 参见eiblog/conf/nginx/domain/deepzz.conf
-└── session_ticket.key          # 参见eiblog/conf/nginx/domain/deepzz.conf
-```
-
-7、`tpl` 模版相关，不用修改。
+| 名称          | 描述                                       |
+| ----------- | ---------------------------------------- |
+| app.yml     | 整个程序的配置文件，里面已经列出了所有配置项的说明，这里不再阐述。        |
+| blackip.yml | 如果没有使用 `Nginx`，博客内置 `ip` 过滤系统。           |
+| es          | elasticsearch，非常强大的分布式搜索引擎，`github` 用的就是它。里面的配置基本不用修改，但 `es/analysis/synonym.txt` 是同义词，你可以照着已有的随意增加。注意，scripts 虽然是空的，但请保持存在。 |
+| nginx       | 系统采用 `nginx` 作为代理(相信博客系统也不会独占一台服务器～)。请使用 `nginx.conf` 替换原 `nginx` 的配置。博客系统的配置文件是 `domain/eiblog.conf`，或则重命名(只要是满足`*.conf`)。`eiblog.conf`文件里面学问是最多的。或许你想一一弄懂，或许…。注意本配置需要更新 nginx 到最新版，openssl 更新到1.0.2j，具体请到 Jerry Qu 的 [本博客 Nginx 配置之完整篇](https://imququ.com/post/my-nginx-conf.html) 查看，了解详情。 |
+| scts        | 存放 ct 文件。                                |
+| ssl         | 这里存放了所有证书相关的内容。                          |
+| tpl         | 模版相关，不用修改。                               |
 
 ### 开始部署
 

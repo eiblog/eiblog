@@ -6,8 +6,14 @@
 * [acme.sh](https://github.com/Neilpang/acme.sh)，强大的 acme 脚本，多种自动更新证书方式，满足你各方面的需求。双证书
 
 #### 方式一
+什么是 autocert，简单点，你只需要两步操作：
 
-一键开启 autocert 功能，修改 `conf/app.yml` 文件内容：
+1. 将域名解析到你的服务器。
+2. 在服务器上运行开启 autocert 功能的程序（这里不需要配置证书），需要占用 443 端口。
+
+其它过程你不需要过问，即会完成自动申请证书，自动更新证书的功能（默认 30 天）。这个是在 tcp/ip 层的操作，对用户完全透明，非常棒。
+
+一键开启 autocert 功能，只需修改 `conf/app.yml` 文件内容：
 
 ```
 # 运行模式
@@ -19,9 +25,9 @@ mode:
   enablehttps: true                     # 必须开启
   autocert: false                       # autocert 功能开关
   httpsport: 9001
-  certfile: conf/ssl/domain.rsa.pem
-  keyfile: conf/ssl/domain.rsa.key
-  domain: deepzz.com
+  certfile: 
+  keyfile: 
+  domain: deepzz.com                    # 申请证书的域名，也是博客的域名
 ```
 
 首先，使用 HTTPS 必须启用  `enablehttps`，它有两个作用：

@@ -79,15 +79,15 @@ func StaticVersion(c *gin.Context) (version int) {
 
 func GetBase() gin.H {
 	return gin.H{
-		"BlogName":  Ei.BlogName,
-		"SubTitle":  Ei.SubTitle,
-		"Twitter":   setting.Conf.Twitter,
-		"CopyYear":  time.Now().Year(),
-		"BTitle":    Ei.BTitle,
-		"BeiAn":     Ei.BeiAn,
-		"Domain":    setting.Conf.Mode.Domain,
-		"Kodo":      setting.Conf.Kodo,
-		"ShortName": setting.Conf.Disqus.ShortName,
+		"BlogName": Ei.BlogName,
+		"SubTitle": Ei.SubTitle,
+		"Twitter":  setting.Conf.Twitter,
+		"CopyYear": time.Now().Year(),
+		"BTitle":   Ei.BTitle,
+		"BeiAn":    Ei.BeiAn,
+		"Domain":   setting.Conf.Mode.Domain,
+		"Kodo":     setting.Conf.Kodo,
+		"Disqus":   setting.Conf.Disqus,
 	}
 }
 
