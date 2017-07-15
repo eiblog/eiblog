@@ -70,12 +70,12 @@ func ReadDir(dir string, filter func(name string) bool) (files []string) {
 }
 
 func IgnoreHtmlTag(src string) string {
-	//去除所有尖括号内的HTML代码
-	re, _ := regexp.Compile("\\<[\\S\\s]+?\\>")
+	// 去除所有尖括号内的HTML代码
+	re, _ := regexp.Compile(`<[\S\s]+?>`)
 	src = re.ReplaceAllString(src, "")
 
-	//去除换行符
-	re, _ = regexp.Compile("\\s{2,}")
+	// 去除换行符
+	re, _ = regexp.Compile(`\s+`)
 	return re.ReplaceAllString(src, "")
 }
 

@@ -221,8 +221,8 @@ func generateTopic() {
 		Author:     setting.Conf.Account.Username,
 		Title:      "友情链接",
 		Slug:       "blogroll",
-		UpdateTime: time.Now(),
-		CreateTime: time.Time{},
+		CreateTime: time.Now(),
+		UpdateTime: time.Time{},
 	}
 	err := db.Insert(DB, COLLECTION_ARTICLE, blogroll)
 	if err != nil {
