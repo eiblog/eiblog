@@ -104,9 +104,9 @@ func ConvertStr(str string) string {
 		logd.Error(err, str)
 		return JUST_NOW
 	}
-	now := time.Now()
+	now := time.Now().UTC()
 	y1, m1, d1 := t.Date()
-	y2, m2, d2 := now.UTC().Date()
+	y2, m2, d2 := now.Date()
 	h1, mi1, s1 := t.Clock()
 	h2, mi2, s2 := now.Clock()
 	if y := y2 - y1; y > 1 || (y == 1 && m2-m1 >= 0) {
