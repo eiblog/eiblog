@@ -321,9 +321,9 @@ type commentsDetail struct {
 	Name         string `json:"name"`
 	Url          string `json:"url"`
 	Avatar       string `json:"avatar"`
-	CreatedAt    string `json:"createdAt"`
 	CreatedAtStr string `json:"createdAtStr"`
 	Message      string `json:"message"`
+	IsDeleted    bool   `json:"isDeleted"`
 }
 
 func HandleDisqus(c *gin.Context) {
@@ -356,27 +356,35 @@ func HandleDisqus(c *gin.Context) {
 				Parent:       v.Parent,
 				Url:          v.Author.ProfileUrl,
 				Avatar:       v.Author.Avatar.Cache,
-				CreatedAt:    v.CreatedAt,
 				CreatedAtStr: ConvertStr(v.CreatedAt),
 				Message:      v.Message,
+				IsDeleted:    v.IsDeleted,
 			}
 		}
 	}
 	c.JSON(http.StatusOK, dcs)
 }
 
+// 发表评论
 // [thread:[5279901489] parent:[] identifier:[post-troubleshooting-https] next:[] author_name:[你好] author_email:[chenqijing2@163.com] message:[fdsfdsf]]
+type DisqusCreate struct {
+	ErrNo  int            `json:"errno"`
+	ErrMsg string         `json:"errmsg"`
+	Data   commentsDetail `json:"data"`
+}
+
 func HandleDisqusCreate(c *gin.Context) {
-	rep := gin.H{"errno": SUCCESS, "errmsg": ""}
-	defer c.JSON(http.StatusOK, rep)
+	resp := &DisqusCreate{}
+	defer c.JSON(http.StatusOK, resp)
+
 	msg := c.PostForm("message")
 	email := c.PostForm("author_email")
 	name := c.PostForm("author_name")
 	thread := c.PostForm("thread")
 	identifier := c.PostForm("identifier")
 	if msg == "" || email == "" || name == "" || thread == "" || identifier == "" {
-		rep["errno"] = FAIL
-		rep["errmsg"] = "参数错误"
+		resp.ErrNo = FAIL
+		resp.ErrMsg = "参数错误"
 		return
 	}
 	pc := &PostCreate{
@@ -389,22 +397,31 @@ func HandleDisqusCreate(c *gin.Context) {
 		IpAddress:   c.ClientIP(),
 	}
 
-	id, err := PostComment(pc)
+	postDetail, err := PostComment(pc)
 	if err != nil {
 		logd.Error(err)
-		rep["errno"] = FAIL
-		rep["errmsg"] = "系统错误"
+		resp.ErrNo = FAIL
+		resp.ErrMsg = "系统错误"
 		return
 	}
-	err = PostApprove(id)
+	err = PostApprove(postDetail.Response.Id)
 	if err != nil {
 		logd.Error(err)
-		rep["errno"] = FAIL
-		rep["errmsg"] = "系统错误"
+		resp.ErrNo = FAIL
+		resp.ErrMsg = "系统错误"
 		return
 	}
-	rep["errno"] = SUCCESS
-	rep["data"] = gin.H{"id": id}
+	resp.ErrNo = SUCCESS
+	resp.Data = commentsDetail{
+		Id:           postDetail.Response.Id,
+		Name:         name,
+		Parent:       postDetail.Response.Parent,
+		Url:          postDetail.Response.Author.ProfileUrl,
+		Avatar:       postDetail.Response.Author.Avatar.Cache,
+		CreatedAtStr: ConvertStr(postDetail.Response.CreatedAt),
+		Message:      postDetail.Response.Message,
+		IsDeleted:    postDetail.Response.IsDeleted,
+	}
 }
 
 func RenderHTMLFront(c *gin.Context, name string, data gin.H) {
