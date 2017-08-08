@@ -152,11 +152,8 @@ func (s *ElasticService) Do(req *http.Request) (interface{}, error) {
 		return b, nil
 	case "HEAD":
 		return resp.StatusCode, nil
-
-	default:
-		return nil, errors.New("unknown methods")
 	}
-	return nil, nil
+	return nil, errors.New("unknown methods")
 }
 
 func CreateIndexAndMappings(index, typ string, mappings []byte) (err error) {

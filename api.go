@@ -16,11 +16,15 @@ import (
 )
 
 const (
+	// 成功
 	NOTICE_SUCCESS = "success"
-	NOTICE_NOTICE  = "notice"
-	NOTICE_ERROR   = "error"
+	// 注意
+	NOTICE_NOTICE = "notice"
+	// 错误
+	NOTICE_ERROR = "error"
 )
 
+// 全局 API
 var APIs = make(map[string]func(c *gin.Context))
 
 func init() {
@@ -61,6 +65,7 @@ func apiAccount(c *gin.Context) {
 		responseNotice(c, NOTICE_NOTICE, "参数错误", "")
 		return
 	}
+
 	err := UpdateAccountField(bson.M{"$set": bson.M{"email": e, "phonen": pn, "address": ad}})
 	if err != nil {
 		responseNotice(c, NOTICE_NOTICE, err.Error(), "")
@@ -83,6 +88,7 @@ func apiBlog(c *gin.Context) {
 		responseNotice(c, NOTICE_NOTICE, "参数错误", "")
 		return
 	}
+
 	err := UpdateAccountField(bson.M{"$set": bson.M{"blogger.blogname": bn, "blogger.btitle": bt, "blogger.beian": ba, "blogger.subtitle": st, "blogger.seriessay": ss, "blogger.archivessay": as}})
 	if err != nil {
 		responseNotice(c, NOTICE_NOTICE, err.Error(), "")
@@ -117,6 +123,7 @@ func apiPassword(c *gin.Context) {
 		return
 	}
 	newPwd := EncryptPasswd(Ei.Username, nw)
+
 	err := UpdateAccountField(bson.M{"$set": bson.M{"password": newPwd}})
 	if err != nil {
 		responseNotice(c, NOTICE_NOTICE, err.Error(), "")
@@ -136,6 +143,7 @@ func apiPostDelete(c *gin.Context) {
 		}
 		responseNotice(c, NOTICE_SUCCESS, "删除成功", "")
 	}()
+
 	err = c.Request.ParseForm()
 	if err != nil {
 		return
@@ -187,6 +195,7 @@ func apiPostAdd(c *gin.Context) {
 			c.Redirect(http.StatusFound, "/admin/manage-posts")
 		}
 	}()
+
 	do = c.PostForm("do") // auto or save or publish
 	slug := c.PostForm("slug")
 	title := c.PostForm("title")

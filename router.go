@@ -90,6 +90,7 @@ func init() {
 	}
 }
 
+// 开始运行
 func Run() {
 	var (
 		endRunning = make(chan bool, 1)

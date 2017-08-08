@@ -91,6 +91,7 @@ func GetBase() gin.H {
 	}
 }
 
+// not found
 func HandleNotFound(c *gin.Context) {
 	h := GetBase()
 	h["Version"] = StaticVersion(c)
@@ -101,6 +102,7 @@ func HandleNotFound(c *gin.Context) {
 	RenderHTMLFront(c, "notfound", h)
 }
 
+// 首页
 func HandleHomePage(c *gin.Context) {
 	h := GetBase()
 	h["Version"] = StaticVersion(c)
@@ -117,6 +119,7 @@ func HandleHomePage(c *gin.Context) {
 	RenderHTMLFront(c, "home", h)
 }
 
+// 专题页
 func HandleSeriesPage(c *gin.Context) {
 	h := GetBase()
 	h["Version"] = StaticVersion(c)
@@ -129,6 +132,7 @@ func HandleSeriesPage(c *gin.Context) {
 	RenderHTMLFront(c, "series", h)
 }
 
+// 归档页
 func HandleArchivesPage(c *gin.Context) {
 	h := GetBase()
 	h["Version"] = StaticVersion(c)
@@ -141,6 +145,7 @@ func HandleArchivesPage(c *gin.Context) {
 	RenderHTMLFront(c, "archives", h)
 }
 
+// 文章
 func HandleArticlePage(c *gin.Context) {
 	path := c.Param("slug")
 	if !strings.HasSuffix(path, ".html") || Ei.MapArticles[path[:len(path)-5]] == nil {
@@ -178,6 +183,7 @@ func HandleArticlePage(c *gin.Context) {
 	RenderHTMLFront(c, name, h)
 }
 
+// 搜索页
 func HandleSearchPage(c *gin.Context) {
 	h := GetBase()
 	h["Version"] = StaticVersion(c)
@@ -220,6 +226,7 @@ func HandleSearchPage(c *gin.Context) {
 	RenderHTMLFront(c, "search", h)
 }
 
+// 评论页
 func HandleDisqusFrom(c *gin.Context) {
 	params := strings.Split(c.Param("slug"), "|")
 	if len(params) != 4 || params[1] == "" {
@@ -240,26 +247,32 @@ func HandleDisqusFrom(c *gin.Context) {
 	c.Header("Content-Type", "text/html; charset=utf-8")
 }
 
+// feed
 func HandleFeed(c *gin.Context) {
 	http.ServeFile(c.Writer, c.Request, "static/feed.xml")
 }
 
+// opensearch
 func HandleOpenSearch(c *gin.Context) {
 	http.ServeFile(c.Writer, c.Request, "static/opensearch.xml")
 }
 
+// robots
 func HandleRobots(c *gin.Context) {
 	http.ServeFile(c.Writer, c.Request, "static/robots.txt")
 }
 
+// sitemap
 func HandleSitemap(c *gin.Context) {
 	http.ServeFile(c.Writer, c.Request, "static/sitemap.xml")
 }
 
+// cross domain
 func HandleCrossDomain(c *gin.Context) {
 	http.ServeFile(c.Writer, c.Request, "static/crossdomain.xml")
 }
 
+// favicon
 func HandleFavicon(c *gin.Context) {
 	http.ServeFile(c.Writer, c.Request, "static/favicon.ico")
 }

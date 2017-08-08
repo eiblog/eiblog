@@ -273,6 +273,7 @@ func PageList(p, n int) (prev int, next int, artcs []*Article) {
 	return
 }
 
+// 管理 tag
 func ManageTagsArticle(artc *Article, s bool, do string) {
 	switch do {
 	case ADD:
@@ -297,6 +298,7 @@ func ManageTagsArticle(artc *Article, s bool, do string) {
 	}
 }
 
+// 管理专题
 func ManageSeriesArticle(artc *Article, s bool, do string) {
 	switch do {
 	case ADD:
@@ -325,6 +327,7 @@ func ManageSeriesArticle(artc *Article, s bool, do string) {
 	}
 }
 
+// 管理归档
 func ManageArchivesArticle(artc *Article, s bool, do string) {
 	switch do {
 	case ADD:

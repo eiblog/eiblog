@@ -43,14 +43,17 @@ func EncryptPasswd(name, pass string) string {
 	return fmt.Sprintf("%x", h.Sum(nil))
 }
 
+// 验证密码
 func VerifyPasswd(origin, name, input string) bool {
 	return origin == EncryptPasswd(name, input)
 }
 
+// 随机 uuid
 func RandUUIDv4() string {
 	return uuid.NewV4().String()
 }
 
+// 读取目录
 func ReadDir(dir string, filter func(name string) bool) (files []string) {
 	fis, err := ioutil.ReadDir(dir)
 	if err != nil {
@@ -69,6 +72,7 @@ func ReadDir(dir string, filter func(name string) bool) (files []string) {
 	return
 }
 
+// 去掉 html tag
 func IgnoreHtmlTag(src string) string {
 	// 去除所有尖括号内的HTML代码
 	re, _ := regexp.Compile(`<[\S\s]+?>`)
@@ -79,6 +83,7 @@ func IgnoreHtmlTag(src string) string {
 	return re.ReplaceAllString(src, "")
 }
 
+// 获取第一张图片
 func PickFirstImage(html string) string {
 	re, _ := regexp.Compile(`data-src="(.*?)"`)
 	sli := re.FindAllStringSubmatch(html, 1)
@@ -98,6 +103,7 @@ const (
 	YEARS_AGO   = "%d年前"
 )
 
+// 时间转换为间隔
 func ConvertStr(str string) string {
 	t, err := time.ParseInLocation("2006-01-02T15:04:05", str, time.UTC)
 	if err != nil {

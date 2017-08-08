@@ -32,6 +32,7 @@ func init() {
 	doCrossdomain()
 }
 
+// 定时更新 feed
 func doFeed() {
 	tpl := tpls.Lookup("feedTpl.xml")
 	if tpl == nil {
@@ -63,6 +64,7 @@ func doFeed() {
 	time.AfterFunc(time.Hour*4, doFeed)
 }
 
+// 定时更新 sitemap
 func doSitemap() {
 	tpl := tpls.Lookup("sitemapTpl.xml")
 	if tpl == nil {
@@ -84,6 +86,7 @@ func doSitemap() {
 	time.AfterFunc(time.Hour*24, doFeed)
 }
 
+// 渲染 opensearch
 func doOpensearch() {
 	tpl := tpls.Lookup("opensearchTpl.xml")
 	if tpl == nil {
@@ -108,6 +111,7 @@ func doOpensearch() {
 	}
 }
 
+// 渲染 robots
 func doRobots() {
 	tpl := tpls.Lookup("robotsTpl.xml")
 	if tpl == nil {
@@ -130,6 +134,7 @@ func doRobots() {
 	}
 }
 
+// 渲染 cross domain
 func doCrossdomain() {
 	tpl := tpls.Lookup("crossdomainTpl.xml")
 	if tpl == nil {

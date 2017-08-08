@@ -25,6 +25,7 @@ func isLogin(c *gin.Context) bool {
 	return true
 }
 
+// 登陆过滤
 func AuthFilter() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		if !isLogin(c) {
@@ -51,6 +52,7 @@ func HandleLogin(c *gin.Context) {
 	RenderHTMLBack(c, "login.html", gin.H{"BTitle": Ei.BTitle})
 }
 
+// 登陆接口
 func HandleLoginPost(c *gin.Context) {
 	user := c.PostForm("user")
 	pwd := c.PostForm("password")
@@ -120,6 +122,7 @@ func HandlePost(c *gin.Context) {
 	RenderHTMLBack(c, "admin-post", h)
 }
 
+// 删除草稿
 func HandleDraftDelete(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("cid"))
 	if err != nil || id < 1 {
@@ -184,6 +187,7 @@ func HandleSeries(c *gin.Context) {
 	RenderHTMLBack(c, "admin-series", h)
 }
 
+// 编辑专题
 func HandleSerie(c *gin.Context) {
 	h := GetBack()
 	id, err := strconv.Atoi(c.Query("mid"))
@@ -276,6 +280,7 @@ func HandleAPI(c *gin.Context) {
 	api(c)
 }
 
+// 渲染 html
 func RenderHTMLBack(c *gin.Context, name string, data gin.H) {
 	if name == "login.html" {
 		err := Tmpl.ExecuteTemplate(c.Writer, name, data)

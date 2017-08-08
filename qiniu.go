@@ -39,6 +39,7 @@ func onProgress(fsize, uploaded int64) {
 	}
 }
 
+// 上传文件
 func FileUpload(name string, size int64, data io.Reader) (string, error) {
 	if setting.Conf.Kodo.AccessKey == "" || setting.Conf.Kodo.SecretKey == "" {
 		return "", errors.New("qiniu config error")
@@ -76,6 +77,7 @@ func FileUpload(name string, size int64, data io.Reader) (string, error) {
 	return url, nil
 }
 
+// 删除文件
 func FileDelete(name string) error {
 	// new一个Bucket管理对象
 	c := kodo.New(0, qiniu_cfg)
