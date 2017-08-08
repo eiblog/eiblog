@@ -437,6 +437,7 @@ func HandleDisqusCreate(c *gin.Context) {
 	}
 }
 
+// 渲染页面
 func RenderHTMLFront(c *gin.Context, name string, data gin.H) {
 	var buf bytes.Buffer
 	err := Tmpl.ExecuteTemplate(&buf, name, data)

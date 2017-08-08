@@ -20,10 +20,12 @@ var (
 )
 
 func init() {
+	// 运行模式
 	if setting.Conf.RunMode == setting.PROD {
 		gin.SetMode(gin.ReleaseMode)
 		logd.SetLevel(logd.Lerror)
 	}
+
 	router = gin.Default()
 	store := sessions.NewCookieStore([]byte("eiblog321"))
 	store.Options(sessions.Options{

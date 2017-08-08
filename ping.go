@@ -105,6 +105,7 @@ func init() {
 	Pings = append(Pings, pr)
 }
 
+// ping
 func DoPings(slug string) {
 	for _, p := range Pings {
 		go p.PingFunc(slug)

@@ -18,6 +18,7 @@ const (
 	FAIL
 )
 
+// 月份转换
 var monthToDays = map[time.Month]int{
 	time.January:   31,
 	time.February:  28,
@@ -129,6 +130,7 @@ func ConvertStr(str string) string {
 	return JUST_NOW
 }
 
+// 获取天数
 func dayIn(year int, m time.Month) int {
 	if m == time.February && isLeap(year) {
 		return 29
@@ -136,6 +138,7 @@ func dayIn(year int, m time.Month) int {
 	return monthToDays[m]
 }
 
+// 是否是闰年
 func isLeap(year int) bool {
 	return year%4 == 0 && (year%100 != 0 || year%400 == 0)
 }

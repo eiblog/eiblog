@@ -30,6 +30,7 @@ type PutRet struct {
 	Key  string `json:"key"`
 }
 
+// 进度条
 func onProgress(fsize, uploaded int64) {
 	d := int(float64(uploaded) / float64(fsize) * 100)
 	if fsize == uploaded {
@@ -97,6 +98,7 @@ func FileDelete(name string) error {
 	return nil
 }
 
+// 修复路径
 func getKey(name string) string {
 	ext := filepath.Ext(name)
 	var key string

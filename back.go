@@ -16,6 +16,7 @@ import (
 	"gopkg.in/mgo.v2/bson"
 )
 
+// 是否登录
 func isLogin(c *gin.Context) bool {
 	session := sessions.Default(c)
 	v := session.Get("username")

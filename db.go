@@ -377,6 +377,7 @@ func GenerateExcerptAndRender(artc *Article) {
 		artc.Content = artc.Content[index:]
 	}
 
+	// 查找目录
 	content := renderPage([]byte(artc.Content))
 	index := regH.FindIndex(content)
 	if index != nil {
@@ -423,7 +424,9 @@ func AddArticle(artc *Article) error {
 			break
 		}
 	}
+
 	if !artc.IsDraft {
+		// 正式发布文章
 		defer GenerateExcerptAndRender(artc)
 		Ei.MapArticles[artc.Slug] = artc
 		Ei.Articles = append([]*Article{artc}, Ei.Articles...)
@@ -463,6 +466,7 @@ func DelArticles(ids ...int32) error {
 	return nil
 }
 
+// 从链表里删除文章
 func DelFromLinkedList(artc *Article) {
 	if artc.Prev == nil && artc.Next != nil {
 		artc.Next.Prev = nil
@@ -474,6 +478,7 @@ func DelFromLinkedList(artc *Article) {
 	}
 }
 
+// 将文章添加到链表
 func AddToLinkedList(id int32) {
 	i, artc := GetArticle(id)
 	if i == 0 && Ei.Articles[i+1].ID >= setting.Conf.General.StartID {

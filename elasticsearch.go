@@ -25,11 +25,13 @@ const (
 
 var es *ElasticService
 
+// 初始化 Elasticsearch 服务器
 func init() {
 	es = &ElasticService{url: "http://elasticsearch:9200", c: new(http.Client)}
 	initIndex()
 }
 
+// 创建索引
 func initIndex() {
 	mappings := fmt.Sprintf(`{"mappings":{"%s":{"properties":{"content":{"analyzer":"ik_syno","search_analyzer":"ik_syno","term_vector":"with_positions_offsets","type":"string"},"date":{"index":"not_analyzed","type":"date"},"slug":{"type":"string"},"tag":{"index":"not_analyzed","type":"string"},"title":{"analyzer":"ik_syno","search_analyzer":"ik_syno","term_vector":"with_positions_offsets","type":"string"}}}}}`, TYPE)
 	err := CreateIndexAndMappings(INDEX, TYPE, []byte(mappings))
@@ -38,6 +40,7 @@ func initIndex() {
 	}
 }
 
+// 查询
 func Elasticsearch(qStr string, size, from int) *ESSearchResult {
 	// 分析查询字符串
 	reg := regexp.MustCompile(`(tag|slug|date):`)
@@ -95,6 +98,7 @@ func Elasticsearch(qStr string, size, from int) *ESSearchResult {
 	return docs
 }
 
+// 添加或更新索引
 func ElasticIndex(artc *Article) error {
 	img := PickFirstImage(artc.Content)
 	mapping := map[string]interface{}{
@@ -109,6 +113,7 @@ func ElasticIndex(artc *Article) error {
 	return IndexOrUpdateDocument(INDEX, TYPE, artc.ID, b)
 }
 
+// 删除索引
 func ElasticDelIndex(ids []int32) error {
 	var target []string
 	for _, id := range ids {
@@ -127,10 +132,12 @@ type IndicesCreateResult struct {
 	Acknowledged bool `json:"acknowledged"`
 }
 
+// 返回 url
 func (s *ElasticService) ParseURL(format string, params ...interface{}) string {
 	return fmt.Sprintf(s.url+format, params...)
 }
 
+// Elastic 相关操作请求
 func (s *ElasticService) Do(req *http.Request) (interface{}, error) {
 	resp, err := s.c.Do(req)
 	if err != nil {
@@ -184,6 +191,7 @@ func CreateIndexAndMappings(index, typ string, mappings []byte) (err error) {
 	return nil
 }
 
+// 创建或更新索引
 func IndexOrUpdateDocument(index, typ string, id int32, doc []byte) (err error) {
 	req, err := http.NewRequest("PUT", es.ParseURL("/%s/%s/%d", index, typ, id), bytes.NewReader(doc))
 	if err != nil {
@@ -210,6 +218,7 @@ type ESDeleteResult struct {
 	} `json:"iterms"`
 }
 
+// 删除文档
 func DeleteDocument(index, typ string, ids []string) error {
 	var buff bytes.Buffer
 	for _, id := range ids {
@@ -244,6 +253,7 @@ func DeleteDocument(index, typ string, ids []string) error {
 	return nil
 }
 
+// 查询结果
 type ESSearchResult struct {
 	Took float32 `json:"took"`
 	Hits struct {
@@ -265,6 +275,7 @@ type ESSearchResult struct {
 	} `json:"hits"`
 }
 
+// DSL 语句查询文档
 func IndexQueryDSL(index, typ string, size, from int, dsl []byte) (*ESSearchResult, error) {
 	req, err := http.NewRequest("POST", es.ParseURL("/%s/%s/_search?size=%d&from=%d", index, typ, size, from), bytes.NewReader(dsl))
 	if err != nil {
