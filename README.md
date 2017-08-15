@@ -11,8 +11,8 @@
 整个博客系统涉及到模块如下：
 
 * 自动更新证书：
-  * 接入 [acme/autocert](https://github.com/golang/crypto/tree/master/acme/autocert)，在 TLS 层开启全自动更新证书，从此证书的更新再也不用惦记了。
-  * 如果你采用如 Nginx 代理，你可能需要 [acme.sh](https://github.com/Neilpang/acme.sh) 实现证书的自动。博主实现 aliyun dns 的自动验证方式，详见 [Makefile/gencert](https://github.com/eiblog/eiblog/blob/master/Makefile)。
+  * 接入 [acme/autocert](https://github.com/golang/crypto/tree/master/acme/autocert)，在 TLS 层开启全自动更新证书，从此证书的更新再也不用惦记了，不过 Go 的 HTTPS 兼容性不够好（不想兼容），在如部分 IE 和 UC 之类的浏览器不能访问，请悉知。
+  * 如果你采用如 Nginx 代理，推荐使用 [acme.sh](https://github.com/Neilpang/acme.sh) 实现证书的自动部署。博主实现 aliyun dns 的自动验证方式，详见 [Makefile/gencert](https://github.com/eiblog/eiblog/blob/master/Makefile)。
 * `MongoDB`，博客采用 mongodb 作为存储数据库。
 * `Elasticsearch`，采用 `elasticsearch` 作为博客的站内搜索，尽管占用内存稍高。
 * `Disqus`，作为博客评论系统，国内大部分被墙，故实现两种评论方式。
