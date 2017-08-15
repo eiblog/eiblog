@@ -95,7 +95,9 @@ $ docker run -d --name eisearch \
 | default_avatar.png | st.example.com/static/img/default_avatar.png | disqus 默认图片，[下载](https://st.deepzz.com/static/img/default_avatar.png) |
 | disqus.js          | st.example.com/static/js/disqus_xxx.js   | disqus 文件，你可以通过 https://short_name.disqus.com/embed.js 下载你的专属文件，并上传到七牛。更新配置文件 app.yml。 |
 
-> 注意：每次修改 views 内的以 `st_` 开头的文件，请将 `app.yml` 中的 staticversion 提高一个版本。 cdn 提到的文件下载，请复制链接进行下载，因为博主使用了防盗链功能。
+> 注意，cdn 提到的文件下载，请复制链接进行下载，因为博主使用了防盗链功能，还有：  
+  1、每次修改 app.yml 文件（如：更换 cdn 域名或更新头像），如果你不知道是否应该提高 staticversion 一个版本，那么最好提高一个 +1。  
+  2、每次手动修改 views 内的以 `st_` 开头的文件，请将 `app.yml` 中的 staticversion 提高一个版本。
 
 #### 配置说明
 走到这里，我相信只走到 `60%` 的路程。放弃还来得及。
@@ -141,7 +143,7 @@ $ docker run -d --name eisearch \
 | ----------- | ---------------------------------------- |
 | app.yml     | 整个程序的配置文件，里面已经列出了所有配置项的说明，这里不再阐述。        |
 | blackip.yml | 如果没有使用 `Nginx`，博客内置 `ip` 过滤系统。           |
-| es          | elasticsearch，非常强大的分布式搜索引擎，`github` 用的就是它。里面的配置基本不用修改，但 `es/analysis/synonym.txt` 是同义词，你可以照着已有的随意增加。注意，scripts 虽然是空的，但请保持存在。 |
+| es          | elasticsearch，非常强大的分布式搜索引擎，`github` 用的就是它。里面的配置基本不用修改，但 `es/analysis/synonym.txt` 是同义词，你可以照着已有的随意增加。注意，`es/config/scripts` 虽然是空的或，但请创建使它存在。 |
 | nginx       | 系统采用 `nginx` 作为代理(相信博客系统也不会独占一台服务器～)。请使用 `nginx.conf` 替换原 `nginx` 的配置。博客系统的配置文件是 `domain/eiblog.conf`，或则重命名(只要是满足`*.conf`)。`eiblog.conf`文件里面学问是最多的。或许你想一一弄懂，或许…。注意本配置需要更新 nginx 到最新版，openssl 更新到1.0.2j，具体请到 Jerry Qu 的 [本博客 Nginx 配置之完整篇](https://imququ.com/post/my-nginx-conf.html) 查看，了解详情。 |
 | scts        | 存放 ct 文件。                                |
 | ssl         | 这里存放了所有证书相关的内容。                          |
