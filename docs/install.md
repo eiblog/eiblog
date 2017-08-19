@@ -141,7 +141,7 @@ $ docker run -d --name eisearch \
 | ----------- | ---------------------------------------- |
 | app.yml     | 整个程序的配置文件，里面已经列出了所有配置项的说明，这里不再阐述。        |
 | blackip.yml | 如果没有使用 `Nginx`，博客内置 `ip` 过滤系统。           |
-| es          | elasticsearch，非常强大的分布式搜索引擎，`github` 用的就是它。里面的配置基本不用修改，但 `es/analysis/synonym.txt` 是同义词，你可以照着已有的随意增加。注意，scripts 虽然是空的，但请保持存在。 |
+| es          | elasticsearch，非常强大的分布式搜索引擎，`github` 用的就是它。里面的配置基本不用修改，但 `es/analysis/synonym.txt` 是同义词，你可以照着已有的随意增加。scripts 是 es 的脚本文件夹 |
 | nginx       | 系统采用 `nginx` 作为代理(相信博客系统也不会独占一台服务器～)。请使用 `nginx.conf` 替换原 `nginx` 的配置。博客系统的配置文件是 `domain/eiblog.conf`，或则重命名(只要是满足`*.conf`)。`eiblog.conf`文件里面学问是最多的。或许你想一一弄懂，或许…。注意本配置需要更新 nginx 到最新版，openssl 更新到1.0.2j，具体请到 Jerry Qu 的 [本博客 Nginx 配置之完整篇](https://imququ.com/post/my-nginx-conf.html) 查看，了解详情。 |
 | scts        | 存放 ct 文件。                                |
 | ssl         | 这里存放了所有证书相关的内容。                          |
@@ -185,8 +185,6 @@ $ docker run -d --name eiblog --restart=always \
 请确认你已经成功安装好 `Nginx`、`docker`、`docker-compose`。Nginx 请一定参照 Jerry Qu 的[Nginx 配置完整篇](https://imququ.com/post/my-nginx-conf.html)。
 
 首先，请将本地测试好的 `conf`，`docker-compose.yml` 文件夹和文件上传至服务器。`conf` 建议存储到服务器 `/data/eiblog` 下，`docker-compose.yml` 存放在你使用方便的地方。
-
-> 注意检查 `conf/es/config/scripts` 空文件夹是否存在，不存在即创建。
 
 ``` sh
 $ tree /data/eiblog -L 1
