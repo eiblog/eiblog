@@ -95,7 +95,9 @@ $ docker run -d --name eisearch \
 | default_avatar.png | st.example.com/static/img/default_avatar.png | disqus 默认图片，[下载](https://st.deepzz.com/static/img/default_avatar.png) |
 | disqus.js          | st.example.com/static/js/disqus_xxx.js   | disqus 文件，你可以通过 https://short_name.disqus.com/embed.js 下载你的专属文件，并上传到七牛。更新配置文件 app.yml。 |
 
-> 注意：每次修改 views 内的以 `st_` 开头的文件，请将 `app.yml` 中的 staticversion 提高一个版本。 cdn 提到的文件下载，请复制链接进行下载，因为博主使用了防盗链功能。
+> 注意，cdn 提到的文件下载，请复制链接进行下载，因为博主使用了防盗链功能，还有：  
+  1、每次修改 app.yml 文件（如：更换 cdn 域名或更新头像），如果你不知道是否应该提高 staticversion 一个版本，那么最好提高一个 +1。  
+  2、每次手动修改 views 内的以 `st_` 开头的文件，请将 `app.yml` 中的 staticversion 提高一个版本。
 
 #### 配置说明
 走到这里，我相信只走到 `60%` 的路程。放弃还来得及。

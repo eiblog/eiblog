@@ -11,8 +11,8 @@
 整个博客系统涉及到模块如下：
 
 * 自动更新证书：
-  * 接入 [acme/autocert](https://github.com/golang/crypto/tree/master/acme/autocert)，在 TLS 层开启全自动更新证书，从此证书的更新再也不用惦记了。
-  * 如果你采用如 Nginx 代理，你可能需要 [acme.sh](https://github.com/Neilpang/acme.sh) 实现证书的自动。博主实现 aliyun dns 的自动验证方式，详见 [Makefile/gencert](https://github.com/eiblog/eiblog/blob/master/Makefile)。
+  * 接入 [acme/autocert](https://github.com/golang/crypto/tree/master/acme/autocert)，在 TLS 层开启全自动更新证书，从此证书的更新再也不用惦记了，不过 Go 的 HTTPS 兼容性不够好（不想兼容），在如部分 IE 和 UC 之类的浏览器不能访问，请悉知。
+  * 如果你采用如 Nginx 代理，推荐使用 [acme.sh](https://github.com/Neilpang/acme.sh) 实现证书的自动部署。博主实现 aliyun dns 的自动验证方式，详见 [Makefile/gencert](https://github.com/eiblog/eiblog/blob/master/Makefile)。
 * `MongoDB`，博客采用 mongodb 作为存储数据库。
 * `Elasticsearch`，采用 `elasticsearch` 作为博客的站内搜索，尽管占用内存稍高。
 * `Disqus`，作为博客评论系统，国内大部分被墙，故实现两种评论方式。
@@ -65,8 +65,8 @@
   * `CT`，证书透明度检测，提供一个开放的审计和监控系统。可以让任何域名所有者或者 CA 确定证书是否被错误签发或者被恶意使用，从而提高 HTTPS 网站的安全性。
   * `OSCP`，在线证书状态协议。用来检验证书合法性的在线查询服务.
   * `HSTS`，强制客户端（如浏览器）使用 HTTPS 与服务器创建连接。可以很好的解决 HTTPS 降级攻击。
-  * `HPKP`，HTTP 公钥固定扩展，防范由「伪造或不正当手段获得网站证书」造成的中间人攻击。该功能让我们选择信任哪些`CA`。
-  * `SSL Protocols`，罗列支持的 `TLS` 协议，SSLv3 被证实是不安全的。
+  * `HPKP`，HTTP 公钥固定扩展，防范由「伪造或不正当手段获得网站证书」造成的中间人攻击。该功能让我们选择信任哪些`CA`。请不要轻易尝试 Nginx 线上运行，因为该配置目前只指定了 Letsencrypt X3 和 TrustAsia G5 证书 pin-sha256。
+  * `SSL Protocols`，罗列支持的 `TLS` 协议，SSLv3 被证实是不安全的。
   * `SSL dhparam`，迪菲赫尔曼密钥交换。
   * `Cipher suite`，罗列服务器支持加密套件。
 6. 文章评论数量（不重要）后端跑定时脚本，定时更新，所以有时评论数是不对的。这样减少了 api 调用，又再次达到加速访问的目的。
