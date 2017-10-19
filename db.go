@@ -213,7 +213,7 @@ func generateTopic() {
 		Author:     setting.Conf.Account.Username,
 		Title:      "关于",
 		Slug:       "about",
-		CreateTime: time.Now(),
+		CreateTime: time.Time{},
 		UpdateTime: time.Time{},
 	}
 	blogroll := &Article{
@@ -221,7 +221,7 @@ func generateTopic() {
 		Author:     setting.Conf.Account.Username,
 		Title:      "友情链接",
 		Slug:       "blogroll",
-		CreateTime: time.Now(),
+		CreateTime: time.Time{},
 		UpdateTime: time.Time{},
 	}
 	err := db.Insert(DB, COLLECTION_ARTICLE, blogroll)
