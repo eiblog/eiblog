@@ -5,7 +5,7 @@ dist: trusty              # 在ubuntu:trusty
 language: go              # 声明构建语言环境
 
 go:                       # 只构建最新版本
-  - 1.8
+  - tip
 
 services:                  # docker环境
   - docker
@@ -26,7 +26,7 @@ after_success:
   #   docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD" registry.cn-hangzhou.aliyuncs.com;
   #   docker push registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog;
   #   fi
-  - docker push registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog
+  - docker push registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog:$TRAVIS_TAG
 
 before_deploy:
    - ./dist.sh
