@@ -19,7 +19,7 @@ install:
 script:
   - glide up
   - GOOS=linux GOARCH=amd64 go build                                    # 编译版本
-  - docker build -t registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog .   # 构建镜像
+  - docker build -t registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog:$TRAVIS_TAG .   # 构建镜像
 
 after_success:
   # - if [ "$TRAVIS_BRANCH" =~ ^v[0-9](\.[0-9])+.*$ ]; then
