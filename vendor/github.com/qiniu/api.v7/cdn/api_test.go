@@ -1,75 +1,86 @@
 package cdn
 
 import (
-	"math/rand"
 	"os"
-	"reflect"
-	"strconv"
 	"testing"
-
 	"time"
 
-	"github.com/qiniu/api.v7/kodo"
+	"github.com/qiniu/api.v7/auth/qbox"
 )
+
+//global variables
 
 var (
-	ak             = os.Getenv("QINIU_ACCESS_KEY")
-	sk             = os.Getenv("QINIU_SECRET_KEY")
-	domain         = os.Getenv("QINIU_TEST_DOMAIN")
-	testBucketName = os.Getenv("QINIU_TEST_BUCKET")
+	ak     = os.Getenv("QINIU_ACCESS_KEY")
+	sk     = os.Getenv("QINIU_SECRET_KEY")
+	domain = os.Getenv("QINIU_TEST_DOMAIN")
 
-	testDate = time.Now().AddDate(0, 0, -3).Format("2006-01-02")
-	bucket   = newBucket()
-	client   *kodo.Client
-	testKey  = "fusionTest"
-	testURL  string
+	layout    = "2006-01-02"
+	now       = time.Now()
+	startDate = now.AddDate(0, 0, -2).Format(layout)
+	endDate   = now.AddDate(0, 0, -1).Format(layout)
+	logDate   = now.AddDate(0, 0, -1).Format(layout)
+
+	testUrls = []string{
+		"http://gosdk.qiniudn.com/qiniu1.png",
+		"http://gosdk.qiniudn.com/qiniu2.png",
+	}
+	testDirs = []string{
+		"http://gosdk.qiniudn.com/dir1/",
+		"http://gosdk.qiniudn.com/dir2/",
+	}
 )
 
-func init() {
-	kodo.SetMac(ak, sk)
-	rand.Seed(time.Now().UnixNano())
-	testKey += strconv.Itoa(rand.Int())
-	bucket.PutFile(nil, nil, testKey, "doc.go", nil)
-	testURL = domain + "/" + testKey
+var mac *qbox.Mac
+var cdnManager *CdnManager
 
+func init() {
+	if ak == "" || sk == "" {
+		panic("please run ./test-env.sh first")
+	}
+	mac = qbox.NewMac(ak, sk)
+	cdnManager = NewCdnManager(mac)
 }
 
-func TestGetBandWidthData(t *testing.T) {
+//TestGetBandwidthData
+func TestGetBandwidthData(t *testing.T) {
 	type args struct {
 		startDate   string
 		endDate     string
 		granularity string
 		domainList  []string
 	}
-	tests := []struct {
-		name        string
-		args        args
-		wantTraffic TrafficResp
-		wantErr     bool
+
+	testCases := []struct {
+		name     string
+		args     args
+		wantCode int
 	}{
 		{
-			name: "BandWidthTest_1",
+			name: "CdnManager_TestGetBandwidthData",
 			args: args{
-				testDate,
-				testDate,
+				startDate,
+				endDate,
 				"5min",
 				[]string{domain},
 			},
+			wantCode: 200,
 		},
 	}
-	kodo.SetMac(ak, sk)
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			_, err := GetBandWidthData(tt.args.startDate, tt.args.endDate, tt.args.granularity, tt.args.domainList)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("GetBandWidthData() error = %v, wantErr %v", err, tt.wantErr)
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			ret, err := cdnManager.GetBandwidthData(tc.args.startDate, tc.args.endDate,
+				tc.args.granularity, tc.args.domainList)
+			if err != nil || ret.Code != tc.wantCode {
+				t.Errorf("GetBandwidth() error = %v, %v", err, ret.Error)
 				return
 			}
-
 		})
 	}
 }
 
+//TestGetFluxData
 func TestGetFluxData(t *testing.T) {
 	type args struct {
 		startDate   string
@@ -77,167 +88,160 @@ func TestGetFluxData(t *testing.T) {
 		granularity string
 		domainList  []string
 	}
-	tests := []struct {
-		name        string
-		args        args
-		wantTraffic TrafficResp
-		wantErr     bool
+
+	testCases := []struct {
+		name     string
+		args     args
+		wantCode int
 	}{
 		{
-			name: "BandWidthTest_1",
+			name: "CdnManager_TestGetFluxData",
 			args: args{
-				testDate,
-				testDate,
+				startDate,
+				endDate,
 				"5min",
 				[]string{domain},
 			},
+			wantCode: 200,
 		},
 	}
-	kodo.SetMac(ak, sk)
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			_, err := GetFluxData(tt.args.startDate, tt.args.endDate, tt.args.granularity, tt.args.domainList)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("GetFluxData() error = %v, wantErr %v", err, tt.wantErr)
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			ret, err := cdnManager.GetFluxData(tc.args.startDate, tc.args.endDate,
+				tc.args.granularity, tc.args.domainList)
+			if err != nil || ret.Code != tc.wantCode {
+				t.Errorf("GetFlux() error = %v, %v", err, ret.Error)
 				return
 			}
 		})
 	}
 }
 
-func TestRefreshUrlsAndDirs(t *testing.T) {
-	kodo.SetMac(ak, sk)
-
-	type args struct {
-		urls []string
-		dirs []string
-	}
-	tests := []struct {
-		name       string
-		args       args
-		wantResult RefreshResp
-		wantErr    bool
-	}{
-		{
-			name: "refresh_test_1",
-			args: args{
-				urls: []string{testURL},
-			},
-			wantErr: false,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			_, err := RefreshUrlsAndDirs(tt.args.urls, tt.args.dirs)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("RefreshUrlsAndDirs() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-
-		})
-	}
-}
-
+//TestRefreshUrls
 func TestRefreshUrls(t *testing.T) {
 	type args struct {
 		urls []string
 	}
-	tests := []struct {
-		name       string
-		args       args
-		wantResult RefreshResp
-		wantErr    bool
+
+	testCases := []struct {
+		name     string
+		args     args
+		wantCode int
 	}{
 		{
-			name: "refresh_test_1",
+			name: "CdnManager_TestRefresUrls",
 			args: args{
-				urls: []string{testURL},
+				urls: testUrls,
 			},
-			wantErr: false,
+			wantCode: 200,
 		},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			_, err := RefreshUrls(tt.args.urls)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("RefreshUrls() error = %v, wantErr %v", err, tt.wantErr)
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			ret, err := cdnManager.RefreshUrls(tc.args.urls)
+			if err != nil || ret.Code != tc.wantCode {
+				t.Errorf("RefreshUrls() error = %v, %v", err, ret.Error)
 				return
 			}
 		})
 	}
 }
 
+//TestRefreshDirs
 func TestRefreshDirs(t *testing.T) {
 	type args struct {
 		dirs []string
 	}
-	tests := []struct {
-		name       string
-		args       args
-		wantResult RefreshResp
-		wantErr    bool
-	}{}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			gotResult, err := RefreshDirs(tt.args.dirs)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("RefreshDirs() error = %v, wantErr %v", err, tt.wantErr)
+
+	testCases := []struct {
+		name     string
+		args     args
+		wantCode int
+	}{
+		{
+			name: "CdnManager_TestRefreshDirs",
+			args: args{
+				dirs: testDirs,
+			},
+			wantCode: 200,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			ret, err := cdnManager.RefreshDirs(tc.args.dirs)
+			if err != nil || ret.Code != tc.wantCode {
+				if ret.Error == "refresh dir limit error" {
+					t.Logf("RefreshDirs() error=%v", ret.Error)
+				} else {
+					t.Errorf("RefreshDirs() error = %v, %v", err, ret.Error)
+				}
 				return
-			}
-			if !reflect.DeepEqual(gotResult, tt.wantResult) {
-				t.Errorf("RefreshDirs() = %v, want %v", gotResult, tt.wantResult)
 			}
 		})
 	}
 }
 
+//TestPrefetchUrls
 func TestPrefetchUrls(t *testing.T) {
 	type args struct {
 		urls []string
 	}
-	tests := []struct {
-		name       string
-		args       args
-		wantResult PrefetchResp
-		wantErr    bool
+
+	testCases := []struct {
+		name     string
+		args     args
+		wantCode int
 	}{
 		{
-			name: "refresh_test_1",
+			name: "CdnManager_PrefetchUrls",
 			args: args{
-				urls: []string{testURL},
+				urls: testUrls,
 			},
-			wantErr: false,
+			wantCode: 200,
 		},
 	}
-	kodo.SetMac(ak, sk)
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			_, err := PrefetchUrls(tt.args.urls)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("PrefetchUrls() error = %v, wantErr %v", err, tt.wantErr)
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			ret, err := cdnManager.PrefetchUrls(tc.args.urls)
+			if err != nil || ret.Code != tc.wantCode {
+				t.Errorf("PrefetchUrls() error = %v, %v", err, ret.Error)
 				return
 			}
 		})
 	}
 }
 
-func newBucket() (bucket kodo.Bucket) {
-
-	ak := os.Getenv("QINIU_ACCESS_KEY")
-	sk := os.Getenv("QINIU_SECRET_KEY")
-	if ak == "" || sk == "" {
-		panic("require ACCESS_KEY & SECRET_KEY")
+//TestGetCdnLogList
+func TestGetCdnLogList(t *testing.T) {
+	type args struct {
+		date    string
+		domains []string
 	}
-	kodo.SetMac(ak, sk)
 
-	testBucketName = os.Getenv("QINIU_TEST_BUCKET")
-	domain = os.Getenv("QINIU_TEST_DOMAIN")
-	if testBucketName == "" || domain == "" {
-		panic("require test env")
+	testCases := []struct {
+		name string
+		args args
+	}{
+		{
+			name: "CdnManager_TestGetCdnLogList",
+			args: args{
+				date:    logDate,
+				domains: []string{domain},
+			},
+		},
 	}
-	client = kodo.NewWithoutZone(nil)
 
-	return client.Bucket(testBucketName)
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			_, err := cdnManager.GetCdnLogList(tc.args.date, tc.args.domains)
+			if err != nil {
+				t.Errorf("GetCdnLogList() error = %v", err)
+				return
+			}
+		})
+	}
 }

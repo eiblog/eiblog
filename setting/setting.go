@@ -51,8 +51,8 @@ type Config struct {
 		V   string
 		T   string
 	}
-	Kodo struct { // 七牛CDN
-		Name      string
+	Qiniu struct { // 七牛CDN
+		Bucket    string
 		Domain    string
 		AccessKey string
 		SecretKey string

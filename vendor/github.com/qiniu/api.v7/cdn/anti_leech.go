@@ -7,10 +7,9 @@ import (
 	"time"
 )
 
-// CreateTimestampAntileechURL 构建带时间戳防盗链的链接
-// encryptKey 七牛防盗链key
-func CreateTimestampAntileechURL(urlStr string, encryptKey string, durationInSeconds int64) (antileechURL string, err error) {
-
+// CreateTimestampAntileechURL 用来构建七牛CDN时间戳防盗链的访问链接
+func CreateTimestampAntileechURL(urlStr string, encryptKey string,
+	durationInSeconds int64) (antileechURL string, err error) {
 	u, err := url.Parse(urlStr)
 	if err != nil {
 		return
@@ -27,7 +26,6 @@ func CreateTimestampAntileechURL(urlStr string, encryptKey string, durationInSec
 	if u.RawQuery == "" {
 		antileechURL = u.String() + "?" + q.Encode()
 	} else {
-
 		antileechURL = u.String() + "&" + q.Encode()
 	}
 

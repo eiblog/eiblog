@@ -1,5 +1,6 @@
 package: github.com/eiblog/eiblog
 import:
+- package: github.com/deepzz0/logd
 - package: github.com/eiblog/blackfriday
 - package: github.com/eiblog/utils
   subpackages:
@@ -7,19 +8,20 @@ import:
   - mgo
   - tmpl
   - uuid
+- package: github.com/gin-gonic/autotls
 - package: github.com/gin-gonic/contrib
   subpackages:
   - sessions
 - package: github.com/gin-gonic/gin
-  version: ~1.1.4
+- package: github.com/qiniu/api.v7
+  subpackages:
+  - auth/qbox
+  - storage
 - package: gopkg.in/mgo.v2
   subpackages:
   - bson
 - package: gopkg.in/yaml.v2
-- package: qiniupkg.com/api.v7
+testImport:
+- package: github.com/stretchr/testify
   subpackages:
-  - kodo
-  - kodocli
-- package: qiniupkg.com/x
-  subpackages:
-  - url.v7
+  - assert

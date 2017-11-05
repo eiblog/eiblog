@@ -4,61 +4,45 @@ import (
 	"crypto/hmac"
 	"crypto/sha1"
 	"encoding/base64"
+	"fmt"
 	"io"
 	"net/http"
 
-	. "github.com/qiniu/api.v7/conf"
 	"github.com/qiniu/x/bytes.v7/seekable"
 )
 
-// ----------------------------------------------------------
-
+// Mac 七牛AK/SK的对象，AK/SK可以从 https://portal.qiniu.com/user/key 获取。
 type Mac struct {
 	AccessKey string
 	SecretKey []byte
 }
 
+// NewMac 构建一个新的拥有AK/SK的对象
 func NewMac(accessKey, secretKey string) (mac *Mac) {
-
-	if accessKey == "" {
-		accessKey, secretKey = ACCESS_KEY, SECRET_KEY
-	}
 	return &Mac{accessKey, []byte(secretKey)}
 }
 
+// Sign 对数据进行签名，一般用于私有空间下载用途
 func (mac *Mac) Sign(data []byte) (token string) {
-
 	h := hmac.New(sha1.New, mac.SecretKey)
 	h.Write(data)
 
 	sign := base64.URLEncoding.EncodeToString(h.Sum(nil))
-	return mac.AccessKey + ":" + sign[:27]
+	return fmt.Sprintf("%s:%s", mac.AccessKey, sign)
 }
 
+// SignWithData 对数据进行签名，一般用于上传凭证的生成用途
 func (mac *Mac) SignWithData(b []byte) (token string) {
-
-	blen := base64.URLEncoding.EncodedLen(len(b))
-
-	key := mac.AccessKey
-	nkey := len(key)
-	ret := make([]byte, nkey+30+blen)
-
-	base64.URLEncoding.Encode(ret[nkey+30:], b)
-
+	encodedData := base64.URLEncoding.EncodeToString(b)
 	h := hmac.New(sha1.New, mac.SecretKey)
-	h.Write(ret[nkey+30:])
+	h.Write([]byte(encodedData))
 	digest := h.Sum(nil)
-
-	copy(ret, key)
-	ret[nkey] = ':'
-	base64.URLEncoding.Encode(ret[nkey+1:], digest)
-	ret[nkey+29] = ':'
-
-	return string(ret)
+	sign := base64.URLEncoding.EncodeToString(digest)
+	return fmt.Sprintf("%s:%s:%s", mac.AccessKey, sign, encodedData)
 }
 
-func (mac *Mac) SignRequest(req *http.Request, incbody bool) (token string, err error) {
-
+// SignRequest 对数据进行签名，一般用于管理凭证的生成
+func (mac *Mac) SignRequest(req *http.Request) (token string, err error) {
 	h := hmac.New(sha1.New, mac.SecretKey)
 
 	u := req.URL
@@ -68,7 +52,7 @@ func (mac *Mac) SignRequest(req *http.Request, incbody bool) (token string, err 
 	}
 	io.WriteString(h, data+"\n")
 
-	if incbody {
+	if incBody(req) {
 		s2, err2 := seekable.New(req)
 		if err2 != nil {
 			return "", err2
@@ -77,18 +61,74 @@ func (mac *Mac) SignRequest(req *http.Request, incbody bool) (token string, err 
 	}
 
 	sign := base64.URLEncoding.EncodeToString(h.Sum(nil))
-	token = mac.AccessKey + ":" + sign
+	token = fmt.Sprintf("%s:%s", mac.AccessKey, sign)
 	return
 }
 
-func (mac *Mac) VerifyCallback(req *http.Request) (bool, error) {
+// SignRequestV2 对数据进行签名，一般用于高级管理凭证的生成
+func (mac *Mac) SignRequestV2(req *http.Request) (token string, err error) {
+	h := hmac.New(sha1.New, mac.SecretKey)
 
+	u := req.URL
+
+	//write method path?query
+	io.WriteString(h, fmt.Sprintf("%s %s", req.Method, u.Path))
+	if u.RawQuery != "" {
+		io.WriteString(h, "?")
+		io.WriteString(h, u.RawQuery)
+	}
+
+	//write host and posrt
+	io.WriteString(h, "\nHost: ")
+	io.WriteString(h, req.Host)
+	if req.URL.Port() != "" {
+		io.WriteString(h, ":")
+		io.WriteString(h, req.URL.Port())
+	}
+
+	//write content type
+	contentType := req.Header.Get("Content-Type")
+	if contentType != "" {
+		io.WriteString(h, "\n")
+		io.WriteString(h, fmt.Sprintf("Content-Type: %s", contentType))
+	}
+
+	io.WriteString(h, "\n\n")
+
+	//write body
+	if incBodyV2(req) {
+		s2, err2 := seekable.New(req)
+		if err2 != nil {
+			return "", err2
+		}
+		h.Write(s2.Bytes())
+	}
+
+	sign := base64.URLEncoding.EncodeToString(h.Sum(nil))
+	token = fmt.Sprintf("%s:%s", mac.AccessKey, sign)
+	return
+}
+
+// 管理凭证生成时，是否同时对request body进行签名
+func incBody(req *http.Request) bool {
+	return req.Body != nil &&
+		req.Header.Get("Content-Type") == "application/x-www-form-urlencoded"
+}
+
+func incBodyV2(req *http.Request) bool {
+	contentType := req.Header.Get("Content-Type")
+	return req.Body != nil && (contentType == "application/x-www-form-urlencoded" ||
+		contentType == "application/json")
+}
+
+// VerifyCallback 验证上传回调请求是否来自七牛
+func (mac *Mac) VerifyCallback(req *http.Request) (bool, error) {
 	auth := req.Header.Get("Authorization")
 	if auth == "" {
 		return false, nil
 	}
 
-	token, err := mac.SignRequest(req, true)
+	token, err := mac.SignRequest(req)
 	if err != nil {
 		return false, err
 	}
@@ -96,76 +136,17 @@ func (mac *Mac) VerifyCallback(req *http.Request) (bool, error) {
 	return auth == "QBox "+token, nil
 }
 
-// ---------------------------------------------------------------------------------------
-
+// Sign 一般用于下载凭证的签名
 func Sign(mac *Mac, data []byte) string {
-
-	if mac == nil {
-		mac = NewMac(ACCESS_KEY, SECRET_KEY)
-	}
 	return mac.Sign(data)
 }
 
+// SignWithData 一般用于上传凭证的签名
 func SignWithData(mac *Mac, data []byte) string {
-
-	if mac == nil {
-		mac = NewMac(ACCESS_KEY, SECRET_KEY)
-	}
 	return mac.SignWithData(data)
 }
 
-// ---------------------------------------------------------------------------------------
-
-type Transport struct {
-	mac       Mac
-	Transport http.RoundTripper
+// VerifyCallback 验证上传回调请求是否来自七牛
+func VerifyCallback(mac *Mac, req *http.Request) (bool, error) {
+	return mac.VerifyCallback(req)
 }
-
-func incBody(req *http.Request) bool {
-
-	if req.Body == nil {
-		return false
-	}
-	if ct, ok := req.Header["Content-Type"]; ok {
-		switch ct[0] {
-		case "application/x-www-form-urlencoded":
-			return true
-		}
-	}
-	return false
-}
-
-func (t *Transport) NestedObject() interface{} {
-
-	return t.Transport
-}
-
-func (t *Transport) RoundTrip(req *http.Request) (resp *http.Response, err error) {
-
-	token, err := t.mac.SignRequest(req, incBody(req))
-	if err != nil {
-		return
-	}
-	req.Header.Set("Authorization", "QBox "+token)
-	return t.Transport.RoundTrip(req)
-}
-
-func NewTransport(mac *Mac, transport http.RoundTripper) *Transport {
-
-	if mac == nil {
-		mac = NewMac(ACCESS_KEY, SECRET_KEY)
-	}
-	if transport == nil {
-		transport = http.DefaultTransport
-	}
-	t := &Transport{mac: *mac, Transport: transport}
-	return t
-}
-
-func NewClient(mac *Mac, transport http.RoundTripper) *http.Client {
-
-	t := NewTransport(mac, transport)
-	return &http.Client{Transport: t}
-}
-
-// ---------------------------------------------------------------------------------------

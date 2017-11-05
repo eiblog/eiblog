@@ -6,7 +6,7 @@ $ curl -L https://github.com/eiblog/eiblog/releases/download/v1.0.0/eiblog-v1.0.
 
 2、如果有幸你也是 `Gopher`，相信你会亲自动手，你可以通过：
 ``` sh
-$ go get -u https://github.com/eiblog/eiblog
+$ git clone https://github.com/eiblog/eiblog.git
 ```
 进行源码编译二进制文件运行。
 

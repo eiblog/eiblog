@@ -64,7 +64,7 @@ func HandleLoginPost(c *gin.Context) {
 		return
 	}
 	if Ei.Username != user || !VerifyPasswd(Ei.Password, user, pwd) {
-		logd.Printf("账号或密码错误 %s, %s", user, pwd)
+		logd.Printf("账号或密码错误 %s, %s\n", user, pwd)
 		c.Redirect(http.StatusFound, "/admin/login")
 		return
 	}
@@ -78,7 +78,7 @@ func HandleLoginPost(c *gin.Context) {
 }
 
 func GetBack() gin.H {
-	return gin.H{"Author": Ei.Username, "Kodo": setting.Conf.Kodo}
+	return gin.H{"Author": Ei.Username, "Qiniu": setting.Conf.Qiniu}
 }
 
 // 个人配置

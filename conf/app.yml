@@ -53,8 +53,8 @@ google:
   v: "1"
   t: pageview
 # 七牛CDN
-kodo:
-  name: eiblog
+qiniu:
+  bucket: eiblog
   domain: st.deepzz.com
   accesskey: MB6AXl_Sj_mmFsL-Lt59Dml2Vmy2o8XMmiCbbSeC
   secretkey: BIrMy0fsZ0_SHNceNXk3eDuo7WmVYzj2-zrmd5Tf

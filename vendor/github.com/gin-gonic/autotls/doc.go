@@ -1,4 +1,4 @@
-// Support Let's Encrypt for a Go server application.
+// Package autotls support Let's Encrypt for a Go server application.
 //
 // 	package main
 //

@@ -86,7 +86,7 @@ func GetBase() gin.H {
 		"BTitle":   Ei.BTitle,
 		"BeiAn":    Ei.BeiAn,
 		"Domain":   setting.Conf.Mode.Domain,
-		"Kodo":     setting.Conf.Kodo,
+		"Qiniu":    setting.Conf.Qiniu,
 		"Disqus":   setting.Conf.Disqus,
 	}
 }
