@@ -265,7 +265,6 @@ $(document).ready(function() {
 
     function autoSaveListener() {
         setInterval(function() {
-            idInput.val(cid);
             var data = form.serialize();
 
             if (savedData != data && !locked) {
@@ -275,7 +274,7 @@ $(document).ready(function() {
                 $.post(formAction, data + '&do=auto', function(o) {
                     savedData = data;
                     lastSaveTime = o.time;
-                    cid = o.cid;
+                    idInput.val(o.cid);
                     autoSave.text('已保存' + ' (' + o.time + ')').effect('highlight', 1000);
                     locked = false;
                 }, 'json');
