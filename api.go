@@ -11,8 +11,8 @@ import (
 
 	"github.com/eiblog/eiblog/setting"
 	"github.com/eiblog/utils/logd"
+	"github.com/eiblog/utils/mgo"
 	"github.com/gin-gonic/gin"
-	"gopkg.in/mgo.v2/bson"
 )
 
 const (
@@ -66,7 +66,7 @@ func apiAccount(c *gin.Context) {
 		return
 	}
 
-	err := UpdateAccountField(bson.M{"$set": bson.M{"email": e, "phonen": pn, "address": ad}})
+	err := UpdateAccountField(mgo.M{"$set": mgo.M{"email": e, "phonen": pn, "address": ad}})
 	if err != nil {
 		responseNotice(c, NOTICE_NOTICE, err.Error(), "")
 		return
@@ -89,7 +89,7 @@ func apiBlog(c *gin.Context) {
 		return
 	}
 
-	err := UpdateAccountField(bson.M{"$set": bson.M{"blogger.blogname": bn, "blogger.btitle": bt, "blogger.beian": ba, "blogger.subtitle": st, "blogger.seriessay": ss, "blogger.archivessay": as}})
+	err := UpdateAccountField(mgo.M{"$set": mgo.M{"blogger.blogname": bn, "blogger.btitle": bt, "blogger.beian": ba, "blogger.subtitle": st, "blogger.seriessay": ss, "blogger.archivessay": as}})
 	if err != nil {
 		responseNotice(c, NOTICE_NOTICE, err.Error(), "")
 		return
@@ -124,7 +124,7 @@ func apiPassword(c *gin.Context) {
 	}
 	newPwd := EncryptPasswd(Ei.Username, nw)
 
-	err := UpdateAccountField(bson.M{"$set": bson.M{"password": newPwd}})
+	err := UpdateAccountField(mgo.M{"$set": mgo.M{"password": newPwd}})
 	if err != nil {
 		responseNotice(c, NOTICE_NOTICE, err.Error(), "")
 		return
@@ -254,7 +254,7 @@ func apiPostAdd(c *gin.Context) {
 	if CheckBool(update) {
 		artc.UpdateTime = time.Now()
 	}
-	err = UpdateArticle(bson.M{"id": artc.ID}, artc)
+	err = UpdateArticle(mgo.M{"id": artc.ID}, artc)
 	if err != nil {
 		logd.Error(err)
 		return

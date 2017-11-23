@@ -13,9 +13,7 @@ import (
 	"github.com/eiblog/blackfriday"
 	"github.com/eiblog/eiblog/setting"
 	"github.com/eiblog/utils/logd"
-	db "github.com/eiblog/utils/mgo"
-	"gopkg.in/mgo.v2"
-	"gopkg.in/mgo.v2/bson"
+	"github.com/eiblog/utils/mgo"
 )
 
 // 数据库及表名
@@ -62,40 +60,20 @@ var (
 
 func init() {
 	// 数据库加索引
-	ms, c := db.Connect(DB, COLLECTION_ACCOUNT)
-	index := mgo.Index{
-		Key:        []string{"username"},
-		Unique:     true,
-		DropDups:   true,
-		Background: true,
-		Sparse:     true,
-	}
-	if err := c.EnsureIndex(index); err != nil {
+	err := mgo.Index(DB, COLLECTION_ACCOUNT, []string{"username"})
+	if err != nil {
 		logd.Fatal(err)
 	}
-	ms.Close()
-	ms, c = db.Connect(DB, COLLECTION_ARTICLE)
-	index = mgo.Index{
-		Key:        []string{"id"},
-		Unique:     true,
-		DropDups:   true,
-		Background: true,
-		Sparse:     true,
-	}
-	if err := c.EnsureIndex(index); err != nil {
+
+	err = mgo.Index(DB, COLLECTION_ARTICLE, []string{"id"})
+	if err != nil {
 		logd.Fatal(err)
 	}
-	index = mgo.Index{
-		Key:        []string{"slug"},
-		Unique:     true,
-		DropDups:   true,
-		Background: true,
-		Sparse:     true,
-	}
-	if err := c.EnsureIndex(index); err != nil {
+
+	err = mgo.Index(DB, COLLECTION_ARTICLE, []string{"slug"})
+	if err != nil {
 		logd.Fatal(err)
 	}
-	ms.Close()
 	// 读取帐号信息
 	Ei = loadAccount()
 	// 获取文章数据
@@ -111,7 +89,7 @@ func init() {
 // 读取或初始化帐号信息
 func loadAccount() (a *Account) {
 	a = &Account{}
-	err := db.FindOne(DB, COLLECTION_ACCOUNT, bson.M{"username": setting.Conf.Account.Username}, a)
+	err := mgo.FindOne(DB, COLLECTION_ACCOUNT, mgo.M{"username": setting.Conf.Account.Username}, a)
 	// 初始化用户数据
 	if err == mgo.ErrNotFound {
 		a = &Account{
@@ -127,7 +105,7 @@ func loadAccount() (a *Account) {
 		a.BeiAn = setting.Conf.Blogger.BeiAn
 		a.BTitle = setting.Conf.Blogger.BTitle
 		a.Copyright = setting.Conf.Blogger.Copyright
-		err = db.Insert(DB, COLLECTION_ACCOUNT, a)
+		err = mgo.Insert(DB, COLLECTION_ACCOUNT, a)
 		generateTopic()
 	} else if err != nil {
 		logd.Fatal(err)
@@ -139,7 +117,7 @@ func loadAccount() (a *Account) {
 }
 
 func loadArticles() (artcs SortArticles) {
-	err := db.FindAll(DB, COLLECTION_ARTICLE, bson.M{"isdraft": false, "deletetime": bson.M{"$eq": time.Time{}}}, &artcs)
+	err := mgo.FindAll(DB, COLLECTION_ARTICLE, mgo.M{"isdraft": false, "deletetime": mgo.M{"$eq": time.Time{}}}, &artcs)
 	if err != nil {
 		logd.Fatal(err)
 	}
@@ -209,7 +187,7 @@ func generateMarkdown() {
 // init account: generate blogroll and about page
 func generateTopic() {
 	about := &Article{
-		ID:         db.NextVal(DB, COUNTER_ARTICLE),
+		ID:         mgo.NextVal(DB, COUNTER_ARTICLE),
 		Author:     setting.Conf.Account.Username,
 		Title:      "关于",
 		Slug:       "about",
@@ -217,18 +195,18 @@ func generateTopic() {
 		UpdateTime: time.Time{},
 	}
 	blogroll := &Article{
-		ID:         db.NextVal(DB, COUNTER_ARTICLE),
+		ID:         mgo.NextVal(DB, COUNTER_ARTICLE),
 		Author:     setting.Conf.Account.Username,
 		Title:      "友情链接",
 		Slug:       "blogroll",
 		CreateTime: time.Time{},
 		UpdateTime: time.Time{},
 	}
-	err := db.Insert(DB, COLLECTION_ARTICLE, blogroll)
+	err := mgo.Insert(DB, COLLECTION_ARTICLE, blogroll)
 	if err != nil {
 		logd.Fatal(err)
 	}
-	err = db.Insert(DB, COLLECTION_ARTICLE, about)
+	err = mgo.Insert(DB, COLLECTION_ARTICLE, about)
 	if err != nil {
 		logd.Fatal(err)
 	}
@@ -307,7 +285,6 @@ func ManageSeriesArticle(artc *Article, s bool, do string) {
 				Ei.Series[i].Articles = append(Ei.Series[i].Articles, artc)
 				if s {
 					sort.Sort(Ei.Series[i].Articles)
-					Ei.CH <- SERIES_MD
 					return
 				}
 			}
@@ -318,7 +295,6 @@ func ManageSeriesArticle(artc *Article, s bool, do string) {
 				for j, v := range serie.Articles {
 					if v == artc {
 						Ei.Series[i].Articles = append(Ei.Series[i].Articles[0:j], Ei.Series[i].Articles[j+1:]...)
-						Ei.CH <- SERIES_MD
 						return
 					}
 				}
@@ -340,7 +316,6 @@ func ManageArchivesArticle(artc *Article, s bool, do string) {
 				Ei.Archives[i].Articles = append(Ei.Archives[i].Articles, artc)
 				if s {
 					sort.Sort(Ei.Archives[i].Articles)
-					Ei.CH <- ARCHIVE_MD
 					break
 				}
 			}
@@ -355,7 +330,9 @@ func ManageArchivesArticle(artc *Article, s bool, do string) {
 				for j, v := range archive.Articles {
 					if v == artc {
 						Ei.Archives[i].Articles = append(Ei.Archives[i].Articles[0:j], Ei.Archives[i].Articles[j+1:]...)
-						Ei.CH <- ARCHIVE_MD
+						if len(Ei.Archives[i].Articles) == 0 {
+							Ei.Archives = append(Ei.Archives[:i], Ei.Archives[i+1:]...)
+						}
 						return
 					}
 				}
@@ -401,14 +378,14 @@ func GenerateExcerptAndRender(artc *Article) {
 
 // 读取草稿箱
 func LoadDraft() (artcs SortArticles, err error) {
-	err = db.FindAll(DB, COLLECTION_ARTICLE, bson.M{"isdraft": true}, &artcs)
+	err = mgo.FindAll(DB, COLLECTION_ARTICLE, mgo.M{"isdraft": true}, &artcs)
 	sort.Sort(artcs)
 	return
 }
 
 // 读取回收箱
 func LoadTrash() (artcs SortArticles, err error) {
-	err = db.FindAll(DB, COLLECTION_ARTICLE, bson.M{"deletetime": bson.M{"$ne": time.Time{}}}, &artcs)
+	err = mgo.FindAll(DB, COLLECTION_ARTICLE, mgo.M{"deletetime": mgo.M{"$ne": time.Time{}}}, &artcs)
 	sort.Sort(artcs)
 	return
 }
@@ -417,7 +394,7 @@ func LoadTrash() (artcs SortArticles, err error) {
 func AddArticle(artc *Article) error {
 	// 分配ID, 占位至起始id
 	for {
-		if id := db.NextVal(DB, COUNTER_ARTICLE); id < setting.Conf.General.StartID {
+		if id := mgo.NextVal(DB, COUNTER_ARTICLE); id < setting.Conf.General.StartID {
 			continue
 		} else {
 			artc.ID = id
@@ -440,7 +417,7 @@ func AddArticle(artc *Article) error {
 			Ei.CH <- SERIES_MD
 		}
 	}
-	return db.Insert(DB, COLLECTION_ARTICLE, artc)
+	return mgo.Insert(DB, COLLECTION_ARTICLE, artc)
 }
 
 // 删除文章，移入回收箱
@@ -455,7 +432,7 @@ func DelArticles(ids ...int32) error {
 		ManageTagsArticle(artc, false, DELETE)
 		ManageSeriesArticle(artc, false, DELETE)
 		ManageArchivesArticle(artc, false, DELETE)
-		err := UpdateArticle(bson.M{"id": id}, bson.M{"$set": bson.M{"deletetime": time.Now()}})
+		err := UpdateArticle(mgo.M{"id": id}, mgo.M{"$set": mgo.M{"deletetime": time.Now()}})
 		if err != nil {
 			return err
 		}
@@ -509,34 +486,34 @@ func timer() {
 	delT := time.NewTicker(time.Duration(setting.Conf.General.Clean) * time.Hour)
 	for {
 		<-delT.C
-		db.Remove(DB, COLLECTION_ARTICLE, bson.M{"deletetime": bson.M{"$gt": time.Time{}, "$lt": time.Now().Add(time.Duration(setting.Conf.General.Trash) * time.Hour)}})
+		mgo.Remove(DB, COLLECTION_ARTICLE, mgo.M{"deletetime": mgo.M{"$gt": time.Time{}, "$lt": time.Now().Add(time.Duration(setting.Conf.General.Trash) * time.Hour)}})
 	}
 }
 
 // 操作帐号字段
-func UpdateAccountField(M bson.M) error {
-	return db.Update(DB, COLLECTION_ACCOUNT, bson.M{"username": Ei.Username}, M)
+func UpdateAccountField(M mgo.M) error {
+	return mgo.Update(DB, COLLECTION_ACCOUNT, mgo.M{"username": Ei.Username}, M)
 }
 
 // 删除草稿箱或回收箱，永久删除
 func RemoveArticle(id int32) error {
-	return db.Remove(DB, COLLECTION_ARTICLE, bson.M{"id": id})
+	return mgo.Remove(DB, COLLECTION_ARTICLE, mgo.M{"id": id})
 }
 
 // 恢复删除文章到草稿箱
 func RecoverArticle(id int32) error {
-	return db.Update(DB, COLLECTION_ARTICLE, bson.M{"id": id}, bson.M{"$set": bson.M{"deletetime": time.Time{}, "isdraft": true}})
+	return mgo.Update(DB, COLLECTION_ARTICLE, mgo.M{"id": id}, mgo.M{"$set": mgo.M{"deletetime": time.Time{}, "isdraft": true}})
 }
 
 // 更新文章
 func UpdateArticle(query, update interface{}) error {
-	return db.Update(DB, COLLECTION_ARTICLE, query, update)
+	return mgo.Update(DB, COLLECTION_ARTICLE, query, update)
 }
 
 // 编辑文档
 func QueryArticle(id int32) *Article {
 	artc := &Article{}
-	if err := db.FindOne(DB, COLLECTION_ARTICLE, bson.M{"id": id}, artc); err != nil {
+	if err := mgo.FindOne(DB, COLLECTION_ARTICLE, mgo.M{"id": id}, artc); err != nil {
 		return nil
 	}
 	return artc
@@ -544,17 +521,17 @@ func QueryArticle(id int32) *Article {
 
 // 添加专题
 func AddSerie(name, slug, desc string) error {
-	serie := &Serie{db.NextVal(DB, COUNTER_SERIE), name, slug, desc, time.Now(), nil}
+	serie := &Serie{mgo.NextVal(DB, COUNTER_SERIE), name, slug, desc, time.Now(), nil}
 	Ei.Series = append(Ei.Series, serie)
 	sort.Sort(Ei.Series)
 	Ei.CH <- SERIES_MD
-	return UpdateAccountField(bson.M{"$addToSet": bson.M{"blogger.series": serie}})
+	return UpdateAccountField(mgo.M{"$addToSet": mgo.M{"blogger.series": serie}})
 }
 
 // 更新专题
 func UpdateSerie(serie *Serie) error {
 	Ei.CH <- SERIES_MD
-	return db.Update(DB, COLLECTION_ACCOUNT, bson.M{"username": Ei.Username, "blogger.series.id": serie.ID}, bson.M{"$set": bson.M{"blogger.series.$": serie}})
+	return mgo.Update(DB, COLLECTION_ACCOUNT, mgo.M{"username": Ei.Username, "blogger.series.id": serie.ID}, mgo.M{"$set": mgo.M{"blogger.series.$": serie}})
 }
 
 // 删除专题
@@ -564,7 +541,7 @@ func DelSerie(id int32) error {
 			if len(serie.Articles) > 0 {
 				return fmt.Errorf("请删除该专题下的所有文章")
 			}
-			err := UpdateAccountField(bson.M{"$pull": bson.M{"blogger.series": bson.M{"id": id}}})
+			err := UpdateAccountField(mgo.M{"$pull": mgo.M{"blogger.series": mgo.M{"id": id}}})
 			if err != nil {
 				return err
 			}
@@ -588,24 +565,24 @@ func QuerySerie(id int32) *Serie {
 
 // 后台分页
 func PageListBack(se int, kw string, draft, del bool, p, n int) (max int, artcs []*Article) {
-	M := bson.M{}
+	M := mgo.M{}
 	if draft {
 		M["isdraft"] = true
 	} else if del {
-		M["deletetime"] = bson.M{"$ne": time.Time{}}
+		M["deletetime"] = mgo.M{"$ne": time.Time{}}
 	} else {
 		M["isdraft"] = false
-		M["deletetime"] = bson.M{"$eq": time.Time{}}
+		M["deletetime"] = mgo.M{"$eq": time.Time{}}
 		if se > 0 {
 			M["serieid"] = se
 		}
 		if kw != "" {
-			M["title"] = bson.M{"$regex": kw, "$options": "$i"}
+			M["title"] = mgo.M{"$regex": kw, "$options": "$i"}
 		}
 	}
-	ms, c := db.Connect(DB, COLLECTION_ARTICLE)
+	ms, c := mgo.Connect(DB, COLLECTION_ARTICLE)
 	defer ms.Close()
-	err := c.Find(M).Select(bson.M{"content": 0}).Sort("-createtime").Limit(n).Skip((p - 1) * n).All(&artcs)
+	err := c.Find(M).Select(mgo.M{"content": 0}).Sort("-createtime").Limit(n).Skip((p - 1) * n).All(&artcs)
 	if err != nil {
 		logd.Error(err)
 	}

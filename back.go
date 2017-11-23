@@ -11,9 +11,9 @@ import (
 
 	"github.com/eiblog/eiblog/setting"
 	"github.com/eiblog/utils/logd"
+	"github.com/eiblog/utils/mgo"
 	"github.com/gin-gonic/contrib/sessions"
 	"github.com/gin-gonic/gin"
-	"gopkg.in/mgo.v2/bson"
 )
 
 // 是否登录
@@ -73,7 +73,7 @@ func HandleLoginPost(c *gin.Context) {
 	session.Save()
 	Ei.LoginIP = c.ClientIP()
 	Ei.LoginTime = time.Now()
-	UpdateAccountField(bson.M{"$set": bson.M{"loginip": Ei.LoginIP, "logintime": Ei.LoginTime}})
+	UpdateAccountField(mgo.M{"$set": mgo.M{"loginip": Ei.LoginIP, "logintime": Ei.LoginTime}})
 	c.Redirect(http.StatusFound, "/admin/profile")
 }
 
