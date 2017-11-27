@@ -15,13 +15,9 @@ script:
   - GOOS=linux GOARCH=amd64 go build                                    # 编译版本
   - docker build -t registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog .   # 构建镜像
 after_success:
-  # - if [ "$TRAVIS_BRANCH" =~ ^v[0-9](\.[0-9])+.*$ ]; then
-  #   docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD" registry.cn-hangzhou.aliyuncs.com;
-  #   docker push registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog;
-  #   fi
+  - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD" registry.cn-hangzhou.aliyuncs.com
   - docker push registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog
-  - docker tag registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog \
-    registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog:$TRAVIS_TAG
+  - docker tag registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog:$TRAVIS_TAG
   - docker push registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog:$TRAVIS_TAG
 before_deploy:
    - ./dist.sh
