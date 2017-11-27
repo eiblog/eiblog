@@ -3,7 +3,7 @@ package main
 
 import (
 	"fmt"
-	"html/template"
+	"text/template"
 	"time"
 
 	"github.com/eiblog/eiblog/setting"
