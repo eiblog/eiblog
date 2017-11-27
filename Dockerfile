@@ -7,4 +7,4 @@ ADD static/tzdata/Shanghai /etc/localtime
 COPY . /eiblog
 EXPOSE 9000
 WORKDIR /eiblog
-CMD ["./eiblog"]
+CMD ["sh","-c","eiblog"]
