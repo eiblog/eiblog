@@ -1,36 +1,30 @@
 sudo: required            # 超级权限
-
 dist: trusty              # 在ubuntu:trusty
-
 language: go              # 声明构建语言环境
-
 go:                       # 只构建最新版本
   - tip
-
-services:                  # docker环境
+services:                 # docker环境
   - docker
-
 branches:                 # 限定项目分支
   only:
     - /^v[0-9](\.[0-9]){2}(-rc[1-9])?$/
-
 install:
   - curl https://glide.sh/get | sh  # 安装glide包管理
 script:
   - glide up
   - GOOS=linux GOARCH=amd64 go build                                    # 编译版本
-  - docker build -t registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog:$TRAVIS_TAG .   # 构建镜像
-
+  - docker build -t registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog .   # 构建镜像
 after_success:
   # - if [ "$TRAVIS_BRANCH" =~ ^v[0-9](\.[0-9])+.*$ ]; then
   #   docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD" registry.cn-hangzhou.aliyuncs.com;
   #   docker push registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog;
   #   fi
+  - docker push registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog
+  - docker tag registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog \
+    registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog:$TRAVIS_TAG
   - docker push registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog:$TRAVIS_TAG
-
 before_deploy:
    - ./dist.sh
-     
 deploy:
   provider: releases
   api_key:
