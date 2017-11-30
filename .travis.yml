@@ -12,7 +12,7 @@ install:
   - curl https://glide.sh/get | sh  # 安装glide包管理
 script:
   - glide up
-  - GOOS=linux GOARCH=amd64 go build                                    # 编译版本
+  - GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build                      # 编译版本
   - docker build -t registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog .   # 构建镜像
 after_success:
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD" registry.cn-hangzhou.aliyuncs.com
