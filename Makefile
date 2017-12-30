@@ -40,7 +40,7 @@ gencert:makedir
 
 	@echo "generate rsa cert..."
 	@$(acme.sh) --force --issue --dns dns_ali $(sans) --log \
-		--renew-hook "ct-submit ctlog.api.venafi.com < $(config)/ssl/domain.rsa.pem > $(config)/scts/rsa/venafi.sct \
+		--renew-hook "ct-submit ctlog-gen2.api.venafi.com < $(config)/ssl/domain.rsa.pem > $(config)/scts/rsa/venafi.sct \
 		&& ct-submit ctlog.wosign.com < $(config)/ssl/domain.rsa.pem > $(config)/scts/rsa/wosign.sct"
 	@$(acme.sh) --install-cert -d $(cn) \
 		--key-file       $(config)/ssl/domain.rsa.key \
@@ -49,7 +49,7 @@ gencert:makedir
 
 	@echo "generate ecc cert..."
 	@$(acme.sh) --force --issue --dns dns_ali $(sans) -k ec-256 --log \
-		--renew-hook "ct-submit ctlog.api.venafi.com < $(config)/ssl/domain.ecc.pem > $(config)/scts/ecc/venafi.sct \
+		--renew-hook "ct-submit ctlog-gen2.api.venafi.com < $(config)/ssl/domain.ecc.pem > $(config)/scts/ecc/venafi.sct \
 		&& ct-submit ctlog.wosign.com < $(config)/ssl/domain.ecc.pem > $(config)/scts/ecc/wosign.sct"
 	@$(acme.sh) --install-cert -d $(cn) --ecc \
 		--key-file       $(config)/ssl/domain.ecc.key \
