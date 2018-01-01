@@ -35,3 +35,14 @@ services:
     ports:
       - "9000:9000"
     restart: always
+  backup:
+    image: registry.cn-hangzhou.aliyuncs.com/deepzz/backup
+    container_name: backup
+    links:
+      - mongodb
+    environment:
+      - QINIU_BUCKET=xxxx
+      - QINIU_DOMAIN=xx.example.com
+      - ACCESS_KEY=xxxxxxxxxx
+      - SECRECT_KEY=xxxxxxxxxx
+    restart: always
