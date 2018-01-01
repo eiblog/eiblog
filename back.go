@@ -3,6 +3,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"net/http"
@@ -118,7 +119,8 @@ func HandlePost(c *gin.Context) {
 	for tag, _ := range Ei.Tags {
 		tags = append(tags, T{tag, tag})
 	}
-	h["Tags"] = tags
+	str, _ := json.Marshal(tags)
+	h["Tags"] = string(str)
 	c.Status(http.StatusOK)
 	RenderHTMLBack(c, "admin-post", h)
 }

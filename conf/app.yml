@@ -35,7 +35,7 @@ general:
   clean: 1
 # 评论相关
 disqus:
-  shortname: deepzz
+  shortname: xxxxxx
   publickey: wdSgxRm9rdGAlLKFcFdToBe3GT4SibmV7Y8EjJQ0r4GWXeKtxpopMAeIeoI2dTEg
   accesstoken: 50023908f39f4607957e909b495326af
   postscount: https://disqus.com/api/3.0/threads/set.json
@@ -49,7 +49,7 @@ disqus:
 # 谷歌统计
 google:
   url: https://www.google-analytics.com/collect
-  tid: UA-77251712-1
+  tid: UA-xxxxxx-1
   v: "1"
   t: pageview
 # 七牛CDN
