@@ -74,6 +74,7 @@
 8. 开源 `Typecho` 完整后台系统，全功能 `markdown` 编辑器，让你体验什么是简洁清爽。
 9. 博客后台直接对接 `七牛 SDK`，实现后台上传文件和删除文件的简单功能。
 10. 采用 `elasticsearch` 作为站内搜索，添加 `google opensearch` 功能，搜索更加自然。
+11. 自动备份数据库数据到七牛云。
 
 ### 文档
 
@@ -81,6 +82,7 @@
 * [安装部署](https://github.com/eiblog/eiblog/blob/master/docs/install.md)
 * [写作需知](https://github.com/eiblog/eiblog/blob/master/docs/writing.md)
 * [好玩的功能](https://github.com/eiblog/eiblog/blob/master/docs/amusing.md)
+* [关于备份](https://github.com/eiblog/backup)
 
 ### 成功搭建者博客
 
