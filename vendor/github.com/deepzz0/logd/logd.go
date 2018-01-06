@@ -67,10 +67,20 @@ type LogOption struct {
 	Mails      Emailer   // 告警邮件
 }
 
+func osSep() string {
+	var sep string
+	if os.IsPathSeparator('\\') {
+		sep = "\\"
+	} else {
+		sep = "/"
+	}
+	return sep
+}
+
 // 新建日志打印器
 func New(option LogOption) *Logger {
 	wd, _ := os.Getwd()
-	index := strings.LastIndex(wd, "/")
+	index := strings.LastIndex(wd, osSep())
 	logger := &Logger{
 		obj:   wd[index+1:],
 		out:   option.Out,

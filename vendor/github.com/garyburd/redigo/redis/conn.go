@@ -29,6 +29,10 @@ import (
 	"time"
 )
 
+var (
+	_ ConnWithTimeout = (*conn)(nil)
+)
+
 // conn is the low-level implementation of Conn
 type conn struct {
 	// Shared
@@ -182,7 +186,12 @@ func Dial(network, address string, options ...DialOption) (Conn, error) {
 	}
 
 	if do.useTLS {
-		tlsConfig := cloneTLSClientConfig(do.tlsConfig, do.skipVerify)
+		var tlsConfig *tls.Config
+		if do.tlsConfig == nil {
+			tlsConfig = &tls.Config{InsecureSkipVerify: do.skipVerify}
+		} else {
+			tlsConfig = cloneTLSConfig(do.tlsConfig)
+		}
 		if tlsConfig.ServerName == "" {
 			host, _, err := net.SplitHostPort(address)
 			if err != nil {
@@ -571,10 +580,17 @@ func (c *conn) Flush() error {
 	return nil
 }
 
-func (c *conn) Receive() (reply interface{}, err error) {
-	if c.readTimeout != 0 {
-		c.conn.SetReadDeadline(time.Now().Add(c.readTimeout))
+func (c *conn) Receive() (interface{}, error) {
+	return c.ReceiveWithTimeout(c.readTimeout)
+}
+
+func (c *conn) ReceiveWithTimeout(timeout time.Duration) (reply interface{}, err error) {
+	var deadline time.Time
+	if timeout != 0 {
+		deadline = time.Now().Add(timeout)
 	}
+	c.conn.SetReadDeadline(deadline)
+
 	if reply, err = c.readReply(); err != nil {
 		return nil, c.fatal(err)
 	}
@@ -597,6 +613,10 @@ func (c *conn) Receive() (reply interface{}, err error) {
 }
 
 func (c *conn) Do(cmd string, args ...interface{}) (interface{}, error) {
+	return c.DoWithTimeout(c.readTimeout, cmd, args...)
+}
+
+func (c *conn) DoWithTimeout(readTimeout time.Duration, cmd string, args ...interface{}) (interface{}, error) {
 	c.mu.Lock()
 	pending := c.pending
 	c.pending = 0
@@ -620,9 +640,11 @@ func (c *conn) Do(cmd string, args ...interface{}) (interface{}, error) {
 		return nil, c.fatal(err)
 	}
 
-	if c.readTimeout != 0 {
-		c.conn.SetReadDeadline(time.Now().Add(c.readTimeout))
+	var deadline time.Time
+	if readTimeout != 0 {
+		deadline = time.Now().Add(readTimeout)
 	}
+	c.conn.SetReadDeadline(deadline)
 
 	if cmd == "" {
 		reply := make([]interface{}, pending)

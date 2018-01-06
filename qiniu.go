@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"io"
-	"net/url"
 	"path/filepath"
 
 	"github.com/eiblog/eiblog/setting"
@@ -69,7 +68,7 @@ func FileUpload(name string, size int64, data io.Reader) (string, error) {
 		return "", err
 	}
 
-	url := "https://" + setting.Conf.Qiniu.Domain + "/" + url.QueryEscape(key)
+	url := "https://" + setting.Conf.Qiniu.Domain + "/" + key
 	return url, nil
 }
 

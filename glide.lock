@@ -1,28 +1,28 @@
 hash: c733fa4abeda21b59b001578b37a168bd33038d337b61198cc5fd94be8bfdf77
-updated: 2017-11-24T22:55:44.759966+08:00
+updated: 2018-01-06T23:16:19.339917+08:00
 imports:
 - name: github.com/boj/redistore
   version: 4562487a4bee9a7c272b72bfaeda4917d0a47ab9
 - name: github.com/deepzz0/logd
-  version: 2bbe53d047054777f3a171cdfc6dca7aa9f8af78
+  version: f91dd8c6316f0e156e93895a96739b67577b6a63
 - name: github.com/eiblog/blackfriday
   version: c0ec111761ae784fe31cc076f2fa0e2d2216d623
 - name: github.com/eiblog/utils
-  version: d4873fe859435121012ce87b6b8407bd09f89ce0
+  version: e8f16268dae939f920ddc55f1c9e46a97a5e3559
   subpackages:
   - logd
   - mgo
   - tmpl
   - uuid
 - name: github.com/garyburd/redigo
-  version: 4a7d9db4333c65288dd5fc8c8de7d1f229bb09ec
+  version: d1ed5c67e5794de818ea85e6b522fda02623a484
   subpackages:
   - internal
   - redis
 - name: github.com/gin-gonic/autotls
   version: 8ca25fbde72bb72a00466215b94b489c71fcb815
 - name: github.com/gin-gonic/contrib
-  version: 8f08bc9b92a9734916abda03656c5f1b99ad10be
+  version: 88aede40372d4bcb11e45168a8c30d99e44cf617
   subpackages:
   - sessions
 - name: github.com/gin-gonic/gin
@@ -61,7 +61,7 @@ imports:
 - name: github.com/shurcooL/sanitized_anchor_name
   version: 86672fcb3f950f35f2e675df2240550f2a50762f
 - name: golang.org/x/crypto
-  version: b080dc9a8c480b08e698fb1219160d598526310f
+  version: 0fcca4842a8d74bfddc2c96a073bd2a4d2a7a2e8
   subpackages:
   - acme
   - acme/autocert
@@ -70,7 +70,7 @@ imports:
   subpackages:
   - context
 - name: golang.org/x/sys
-  version: a13efeb2fd213cf4be7227992aa54519af3b2ac0
+  version: dd9ec17814d5b1de388ebe438ec013d57d8b3779
   subpackages:
   - unix
 - name: gopkg.in/go-playground/validator.v8
@@ -83,7 +83,7 @@ imports:
   - internal/sasl
   - internal/scram
 - name: gopkg.in/yaml.v2
-  version: 287cf08546ab5e7e37d55a84f7ed3fd1db036de5
+  version: 0e4404da71227dcc02fb1deee803d93e86d08f72
 - name: qiniupkg.com/x
   version: 946c4a16076d6d98aeb78619e2bd4012357f7228
   subpackages:

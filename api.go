@@ -437,7 +437,7 @@ func apiFileUpload(c *gin.Context) {
 		c.String(http.StatusBadRequest, err.Error())
 		return
 	}
-	typ := c.Request.Header.Get("Content-Type")
+	typ := header.Header.Get("Content-Type")
 	c.JSON(http.StatusOK, gin.H{
 		"title":   filename,
 		"isImage": typ[:5] == "image",
