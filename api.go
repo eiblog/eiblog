@@ -152,7 +152,7 @@ func apiPostDelete(c *gin.Context) {
 	var i int
 	for _, v := range c.Request.PostForm["cid[]"] {
 		i, err = strconv.Atoi(v)
-		if err != nil || i < 1 {
+		if err != nil || int32(i) < setting.Conf.General.StartID {
 			err = errors.New("参数错误")
 			return
 		}

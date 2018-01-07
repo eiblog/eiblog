@@ -402,8 +402,13 @@ func AddArticle(artc *Article) error {
 		}
 	}
 
+	err := mgo.Insert(DB, COLLECTION_ARTICLE, artc)
+	if err != nil {
+		return err
+	}
+
+	// 正式发布文章
 	if !artc.IsDraft {
-		// 正式发布文章
 		defer GenerateExcerptAndRender(artc)
 		Ei.MapArticles[artc.Slug] = artc
 		Ei.Articles = append([]*Article{artc}, Ei.Articles...)
@@ -417,7 +422,7 @@ func AddArticle(artc *Article) error {
 			Ei.CH <- SERIES_MD
 		}
 	}
-	return mgo.Insert(DB, COLLECTION_ARTICLE, artc)
+	return nil
 }
 
 // 删除文章，移入回收箱
