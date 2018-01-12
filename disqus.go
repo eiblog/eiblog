@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"net/url"
 	"strings"
 	"time"
 
@@ -16,6 +17,12 @@ import (
 )
 
 var ErrDisqusConfig = errors.New("disqus config incorrect")
+
+func correctDisqusConfig() bool {
+	return setting.Conf.Disqus.PostsCount != "" &&
+		setting.Conf.Disqus.PublicKey != "" &&
+		setting.Conf.Disqus.ShortName != ""
+}
 
 // 定时获取所有文章评论数量
 type postsCountResp struct {
@@ -28,9 +35,7 @@ type postsCountResp struct {
 }
 
 func PostsCount() error {
-	if setting.Conf.Disqus.PostsCount == "" ||
-		setting.Conf.Disqus.PublicKey == "" ||
-		setting.Conf.Disqus.ShortName == "" {
+	if !correctDisqusConfig() {
 		return ErrDisqusConfig
 	}
 
@@ -41,20 +46,19 @@ func PostsCount() error {
 		}
 	})
 
-	baseUrl := setting.Conf.Disqus.PostsCount +
-		"?api_key=" + setting.Conf.Disqus.PublicKey +
-		"&forum=" + setting.Conf.Disqus.ShortName + "&"
+	vals := url.Values{}
+	vals.Set("api_key", setting.Conf.Disqus.PublicKey)
+	vals.Set("forum", setting.Conf.Disqus.ShortName)
+
 	var count, index int
 	for index < len(Ei.Articles) {
-		var threads []string
 		for ; index < len(Ei.Articles) && count < 50; index++ {
 			artc := Ei.Articles[index]
-			threads = append(threads, fmt.Sprintf("thread:ident=post-%s", artc.Slug))
+			vals.Add("thread:ident", "post-"+artc.Slug)
 			count++
 		}
 		count = 0
-		url := baseUrl + strings.Join(threads, "&")
-		resp, err := http.Get(url)
+		resp, err := http.Get(setting.Conf.Disqus.PostsCount + "?" + vals.Encode())
 		if err != nil {
 			return err
 		}
@@ -113,16 +117,18 @@ type postDetail struct {
 }
 
 func PostsList(slug, cursor string) (*postsListResp, error) {
-	if setting.Conf.Disqus.PostsList == "" ||
-		setting.Conf.Disqus.PublicKey == "" ||
-		setting.Conf.Disqus.ShortName == "" {
+	if !correctDisqusConfig() {
 		return nil, ErrDisqusConfig
 	}
 
-	url := setting.Conf.Disqus.PostsList + "?limit=50&api_key=" +
-		setting.Conf.Disqus.PublicKey + "&forum=" + setting.Conf.Disqus.ShortName +
-		"&cursor=" + cursor + "&thread:ident=post-" + slug
-	resp, err := http.Get(url)
+	vals := url.Values{}
+	vals.Set("api_key", setting.Conf.Disqus.PublicKey)
+	vals.Set("forum", setting.Conf.Disqus.ShortName)
+	vals.Set("thread:ident", "post-"+slug)
+	vals.Set("cursor", cursor)
+	vals.Set("limit", "50")
+
+	resp, err := http.Get(setting.Conf.Disqus.PostsList + "?" + vals.Encode())
 	if err != nil {
 		return nil, err
 	}
@@ -144,15 +150,15 @@ func PostsList(slug, cursor string) (*postsListResp, error) {
 	return result, nil
 }
 
-type PostCreate struct {
-	Message     string `json:"message"`
-	Parent      string `json:"parent"`
-	Thread      string `json:"thread"`
-	AuthorEmail string `json:"author_email"`
-	AuthorName  string `json:"autor_name"`
-	IpAddress   string `json:"ip_address"`
-	Identifier  string `json:"identifier"`
-	UserAgent   string `json:"user_agent"`
+type PostComment struct {
+	Message     string
+	Parent      string
+	Thread      string
+	AuthorEmail string
+	AuthorName  string
+	IpAddress   string
+	Identifier  string
+	UserAgent   string
 }
 
 type postCreateResp struct {
@@ -161,19 +167,21 @@ type postCreateResp struct {
 }
 
 // 评论文章
-func PostComment(pc *PostCreate) (*postCreateResp, error) {
-	if setting.Conf.Disqus.PostsList == "" ||
-		setting.Conf.Disqus.PublicKey == "" ||
-		setting.Conf.Disqus.ShortName == "" {
+func PostCreate(pc *PostComment) (*postCreateResp, error) {
+	if !correctDisqusConfig() {
 		return nil, ErrDisqusConfig
 	}
-	url := setting.Conf.Disqus.PostCreate +
-		"?api_key=E8Uh5l5fHZ6gD8U3KycjAIAk46f68Zw7C6eW8WSjZvCLXebZ7p0r1yrYDrLilk2F" +
-		"&message=" + pc.Message + "&parent=" + pc.Parent +
-		"&thread=" + pc.Thread + "&author_email=" + pc.AuthorEmail +
-		"&author_name=" + pc.AuthorName
 
-	request, err := http.NewRequest("POST", url, nil)
+	vals := url.Values{}
+	vals.Set("api_key", "E8Uh5l5fHZ6gD8U3KycjAIAk46f68Zw7C6eW8WSjZvCLXebZ7p0r1yrYDrLilk2F")
+	vals.Set("message", pc.Message)
+	vals.Set("parent", pc.Parent)
+	vals.Set("thread", pc.Thread)
+	vals.Set("author_email", pc.AuthorEmail)
+	vals.Set("author_name", pc.AuthorName)
+	// vals.Set("state", "approved")
+
+	request, err := http.NewRequest("POST", setting.Conf.Disqus.PostCreate, strings.NewReader(vals.Encode()))
 	if err != nil {
 		return nil, err
 	}
@@ -201,24 +209,23 @@ func PostComment(pc *PostCreate) (*postCreateResp, error) {
 
 // 批准评论通过
 type approvedResp struct {
-	Code     int `json:"code"`
+	Code     int
 	Response []struct {
-		Id string `json:"id"`
-	} `json:"response"`
+		Id string
+	}
 }
 
 func PostApprove(post string) error {
-	if setting.Conf.Disqus.PostsList == "" ||
-		setting.Conf.Disqus.PublicKey == "" ||
-		setting.Conf.Disqus.ShortName == "" {
+	if !correctDisqusConfig() {
 		return ErrDisqusConfig
 	}
 
-	url := setting.Conf.Disqus.PostApprove +
-		"?api_key=" + setting.Conf.Disqus.PublicKey +
-		"&access_token=" + setting.Conf.Disqus.AccessToken +
-		"&post=" + post
-	request, err := http.NewRequest("POST", url, nil)
+	vals := url.Values{}
+	vals.Set("api_key", setting.Conf.Disqus.PublicKey)
+	vals.Set("access_token", setting.Conf.Disqus.AccessToken)
+	vals.Set("post", post)
+
+	request, err := http.NewRequest("POST", setting.Conf.Disqus.PostApprove, strings.NewReader(vals.Encode()))
 	if err != nil {
 		return err
 	}
@@ -244,5 +251,51 @@ func PostApprove(post string) error {
 		return err
 	}
 
+	return nil
+}
+
+// 创建thread
+type threadCreateResp struct {
+	Code     int
+	Response struct {
+		Id string
+	}
+}
+
+func ThreadCreate(artc *Article) error {
+	if !correctDisqusConfig() {
+		return ErrDisqusConfig
+	}
+
+	vals := url.Values{}
+	vals.Set("api_key", setting.Conf.Disqus.PublicKey)
+	vals.Set("access_token", setting.Conf.Disqus.AccessToken)
+	vals.Set("forum", setting.Conf.Disqus.ShortName)
+	vals.Set("title", artc.Title+" | "+Ei.BTitle)
+	vals.Set("identifier", "post-"+artc.Slug)
+	urlPath := fmt.Sprintf("https://%s/post/%s.html", setting.Conf.Mode.Domain, artc.Slug)
+	vals.Set("url", urlPath)
+
+	resp, err := http.PostForm(setting.Conf.Disqus.ThreadCreate, vals)
+	if err != nil {
+		return err
+	}
+
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return errors.New(string(b))
+	}
+
+	result := &threadCreateResp{}
+	err = json.Unmarshal(b, result)
+	if err != nil {
+		return err
+	}
+
+	artc.Thread = result.Response.Id
 	return nil
 }

@@ -400,7 +400,7 @@ func HandleDisqusCreate(c *gin.Context) {
 		resp.ErrMsg = "参数错误"
 		return
 	}
-	pc := &PostCreate{
+	pc := &PostComment{
 		Message:     msg,
 		Parent:      c.PostForm("parent"),
 		Thread:      thread,
@@ -410,7 +410,7 @@ func HandleDisqusCreate(c *gin.Context) {
 		IpAddress:   c.ClientIP(),
 	}
 
-	postDetail, err := PostComment(pc)
+	postDetail, err := PostCreate(pc)
 	if err != nil {
 		logd.Error(err)
 		resp.ErrNo = FAIL
