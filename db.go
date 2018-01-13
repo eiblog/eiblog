@@ -308,16 +308,14 @@ func upArticle(artc *Article, needSort bool) {
 		}
 	}
 	// serie
-	if artc.SerieID > 0 {
-		for i, serie := range Ei.Series {
-			if serie.ID == artc.SerieID {
-				Ei.Series[i].Articles = append(Ei.Series[i].Articles, artc)
-				if needSort {
-					sort.Sort(Ei.Series[i].Articles)
-					Ei.CH <- SERIES_MD
-				}
-				break
+	for i, serie := range Ei.Series {
+		if serie.ID == artc.SerieID {
+			Ei.Series[i].Articles = append(Ei.Series[i].Articles, artc)
+			if needSort {
+				sort.Sort(Ei.Series[i].Articles)
+				Ei.CH <- SERIES_MD
 			}
+			break
 		}
 	}
 	// archive
@@ -329,8 +327,12 @@ func upArticle(artc *Article, needSort bool) {
 				sort.Sort(Ei.Archives[i].Articles)
 				Ei.CH <- ARCHIVE_MD
 			}
-			break
+			return
 		}
+	}
+	Ei.Archives = append(Ei.Archives, &Archive{Time: artc.CreateTime, Articles: SortArticles{artc}})
+	if needSort {
+		Ei.CH <- ARCHIVE_MD
 	}
 }
 
@@ -352,7 +354,9 @@ func dropArticle(artc *Article) {
 		if serie.ID == artc.SerieID {
 			for j, v := range serie.Articles {
 				if v == artc {
-					Ei.Series[i].Articles = append(Ei.Series[i].Articles[0:j], Ei.Series[i].Articles[j+1:]...)
+					Ei.Series[i].Articles = append(Ei.Series[i].Articles[0:j],
+						Ei.Series[i].Articles[j+1:]...)
+					Ei.CH <- SERIES_MD
 					break
 				}
 			}
@@ -364,10 +368,12 @@ func dropArticle(artc *Article) {
 		if y, m, _ := artc.CreateTime.Date(); ay == y && am == m {
 			for j, v := range archive.Articles {
 				if v == artc {
-					Ei.Archives[i].Articles = append(Ei.Archives[i].Articles[0:j], Ei.Archives[i].Articles[j+1:]...)
+					Ei.Archives[i].Articles = append(Ei.Archives[i].Articles[0:j],
+						Ei.Archives[i].Articles[j+1:]...)
 					if len(Ei.Archives[i].Articles) == 0 {
 						Ei.Archives = append(Ei.Archives[:i], Ei.Archives[i+1:]...)
 					}
+					Ei.CH <- ARCHIVE_MD
 					break
 				}
 			}
@@ -442,8 +448,6 @@ func DelArticles(ids ...int32) error {
 		}
 		dropArticle(artc)
 	}
-	Ei.CH <- ARCHIVE_MD
-	Ei.CH <- SERIES_MD
 	return nil
 }
 
