@@ -4,7 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -56,6 +55,7 @@ func init() {
 	APIs["file-delete"] = apiFileDelete
 }
 
+// 更新账号信息，Email、PhoneNumber、Address
 func apiAccount(c *gin.Context) {
 	e := c.PostForm("email")
 	pn := c.PostForm("phoneNumber")
@@ -68,6 +68,7 @@ func apiAccount(c *gin.Context) {
 
 	err := UpdateAccountField(mgo.M{"$set": mgo.M{"email": e, "phonen": pn, "address": ad}})
 	if err != nil {
+		logd.Error(err)
 		responseNotice(c, NOTICE_NOTICE, err.Error(), "")
 		return
 	}
@@ -77,6 +78,7 @@ func apiAccount(c *gin.Context) {
 	responseNotice(c, NOTICE_SUCCESS, "更新成功", "")
 }
 
+// 更新博客信息
 func apiBlog(c *gin.Context) {
 	bn := c.PostForm("blogName")
 	bt := c.PostForm("bTitle")
@@ -93,6 +95,7 @@ func apiBlog(c *gin.Context) {
 		"blogger.btitle": bt, "blogger.beian": ba, "blogger.subtitle": st,
 		"blogger.seriessay": ss, "blogger.archivessay": as}})
 	if err != nil {
+		logd.Error(err)
 		responseNotice(c, NOTICE_NOTICE, err.Error(), "")
 		return
 	}
@@ -107,6 +110,7 @@ func apiBlog(c *gin.Context) {
 	responseNotice(c, NOTICE_SUCCESS, "更新成功", "")
 }
 
+// 更新密码
 func apiPassword(c *gin.Context) {
 	logd.Debug(c.Request.PostForm.Encode())
 	od := c.PostForm("old")
@@ -128,6 +132,7 @@ func apiPassword(c *gin.Context) {
 
 	err := UpdateAccountField(mgo.M{"$set": mgo.M{"password": newPwd}})
 	if err != nil {
+		logd.Error(err)
 		responseNotice(c, NOTICE_NOTICE, err.Error(), "")
 		return
 	}
@@ -135,46 +140,39 @@ func apiPassword(c *gin.Context) {
 	responseNotice(c, NOTICE_SUCCESS, "更新成功", "")
 }
 
+// 删除文章，软删除：移入到回收箱
 func apiPostDelete(c *gin.Context) {
-	var err error
-	defer func() {
-		if err != nil {
-			logd.Error(err)
-			responseNotice(c, NOTICE_NOTICE, err.Error(), "")
-			return
-		}
-		responseNotice(c, NOTICE_SUCCESS, "删除成功", "")
-	}()
-
-	err = c.Request.ParseForm()
-	if err != nil {
-		return
-	}
 	var ids []int32
-	var i int
-	for _, v := range c.Request.PostForm["cid[]"] {
-		i, err = strconv.Atoi(v)
+	for _, v := range c.PostFormArray("cid[]") {
+		i, err := strconv.Atoi(v)
 		if err != nil || int32(i) < setting.Conf.General.StartID {
-			err = errors.New("参数错误")
+			responseNotice(c, NOTICE_NOTICE, "参数错误", "")
 			return
 		}
 		ids = append(ids, int32(i))
 	}
-	err = DelArticles(ids...)
+	err := DelArticles(ids...)
 	if err != nil {
+		logd.Error(err)
+		responseNotice(c, NOTICE_NOTICE, err.Error(), "")
 		return
 	}
-	// elasticsearch 删除索引
+
+	// elasticsearch
 	err = ElasticDelIndex(ids)
 	if err != nil {
-		return
+		logd.Error(err)
 	}
+	// TODO disqus delete
+	responseNotice(c, NOTICE_SUCCESS, "删除成功", "")
 }
 
 func apiPostAdd(c *gin.Context) {
-	var err error
-	var do string
-	var cid int
+	var (
+		err error
+		do  string
+		cid int
+	)
 	defer func() {
 		switch do {
 		case "auto": // 自动保存
@@ -183,18 +181,16 @@ func apiPostAdd(c *gin.Context) {
 				return
 			}
 			c.JSON(http.StatusOK, gin.H{"success": SUCCESS, "time": time.Now().Format("15:04:05 PM"), "cid": cid})
-		case "save": // 保存草稿
+		case "save", "publish": // 草稿，发布
 			if err != nil {
 				responseNotice(c, NOTICE_NOTICE, err.Error(), "")
 				return
 			}
-			c.Redirect(http.StatusFound, "/admin/manage-draft")
-		case "publish": // 发布
-			if err != nil {
-				responseNotice(c, NOTICE_NOTICE, err.Error(), "")
-				return
+			uri := "/admin/manage-draft"
+			if do == "publish" {
+				uri = "/admin/manage-posts"
 			}
-			c.Redirect(http.StatusFound, "/admin/manage-posts")
+			c.Redirect(http.StatusFound, uri)
 		}
 	}()
 
@@ -202,11 +198,11 @@ func apiPostAdd(c *gin.Context) {
 	slug := c.PostForm("slug")
 	title := c.PostForm("title")
 	text := c.PostForm("text")
-	date := c.PostForm("date")
+	date := CheckDate(c.PostForm("date"))
 	serie := c.PostForm("serie")
 	tag := c.PostForm("tags")
 	update := c.PostForm("update")
-	if title == "" || text == "" || slug == "" {
+	if slug == "" || title == "" || text == "" {
 		err = errors.New("参数错误")
 		return
 	}
@@ -219,13 +215,14 @@ func apiPostAdd(c *gin.Context) {
 		Title:      title,
 		Content:    text,
 		Slug:       slug,
-		CreateTime: CheckDate(date),
+		CreateTime: date,
 		IsDraft:    do != "publish",
 		Author:     Ei.Username,
 		SerieID:    serieid,
 		Tags:       tags,
 	}
 	cid, err = strconv.Atoi(c.PostForm("cid"))
+	// 新文章
 	if err != nil || cid < 1 {
 		err = AddArticle(artc)
 		if err != nil {
@@ -234,58 +231,49 @@ func apiPostAdd(c *gin.Context) {
 		}
 		cid = int(artc.ID)
 		if !artc.IsDraft {
+			// elastic
 			ElasticIndex(artc)
+			// rss
 			DoPings(slug)
+			// disqus
+			ThreadCreate(artc)
 		}
 		return
 	}
+
+	// 旧文章
 	artc.ID = int32(cid)
-	i, a := GetArticle(artc.ID)
+	_, a := GetArticle(artc.ID)
 	if a != nil {
 		artc.IsDraft = false
 		artc.Count = a.Count
 		artc.UpdateTime = a.UpdateTime
-		Ei.Articles = append(Ei.Articles[0:i], Ei.Articles[i+1:]...)
-		DelFromLinkedList(a)
-		ManageTagsArticle(a, false, DELETE)
-		ManageSeriesArticle(a, false, DELETE)
-		ManageArchivesArticle(a, false, DELETE)
-		delete(Ei.MapArticles, a.Slug)
-		a = nil
 	}
 	if CheckBool(update) {
 		artc.UpdateTime = time.Now()
 	}
+	// 数据库更新
 	err = UpdateArticle(mgo.M{"id": artc.ID}, artc)
 	if err != nil {
 		logd.Error(err)
 		return
 	}
 	if !artc.IsDraft {
-		Ei.MapArticles[artc.Slug] = artc
-		Ei.Articles = append(Ei.Articles, artc)
-		sort.Sort(Ei.Articles)
-		GenerateExcerptAndRender(artc)
-		// elasticsearch 索引
+		ReplaceArticle(a, artc)
+		// elastic
 		ElasticIndex(artc)
+		// rss
 		DoPings(slug)
-		if artc.ID >= setting.Conf.General.StartID {
-			ManageTagsArticle(artc, true, ADD)
-			ManageSeriesArticle(artc, true, ADD)
-			ManageArchivesArticle(artc, true, ADD)
-			AddToLinkedList(artc.ID)
+		// disqus
+		if a == nil {
+			ThreadCreate(artc)
 		}
 	}
 }
 
+// 只能逐一删除，专题下不能有文章
 func apiSerieDelete(c *gin.Context) {
-	err := c.Request.ParseForm()
-	if err != nil {
-		responseNotice(c, NOTICE_NOTICE, err.Error(), "")
-		return
-	}
-	// 只能逐一删除
-	for _, v := range c.Request.PostForm["mid[]"] {
+	for _, v := range c.PostFormArray("mid[]") {
 		id, err := strconv.Atoi(v)
 		if err != nil || id < 1 {
 			responseNotice(c, NOTICE_NOTICE, err.Error(), "")
@@ -301,6 +289,7 @@ func apiSerieDelete(c *gin.Context) {
 	responseNotice(c, NOTICE_SUCCESS, "删除成功", "")
 }
 
+// 添加专题，如果专题有提交 mid 即更新专题
 func apiSerieAdd(c *gin.Context) {
 	name := c.PostForm("name")
 	slug := c.PostForm("slug")
@@ -337,24 +326,15 @@ func apiSerieAdd(c *gin.Context) {
 	responseNotice(c, NOTICE_SUCCESS, "操作成功", "")
 }
 
-// NOTE 暂未启用
+// NOTE 排序专题，暂未实现
 func apiSerieSort(c *gin.Context) {
-	err := c.Request.ParseForm()
-	if err != nil {
-		responseNotice(c, NOTICE_NOTICE, err.Error(), "")
-		return
-	}
-	v := c.Request.PostForm["mid[]"]
+	v := c.PostFormArray("mid[]")
 	logd.Debug(v)
 }
 
+// 删除草稿箱，物理删除
 func apiDraftDelete(c *gin.Context) {
-	err := c.Request.ParseForm()
-	if err != nil {
-		responseNotice(c, NOTICE_NOTICE, err.Error(), "")
-		return
-	}
-	for _, v := range c.Request.PostForm["mid[]"] {
+	for _, v := range c.PostFormArray("mid[]") {
 		i, err := strconv.Atoi(v)
 		if err != nil || i < 1 {
 			responseNotice(c, NOTICE_NOTICE, "参数错误", "")
@@ -369,15 +349,9 @@ func apiDraftDelete(c *gin.Context) {
 	responseNotice(c, NOTICE_SUCCESS, "删除成功", "")
 }
 
+// 删除垃圾箱，物理删除
 func apiTrashDelete(c *gin.Context) {
-	logd.Debug(c.PostForm("key"))
-	logd.Debug(c.Request.PostForm)
-	err := c.Request.ParseForm()
-	if err != nil {
-		responseNotice(c, NOTICE_NOTICE, err.Error(), "")
-		return
-	}
-	for _, v := range c.Request.PostForm["mid[]"] {
+	for _, v := range c.PostFormArray("mid[]") {
 		i, err := strconv.Atoi(v)
 		if err != nil || i < 1 {
 			responseNotice(c, NOTICE_NOTICE, "参数错误", "")
@@ -392,15 +366,9 @@ func apiTrashDelete(c *gin.Context) {
 	responseNotice(c, NOTICE_SUCCESS, "删除成功", "")
 }
 
+// 从垃圾箱恢复到草稿箱
 func apiTrashRecover(c *gin.Context) {
-	logd.Debug(c.PostForm("key"))
-	logd.Debug(c.Request.PostForm)
-	err := c.Request.ParseForm()
-	if err != nil {
-		responseNotice(c, NOTICE_NOTICE, err.Error(), "")
-		return
-	}
-	for _, v := range c.Request.PostForm["mid[]"] {
+	for _, v := range c.PostFormArray("mid[]") {
 		i, err := strconv.Atoi(v)
 		if err != nil || i < 1 {
 			responseNotice(c, NOTICE_NOTICE, "参数错误", "")
@@ -416,6 +384,7 @@ func apiTrashRecover(c *gin.Context) {
 	responseNotice(c, NOTICE_SUCCESS, "恢复成功", "")
 }
 
+// 上传文件到 qiniu 云
 func apiFileUpload(c *gin.Context) {
 	type Size interface {
 		Size() int64
@@ -448,20 +417,19 @@ func apiFileUpload(c *gin.Context) {
 	})
 }
 
+// 删除七牛 CDN 文件
 func apiFileDelete(c *gin.Context) {
-	var err error
-	defer func() {
-		if err != nil {
-			logd.Error(err)
-		}
-		c.String(http.StatusOK, "删掉了吗？鬼知道。。。")
-	}()
+	defer c.String(http.StatusOK, "删掉了吗？鬼知道。。。")
+
 	name := c.PostForm("title")
 	if name == "" {
-		err = errors.New("参数错误")
+		logd.Error("参数错误")
 		return
 	}
-	err = FileDelete(name)
+	err := FileDelete(name)
+	if err != nil {
+		logd.Error(err)
+	}
 }
 
 func responseNotice(c *gin.Context, typ, content, hl string) {

@@ -136,9 +136,7 @@ func loadArticles() (artcs SortArticles) {
 		if artcs[i+1].ID >= setting.Conf.General.StartID {
 			v.Next = artcs[i+1]
 		}
-		ManageTagsArticle(v, false, ADD)
-		ManageSeriesArticle(v, false, ADD)
-		ManageArchivesArticle(v, false, ADD)
+		upArticle(v, false)
 	}
 	Ei.CH <- SERIES_MD
 	Ei.CH <- ARCHIVE_MD
@@ -251,96 +249,6 @@ func PageList(p, n int) (prev int, next int, artcs []*Article) {
 	return
 }
 
-// 管理 tag
-func ManageTagsArticle(artc *Article, s bool, do string) {
-	switch do {
-	case ADD:
-		for _, tag := range artc.Tags {
-			Ei.Tags[tag] = append(Ei.Tags[tag], artc)
-			if s {
-				sort.Sort(Ei.Tags[tag])
-			}
-		}
-	case DELETE:
-		for _, tag := range artc.Tags {
-			for i, v := range Ei.Tags[tag] {
-				if v == artc {
-					Ei.Tags[tag] = append(Ei.Tags[tag][0:i], Ei.Tags[tag][i+1:]...)
-					if len(Ei.Tags[tag]) == 0 {
-						delete(Ei.Tags, tag)
-					}
-					return
-				}
-			}
-		}
-	}
-}
-
-// 管理专题
-func ManageSeriesArticle(artc *Article, s bool, do string) {
-	switch do {
-	case ADD:
-		for i, serie := range Ei.Series {
-			if serie.ID == artc.SerieID {
-				Ei.Series[i].Articles = append(Ei.Series[i].Articles, artc)
-				if s {
-					sort.Sort(Ei.Series[i].Articles)
-					return
-				}
-			}
-		}
-	case DELETE:
-		for i, serie := range Ei.Series {
-			if serie.ID == artc.SerieID {
-				for j, v := range serie.Articles {
-					if v == artc {
-						Ei.Series[i].Articles = append(Ei.Series[i].Articles[0:j], Ei.Series[i].Articles[j+1:]...)
-						return
-					}
-				}
-			}
-		}
-	}
-}
-
-// 管理归档
-func ManageArchivesArticle(artc *Article, s bool, do string) {
-	switch do {
-	case ADD:
-		add := false
-		y, m, _ := artc.CreateTime.Date()
-		for i, archive := range Ei.Archives {
-			ay, am, _ := archive.Time.Date()
-			if y == ay && m == am {
-				add = true
-				Ei.Archives[i].Articles = append(Ei.Archives[i].Articles, artc)
-				if s {
-					sort.Sort(Ei.Archives[i].Articles)
-					break
-				}
-			}
-		}
-		if !add {
-			Ei.Archives = append(Ei.Archives, &Archive{Time: artc.CreateTime, Articles: SortArticles{artc}})
-		}
-	case DELETE:
-		for i, archive := range Ei.Archives {
-			ay, am, _ := archive.Time.Date()
-			if y, m, _ := artc.CreateTime.Date(); ay == y && am == m {
-				for j, v := range archive.Articles {
-					if v == artc {
-						Ei.Archives[i].Articles = append(Ei.Archives[i].Articles[0:j], Ei.Archives[i].Articles[j+1:]...)
-						if len(Ei.Archives[i].Articles) == 0 {
-							Ei.Archives = append(Ei.Archives[:i], Ei.Archives[i+1:]...)
-						}
-						return
-					}
-				}
-			}
-		}
-	}
-}
-
 // 渲染markdown操作和截取摘要操作
 var reg = regexp.MustCompile(setting.Conf.General.Identifier)
 
@@ -390,6 +298,104 @@ func LoadTrash() (artcs SortArticles, err error) {
 	return
 }
 
+// 添加文章到tag、serie、archive
+func upArticle(artc *Article, needSort bool) {
+	// tag
+	for _, tag := range artc.Tags {
+		Ei.Tags[tag] = append(Ei.Tags[tag], artc)
+		if needSort {
+			sort.Sort(Ei.Tags[tag])
+		}
+	}
+	// serie
+	if artc.SerieID > 0 {
+		for i, serie := range Ei.Series {
+			if serie.ID == artc.SerieID {
+				Ei.Series[i].Articles = append(Ei.Series[i].Articles, artc)
+				if needSort {
+					sort.Sort(Ei.Series[i].Articles)
+					Ei.CH <- SERIES_MD
+				}
+				break
+			}
+		}
+	}
+	// archive
+	y, m, _ := artc.CreateTime.Date()
+	for i, archive := range Ei.Archives {
+		if ay, am, _ := archive.Time.Date(); y == ay && m == am {
+			Ei.Archives[i].Articles = append(Ei.Archives[i].Articles, artc)
+			if needSort {
+				sort.Sort(Ei.Archives[i].Articles)
+				Ei.CH <- ARCHIVE_MD
+			}
+			break
+		}
+	}
+}
+
+// 删除文章从tag、serie、archive
+func dropArticle(artc *Article) {
+	// tag
+	for _, tag := range artc.Tags {
+		for i, v := range Ei.Tags[tag] {
+			if v == artc {
+				Ei.Tags[tag] = append(Ei.Tags[tag][0:i], Ei.Tags[tag][i+1:]...)
+				if len(Ei.Tags[tag]) == 0 {
+					delete(Ei.Tags, tag)
+				}
+			}
+		}
+	}
+	// serie
+	for i, serie := range Ei.Series {
+		if serie.ID == artc.SerieID {
+			for j, v := range serie.Articles {
+				if v == artc {
+					Ei.Series[i].Articles = append(Ei.Series[i].Articles[0:j], Ei.Series[i].Articles[j+1:]...)
+					break
+				}
+			}
+		}
+	}
+	// archive
+	for i, archive := range Ei.Archives {
+		ay, am, _ := archive.Time.Date()
+		if y, m, _ := artc.CreateTime.Date(); ay == y && am == m {
+			for j, v := range archive.Articles {
+				if v == artc {
+					Ei.Archives[i].Articles = append(Ei.Archives[i].Articles[0:j], Ei.Archives[i].Articles[j+1:]...)
+					if len(Ei.Archives[i].Articles) == 0 {
+						Ei.Archives = append(Ei.Archives[:i], Ei.Archives[i+1:]...)
+					}
+					break
+				}
+			}
+		}
+	}
+}
+
+// 替换文章
+func ReplaceArticle(oldArtc *Article, newArtc *Article) {
+	if oldArtc != nil {
+		i, artc := GetArticle(oldArtc.ID)
+		DelFromLinkedList(artc)
+		Ei.Articles = append(Ei.Articles[:i], Ei.Articles[i+1:]...)
+		delete(Ei.MapArticles, artc.Slug)
+
+		dropArticle(oldArtc)
+	}
+
+	Ei.MapArticles[newArtc.Slug] = newArtc
+	Ei.Articles = append(Ei.Articles, newArtc)
+	sort.Sort(Ei.Articles)
+
+	GenerateExcerptAndRender(newArtc)
+	AddToLinkedList(newArtc.ID)
+
+	upArticle(newArtc, true)
+}
+
 // 添加文章
 func AddArticle(artc *Article) error {
 	// 分配ID, 占位至起始id
@@ -414,13 +420,8 @@ func AddArticle(artc *Article) error {
 		Ei.Articles = append([]*Article{artc}, Ei.Articles...)
 		sort.Sort(Ei.Articles)
 		AddToLinkedList(artc.ID)
-		ManageTagsArticle(artc, true, ADD)
-		ManageSeriesArticle(artc, true, ADD)
-		ManageArchivesArticle(artc, true, ADD)
-		Ei.CH <- ARCHIVE_MD
-		if artc.SerieID > 0 {
-			Ei.CH <- SERIES_MD
-		}
+
+		upArticle(artc, true)
 	}
 	return nil
 }
@@ -434,14 +435,12 @@ func DelArticles(ids ...int32) error {
 		DelFromLinkedList(artc)
 		Ei.Articles = append(Ei.Articles[:i], Ei.Articles[i+1:]...)
 		delete(Ei.MapArticles, artc.Slug)
-		ManageTagsArticle(artc, false, DELETE)
-		ManageSeriesArticle(artc, false, DELETE)
-		ManageArchivesArticle(artc, false, DELETE)
+
 		err := UpdateArticle(mgo.M{"id": id}, mgo.M{"$set": mgo.M{"deletetime": time.Now()}})
 		if err != nil {
 			return err
 		}
-		artc = nil
+		dropArticle(artc)
 	}
 	Ei.CH <- ARCHIVE_MD
 	Ei.CH <- SERIES_MD
