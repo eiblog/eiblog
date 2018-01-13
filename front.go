@@ -379,7 +379,8 @@ func HandleDisqus(c *gin.Context) {
 }
 
 // 发表评论
-// [thread:[5279901489] parent:[] identifier:[post-troubleshooting-https] next:[] author_name:[你好] author_email:[chenqijing2@163.com] message:[fdsfdsf]]
+// [thread:[5279901489] parent:[] identifier:[post-troubleshooting-https]
+// next:[] author_name:[你好] author_email:[chenqijing2@163.com] message:[fdsfdsf]]
 type DisqusCreate struct {
 	ErrNo  int            `json:"errno"`
 	ErrMsg string         `json:"errmsg"`

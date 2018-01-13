@@ -11,18 +11,6 @@ import (
 	"github.com/qiniu/api.v7/storage"
 )
 
-type bucket struct {
-	name      string
-	domain    string
-	accessKey string
-	secretKey string
-}
-
-type PutRet struct {
-	Hash string `json:"hash"`
-	Key  string `json:"key"`
-}
-
 // 进度条
 func onProgress(fsize, uploaded int64) {
 	d := int(float64(uploaded) / float64(fsize) * 100)
@@ -40,10 +28,6 @@ func FileUpload(name string, size int64, data io.Reader) (string, error) {
 	}
 
 	key := getKey(name)
-	if key == "" {
-		return "", errors.New("不支持的文件类型")
-	}
-
 	mac := qbox.NewMac(setting.Conf.Qiniu.AccessKey, setting.Conf.Qiniu.SecretKey)
 	// 设置上传的策略
 	putPolicy := &storage.PutPolicy{
@@ -62,7 +46,8 @@ func FileUpload(name string, size int64, data io.Reader) (string, error) {
 	// uploader
 	uploader := storage.NewFormUploader(cfg)
 	ret := new(storage.PutRet)
-	putExtra := &storage.PutExtra{OnProgress: onProgress}
+	putExtra := &storage.PutExtra{}
+
 	err := uploader.Put(nil, ret, upToken, key, data, size, putExtra)
 	if err != nil {
 		return "", err
@@ -75,9 +60,6 @@ func FileUpload(name string, size int64, data io.Reader) (string, error) {
 // 删除文件
 func FileDelete(name string) error {
 	key := getKey(name)
-	if key == "" {
-		return errors.New("不支持的文件类型")
-	}
 
 	mac := qbox.NewMac(setting.Conf.Qiniu.AccessKey, setting.Conf.Qiniu.SecretKey)
 	// 上传配置
@@ -104,9 +86,12 @@ func getKey(name string) string {
 		key = "blog/img/" + name
 	case ".mov", ".mp4":
 		key = "blog/video/" + name
-	case ".go", ".js", ".css", ".cpp", ".php", ".rb", ".java", ".py", ".sql", ".lua", ".html", ".sh", ".xml", ".cs":
+	case ".go", ".js", ".css", ".cpp", ".php", ".rb",
+		".java", ".py", ".sql", ".lua", ".html",
+		".sh", ".xml", ".cs":
 		key = "blog/code/" + name
-	case ".txt", ".md", ".ini", ".yaml", ".yml", ".doc", ".ppt", ".pdf":
+	case ".txt", ".md", ".ini", ".yaml", ".yml",
+		".doc", ".ppt", ".pdf":
 		key = "blog/document/" + name
 	case ".zip", ".rar", ".tar", ".gz":
 		key = "blog/archive/" + name

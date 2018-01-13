@@ -89,7 +89,9 @@ func apiBlog(c *gin.Context) {
 		return
 	}
 
-	err := UpdateAccountField(mgo.M{"$set": mgo.M{"blogger.blogname": bn, "blogger.btitle": bt, "blogger.beian": ba, "blogger.subtitle": st, "blogger.seriessay": ss, "blogger.archivessay": as}})
+	err := UpdateAccountField(mgo.M{"$set": mgo.M{"blogger.blogname": bn,
+		"blogger.btitle": bt, "blogger.beian": ba, "blogger.subtitle": st,
+		"blogger.seriessay": ss, "blogger.archivessay": as}})
 	if err != nil {
 		responseNotice(c, NOTICE_NOTICE, err.Error(), "")
 		return
@@ -335,7 +337,7 @@ func apiSerieAdd(c *gin.Context) {
 	responseNotice(c, NOTICE_SUCCESS, "操作成功", "")
 }
 
-// 暂未启用
+// NOTE 暂未启用
 func apiSerieSort(c *gin.Context) {
 	err := c.Request.ParseForm()
 	if err != nil {

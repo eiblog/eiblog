@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/xml"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -64,7 +65,7 @@ func (p *pingRPC) PingFunc(slug string) {
 	if len(setting.Conf.PingRPCs) == 0 {
 		return
 	}
-	p.Params.Param[1].Value = "https://" + setting.Conf.Mode.Domain + "/post/" + slug + ".html"
+	p.Params.Param[1].Value = fmt.Sprintf("https://%s/post/%s.html", setting.Conf.Mode.Domain, slug)
 	buf := &bytes.Buffer{}
 	buf.WriteString(xml.Header)
 	enc := xml.NewEncoder(buf)
