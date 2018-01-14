@@ -159,7 +159,8 @@ func generateMarkdown() {
 				buffer.WriteString("\n\n")
 				for _, artc := range serie.Articles {
 					//eg. * [标题一](/post/hello-world.html) <span class="date">(Man 02, 2006)</span>
-					buffer.WriteString("* [" + artc.Title + "](/post/" + artc.Slug + ".html) <span class=\"date\">(" + artc.CreateTime.Format("Jan 02, 2006") + ")</span>\n")
+					buffer.WriteString("* [" + artc.Title + "](/post/" + artc.Slug +
+						".html) <span class=\"date\">(" + artc.CreateTime.Format("Jan 02, 2006") + ")</span>\n")
 				}
 				buffer.WriteByte('\n')
 			}
@@ -167,15 +168,31 @@ func generateMarkdown() {
 		case ARCHIVE_MD:
 			sort.Sort(Ei.Archives)
 			var buffer bytes.Buffer
-			buffer.WriteString(Ei.ArchivesSay)
-			buffer.WriteString("\n\n")
+			buffer.WriteString(Ei.ArchivesSay + "\n")
+
+			var (
+				currentYear string
+				gt12Month   = len(Ei.Archives) > 12
+			)
 			for _, archive := range Ei.Archives {
-				buffer.WriteString(fmt.Sprintf("### %s", archive.Time.Format("2006年01月")))
-				buffer.WriteString("\n\n")
-				for _, artc := range archive.Articles {
-					buffer.WriteString("* [" + artc.Title + "](/post/" + artc.Slug + ".html) <span class=\"date\">(" + artc.CreateTime.Format("Jan 02, 2006") + ")</span>\n")
+				if gt12Month {
+					year := archive.Time.Format("2006年")
+					if currentYear != year {
+						currentYear = year
+						buffer.WriteString(fmt.Sprintf("\n### %s\n\n", archive.Time.Format("2006年")))
+					}
+				} else {
+					buffer.WriteString(fmt.Sprintf("\n### %s\n\n", archive.Time.Format("2006年2月")))
 				}
-				buffer.WriteByte('\n')
+				for i, artc := range archive.Articles {
+					if i == 0 && gt12Month {
+						buffer.WriteString("* *[" + artc.Title + "](/post/" + artc.Slug +
+							".html)* <span class=\"date\">(" + artc.CreateTime.Format("Jan 02, 2006") + ")</span>\n")
+					} else {
+						buffer.WriteString("* [" + artc.Title + "](/post/" + artc.Slug +
+							".html) <span class=\"date\">(" + artc.CreateTime.Format("Jan 02, 2006") + ")</span>\n")
+					}
+				}
 			}
 			Ei.PageArchives = string(renderPage(buffer.Bytes()))
 		}
@@ -330,7 +347,8 @@ func upArticle(artc *Article, needSort bool) {
 			return
 		}
 	}
-	Ei.Archives = append(Ei.Archives, &Archive{Time: artc.CreateTime, Articles: SortArticles{artc}})
+	Ei.Archives = append(Ei.Archives, &Archive{Time: artc.CreateTime,
+		Articles: SortArticles{artc}})
 	if needSort {
 		Ei.CH <- ARCHIVE_MD
 	}
@@ -494,7 +512,8 @@ func timer() {
 	delT := time.NewTicker(time.Duration(setting.Conf.General.Clean) * time.Hour)
 	for {
 		<-delT.C
-		mgo.Remove(DB, COLLECTION_ARTICLE, mgo.M{"deletetime": mgo.M{"$gt": time.Time{}, "$lt": time.Now().Add(time.Duration(setting.Conf.General.Trash) * time.Hour)}})
+		mgo.Remove(DB, COLLECTION_ARTICLE, mgo.M{"deletetime": mgo.M{"$gt": time.Time{},
+			"$lt": time.Now().Add(time.Duration(setting.Conf.General.Trash) * time.Hour)}})
 	}
 }
 
@@ -510,7 +529,8 @@ func RemoveArticle(id int32) error {
 
 // 恢复删除文章到草稿箱
 func RecoverArticle(id int32) error {
-	return mgo.Update(DB, COLLECTION_ARTICLE, mgo.M{"id": id}, mgo.M{"$set": mgo.M{"deletetime": time.Time{}, "isdraft": true}})
+	return mgo.Update(DB, COLLECTION_ARTICLE, mgo.M{"id": id},
+		mgo.M{"$set": mgo.M{"deletetime": time.Time{}, "isdraft": true}})
 }
 
 // 更新文章
@@ -539,7 +559,8 @@ func AddSerie(name, slug, desc string) error {
 // 更新专题
 func UpdateSerie(serie *Serie) error {
 	Ei.CH <- SERIES_MD
-	return mgo.Update(DB, COLLECTION_ACCOUNT, mgo.M{"username": Ei.Username, "blogger.series.id": serie.ID}, mgo.M{"$set": mgo.M{"blogger.series.$": serie}})
+	return mgo.Update(DB, COLLECTION_ACCOUNT, mgo.M{"username": Ei.Username,
+		"blogger.series.id": serie.ID}, mgo.M{"$set": mgo.M{"blogger.series.$": serie}})
 }
 
 // 删除专题
