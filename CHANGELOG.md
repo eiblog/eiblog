@@ -1,5 +1,36 @@
 # Eiblog Changelog
 
+## v1.4.1 (2018-01-14)
+* 修复创建新文章，disqus 不收录bug
+* 修复创建新文章，归档页面不刷新bug
+* 修复能够删除关于页面和友情链接页面bug
+* 修复重复添加文章错误
+* 注释掉 docker-compose.yml 自动备份内容，请自行解开
+* 添加当月数大于12，归档页面使用年份归档
+* 优化代码逻辑
+
+## v1.4.0 (2018-01-01)
+* fix 搜索页面 bug
+* CGO_ENABLED=0 关闭 cgo
+* 更新Makefile ct log 服务器
+* 数据库数据终于可以备份了
+
+## v1.3.4 (2017-11-29)
+* fix page:admin/write-post autocomplete tag
+
+## v1.3.3 (2017-11-27)
+* fix docker image: exec user process caused "no such file or directory"
+
+## v1.3.2 (2017-11-17)
+* 修复文章自动保存引起的发布文章不成功的bug
+
+## v1.3.1 (2017-11-05)
+* 修复调整 关于、友情链接 创建时间出现文章乱序
+* 修复评论时间计算错误
+* 调整acme文件验证路径
+* 更改七牛SDK包为github包。
+* 调整七牛配置文件名称，app.yml: kodo -> qiniu，name -> bucket，请提高静态文件版本 staticversion
+
 ## v1.3.0 (2017-07-13)
 * 更改 app.yml 配置项，将大部分配置归在 general 常规配置下。注意，部署时请先更新 app.yml。
 * 静态文件采用动态渲染，即用户不再需要管理 view、static 目录。
