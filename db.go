@@ -176,10 +176,10 @@ func generateMarkdown() {
 			)
 			for _, archive := range Ei.Archives {
 				if gt12Month {
-					year := archive.Time.Format("2006年")
+					year := archive.Time.Format("2006 年")
 					if currentYear != year {
 						currentYear = year
-						buffer.WriteString(fmt.Sprintf("\n### %s\n\n", archive.Time.Format("2006年")))
+						buffer.WriteString(fmt.Sprintf("\n### %s\n\n", archive.Time.Format("2006 年")))
 					}
 				} else {
 					buffer.WriteString(fmt.Sprintf("\n### %s\n\n", archive.Time.Format("2006年2月")))
@@ -187,7 +187,7 @@ func generateMarkdown() {
 				for i, artc := range archive.Articles {
 					if i == 0 && gt12Month {
 						buffer.WriteString("* *[" + artc.Title + "](/post/" + artc.Slug +
-							".html)* <span class=\"date\">(" + artc.CreateTime.Format("Jan 02, 2006") + ")</span>\n")
+							".html) <span class=\"date\">(" + artc.CreateTime.Format("Jan 02, 2006") + ")</span>*\n")
 					} else {
 						buffer.WriteString("* [" + artc.Title + "](/post/" + artc.Slug +
 							".html) <span class=\"date\">(" + artc.CreateTime.Format("Jan 02, 2006") + ")</span>\n")
