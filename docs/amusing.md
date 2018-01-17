@@ -18,3 +18,7 @@ twitter:
 ![twitter-card2](http://7xokm2.com1.z0.glb.clouddn.com/img/twitter-pub2.png)
 
 可以看到`，`之前是没有内容的，该内容是我们文章的描述。
+
+### Google OpenSearch
+在 Chrome 浏览器上，你可以在输入网站后按 TAB 键进入搜索模式，如：
+![opensearch](http://7xokm2.com1.z0.glb.clouddn.com/opensearch.gif)
