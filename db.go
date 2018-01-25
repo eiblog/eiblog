@@ -182,7 +182,7 @@ func generateMarkdown() {
 						buffer.WriteString(fmt.Sprintf("\n### %s\n\n", archive.Time.Format("2006 年")))
 					}
 				} else {
-					buffer.WriteString(fmt.Sprintf("\n### %s\n\n", archive.Time.Format("2006年2月")))
+					buffer.WriteString(fmt.Sprintf("\n### %s\n\n", archive.Time.Format("2006年1月")))
 				}
 				for i, artc := range archive.Articles {
 					if i == 0 && gt12Month {
