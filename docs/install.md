@@ -90,7 +90,7 @@ $ docker run -d --name eisearch \
 | ------------------ | ---------------------------------------- | ---------------------------------------- |
 | favicon.ico        | st.example.com/static/img/favicon.ico    | cdn 中的文件名为 `static/img/favicon.ico`。你也可以复制 favicon.ico 到 static 文件夹下，通过 example.com/favicon.ico 也是能够访问到。docker 用户可能需要重新打包镜像。 |
 | bg04.jpg           | st.example.com/static/img/bg04.jpg       | 首页左侧的大背景图，需要更名请到 views/st_blog.css 修改。   |
-| avatar.jpg         | st.example.com/static/img/avatar.jpg     | 头像                                       |
+| avatar.png         | st.example.com/static/img/avatar.png     | 头像                                       |
 | blank.gif          | st.example.com/static/img/blank.gif      | 空白图片，[下载](https://st.deepzz.com/static/img/blank.gif) |
 | default_avatar.png | st.example.com/static/img/default_avatar.png | disqus 默认图片，[下载](https://st.deepzz.com/static/img/default_avatar.png) |
 | disqus.js          | st.example.com/static/js/disqus_xxx.js   | disqus 文件，你可以通过 https://short_name.disqus.com/embed.js 下载你的专属文件，并上传到七牛。更新配置文件 app.yml。 |
