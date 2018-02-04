@@ -45,10 +45,11 @@
                                 <td>
                                     <input type="checkbox" value="{{.ID}}" name="mid[]" />
                                 </td>
-                                <td><a href="/admin/add-serie?mid={{.ID}}">{{.ID}}</a>
-                                    <a href="/series.html#toc-{{.ID}}" title="浏览 {{.Name}}"><i class="i-exlink"></i></a>
+                                <td>{{.ID}}</td>
+                                <td>
+                                    <a href="/admin/add-serie?mid={{.ID}}">{{.Name}}</a>
+                                    <a target="_blank" href="/series.html#toc-{{.ID}}" title="浏览 {{.Name}}"><i class="i-exlink"></i></a>
                                 </td>
-                                <td>{{.Name}}</td>
                                 <td>{{dateformat .CreateTime "2006/01/02 15:04"}}</td>
                                 <td><a class="balloon-button left size-50" href="#">{{len .Articles}}</a></td>
                             </tr>
