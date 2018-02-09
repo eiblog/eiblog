@@ -2,6 +2,7 @@
 package main
 
 import (
+	"crypto/rand"
 	"fmt"
 	"text/template"
 	"time"
@@ -27,7 +28,12 @@ func init() {
 	}
 
 	router = gin.Default()
-	store := sessions.NewCookieStore([]byte("eiblog321"))
+	b := make([]byte, 16)
+	_, err := rand.Read(b)
+	if err != nil {
+		logd.Fatal(err)
+	}
+	store := sessions.NewCookieStore(b)
 	store.Options(sessions.Options{
 		MaxAge:   86400 * 7,
 		Path:     "/",
@@ -43,7 +49,7 @@ func init() {
 		}
 		return false
 	})
-	_, err := Tmpl.ParseFiles(files...)
+	_, err = Tmpl.ParseFiles(files...)
 	if err != nil {
 		logd.Fatal(err)
 	}

@@ -231,12 +231,15 @@ func apiPostAdd(c *gin.Context) {
 		}
 		cid = int(artc.ID)
 		if !artc.IsDraft {
-			// elastic
-			ElasticIndex(artc)
-			// rss
-			DoPings(slug)
-			// disqus
-			ThreadCreate(artc)
+			// 异步执行，快
+			go func() {
+				// elastic
+				ElasticIndex(artc)
+				// rss
+				DoPings(slug)
+				// disqus
+				ThreadCreate(artc)
+			}()
 		}
 		return
 	}
@@ -260,14 +263,17 @@ func apiPostAdd(c *gin.Context) {
 	}
 	if !artc.IsDraft {
 		ReplaceArticle(a, artc)
-		// elastic
-		ElasticIndex(artc)
-		// rss
-		DoPings(slug)
-		// disqus
-		if a == nil {
-			ThreadCreate(artc)
-		}
+		// 异步执行，快
+		go func() {
+			// elastic
+			ElasticIndex(artc)
+			// rss
+			DoPings(slug)
+			// disqus
+			if a == nil {
+				ThreadCreate(artc)
+			}
+		}()
 	}
 }
 

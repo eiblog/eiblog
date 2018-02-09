@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"regexp"
 	"strings"
@@ -23,10 +24,20 @@ const (
 	ES_DATE   = `{"range":{"date":{"gte":"%s","lte": "%s","format": "yyyy-MM-dd||yyyy-MM||yyyy"}}}` // 2016-10||/M
 )
 
-var es *ElasticService
+var (
+	ErrUninitializedES = errors.New("uninitialized elasticsearch")
+
+	es *ElasticService
+)
 
 // 初始化 Elasticsearch 服务器
 func init() {
+	_, err := net.LookupIP("elasticsearch")
+	if err != nil {
+		logd.Info(err)
+		return
+	}
+
 	es = &ElasticService{url: "http://elasticsearch:9200", c: new(http.Client)}
 	initIndex()
 }
@@ -41,7 +52,11 @@ func initIndex() {
 }
 
 // 查询
-func Elasticsearch(qStr string, size, from int) *ESSearchResult {
+func Elasticsearch(qStr string, size, from int) (*ESSearchResult, error) {
+	if es == nil {
+		return nil, ErrUninitializedES
+	}
+
 	// 分析查询字符串
 	reg := regexp.MustCompile(`(tag|slug|date):`)
 	indexs := reg.FindAllStringIndex(qStr, -1)
@@ -92,14 +107,17 @@ func Elasticsearch(qStr string, size, from int) *ESSearchResult {
 	}
 	docs, err := IndexQueryDSL(INDEX, TYPE, size, from, []byte(dsl))
 	if err != nil {
-		logd.Error(err)
-		return nil
+		return nil, err
 	}
-	return docs
+	return docs, nil
 }
 
 // 添加或更新索引
 func ElasticIndex(artc *Article) error {
+	if es == nil {
+		return ErrUninitializedES
+	}
+
 	img := PickFirstImage(artc.Content)
 	mapping := map[string]interface{}{
 		"title":   artc.Title,
@@ -115,6 +133,10 @@ func ElasticIndex(artc *Article) error {
 
 // 删除索引
 func ElasticDelIndex(ids []int32) error {
+	if es == nil {
+		return ErrUninitializedES
+	}
+
 	var target []string
 	for _, id := range ids {
 		target = append(target, fmt.Sprint(id))

@@ -6,8 +6,6 @@ services:
     volumes:
       - /data/eiblog/mgodb:/data/db
     restart: always
-    ports:
-      - 27017:27017
   elasticsearch:
     image: elasticsearch:2.4.1
     container_name: eisearch

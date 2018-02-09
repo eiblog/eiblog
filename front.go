@@ -199,10 +199,12 @@ func HandleSearchPage(c *gin.Context) {
 			start = 1
 		}
 		h["Word"] = q
-		var result *ESSearchResult
+
 		vals := c.Request.URL.Query()
-		result = Elasticsearch(q, setting.Conf.General.PageNum, start-1)
-		if result != nil {
+		result, err := Elasticsearch(q, setting.Conf.General.PageNum, start-1)
+		if err != nil {
+			logd.Error(err)
+		} else {
 			result.Took /= 1000
 			for i, v := range result.Hits.Hits {
 				if artc := Ei.MapArticles[result.Hits.Hits[i].Source.Slug]; len(v.Highlight.Content) == 0 && artc != nil {

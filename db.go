@@ -75,9 +75,9 @@ func init() {
 		logd.Fatal(err)
 	}
 	// 读取帐号信息
-	Ei = loadAccount()
+	loadAccount()
 	// 获取文章数据
-	Ei.Articles = loadArticles()
+	loadArticles()
 	// 生成markdown文档
 	go generateMarkdown()
 	// 启动定时器
@@ -87,12 +87,13 @@ func init() {
 }
 
 // 读取或初始化帐号信息
-func loadAccount() (a *Account) {
-	a = &Account{}
-	err := mgo.FindOne(DB, COLLECTION_ACCOUNT, mgo.M{"username": setting.Conf.Account.Username}, a)
+func loadAccount() {
+	Ei = &Account{}
+	err := mgo.FindOne(DB, COLLECTION_ACCOUNT, mgo.M{"username": setting.Conf.Account.Username}, Ei)
 	// 初始化用户数据
 	if err == mgo.ErrNotFound {
-		a = &Account{
+		logd.Printf("Initializing account: %s\n", setting.Conf.Account.Username)
+		Ei = &Account{
 			Username:   setting.Conf.Account.Username,
 			Password:   EncryptPasswd(setting.Conf.Account.Username, setting.Conf.Account.Password),
 			Email:      setting.Conf.Account.Email,
@@ -100,29 +101,28 @@ func loadAccount() (a *Account) {
 			Address:    setting.Conf.Account.Address,
 			CreateTime: time.Now(),
 		}
-		a.BlogName = setting.Conf.Blogger.BlogName
-		a.SubTitle = setting.Conf.Blogger.SubTitle
-		a.BeiAn = setting.Conf.Blogger.BeiAn
-		a.BTitle = setting.Conf.Blogger.BTitle
-		a.Copyright = setting.Conf.Blogger.Copyright
-		err = mgo.Insert(DB, COLLECTION_ACCOUNT, a)
+		Ei.BlogName = setting.Conf.Blogger.BlogName
+		Ei.SubTitle = setting.Conf.Blogger.SubTitle
+		Ei.BeiAn = setting.Conf.Blogger.BeiAn
+		Ei.BTitle = setting.Conf.Blogger.BTitle
+		Ei.Copyright = setting.Conf.Blogger.Copyright
+		err = mgo.Insert(DB, COLLECTION_ACCOUNT, Ei)
 		generateTopic()
 	} else if err != nil {
 		logd.Fatal(err)
 	}
-	a.CH = make(chan string, 2)
-	a.MapArticles = make(map[string]*Article)
-	a.Tags = make(map[string]SortArticles)
-	return
+	Ei.CH = make(chan string, 2)
+	Ei.MapArticles = make(map[string]*Article)
+	Ei.Tags = make(map[string]SortArticles)
 }
 
-func loadArticles() (artcs SortArticles) {
-	err := mgo.FindAll(DB, COLLECTION_ARTICLE, mgo.M{"isdraft": false, "deletetime": mgo.M{"$eq": time.Time{}}}, &artcs)
+func loadArticles() {
+	err := mgo.FindAll(DB, COLLECTION_ARTICLE, mgo.M{"isdraft": false, "deletetime": mgo.M{"$eq": time.Time{}}}, &Ei.Articles)
 	if err != nil {
 		logd.Fatal(err)
 	}
-	sort.Sort(artcs)
-	for i, v := range artcs {
+	sort.Sort(Ei.Articles)
+	for i, v := range Ei.Articles {
 		// 渲染文章
 		GenerateExcerptAndRender(v)
 		Ei.MapArticles[v.Slug] = v
@@ -131,16 +131,15 @@ func loadArticles() (artcs SortArticles) {
 			continue
 		}
 		if i > 0 {
-			v.Prev = artcs[i-1]
+			v.Prev = Ei.Articles[i-1]
 		}
-		if artcs[i+1].ID >= setting.Conf.General.StartID {
-			v.Next = artcs[i+1]
+		if Ei.Articles[i+1].ID >= setting.Conf.General.StartID {
+			v.Next = Ei.Articles[i+1]
 		}
 		upArticle(v, false)
 	}
 	Ei.CH <- SERIES_MD
 	Ei.CH <- ARCHIVE_MD
-	return
 }
 
 // generate series,archive markdown
@@ -209,6 +208,9 @@ func generateTopic() {
 		CreateTime: time.Time{},
 		UpdateTime: time.Time{},
 	}
+	// 推送到 disqus
+	go func() { ThreadCreate(about) }()
+
 	blogroll := &Article{
 		ID:         mgo.NextVal(DB, COUNTER_ARTICLE),
 		Author:     setting.Conf.Account.Username,
