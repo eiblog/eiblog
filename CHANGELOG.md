@@ -1,12 +1,19 @@
 # Eiblog Changelog
 
-## v1.4.2 (2018-02-09)
+## v1.4.4 (2018-05-07)
+* 修复基础评论分钟数计算错误
+* let's encrypt v2证书内嵌ct，故移除有关ct内容
+
+## v1.4.3 (2018-02-09)
 * 修复博客初始化后，about 页面不能够评论 #6
 * 修复编辑专题，按钮显示“添加专题”错误
 * 优化“添加文章”从同步改为异步推送：feed，es，disqus。速度显著提升
 * （**重要*）头像图片从 avatar.jpg 改为 avatar.png（透明）
 * docker-compose.yml mongodb 去掉端口映射，防止用户将端口暴露至外网
 * session key 每次重启随机生成等一些细节的修复
+
+## v1.4.2 (2018-01-25)
+* fix archive page bug
 
 ## v1.4.1 (2018-01-14)
 * 修复创建新文章，disqus 不收录bug
