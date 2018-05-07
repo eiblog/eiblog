@@ -26,7 +26,7 @@ dist:
 gencert:makedir
 	@if [ ! -n "$(sans)" ]; then \
 		printf "Need one argument [sans=params]\n"; \
-		printf "example: sans=\"-d domain -d domain\"\n"; \
+		printf "example: sans=\"-d domain -d *.domain\"\n"; \
 		exit 1; \
 	fi; \
 	if [ ! -n "$(cn)" ]; then \
@@ -39,22 +39,18 @@ gencert:makedir
 	fi
 
 	@echo "generate rsa cert..."
-	@$(acme.sh) --force --issue --dns dns_ali $(sans) --log \
-		--renew-hook "ct-submit ctlog-gen2.api.venafi.com < $(config)/ssl/domain.rsa.pem > $(config)/scts/rsa/venafi.sct \
-		&& ct-submit ctlog.wosign.com < $(config)/ssl/domain.rsa.pem > $(config)/scts/rsa/wosign.sct"
-	@$(acme.sh) --install-cert -d $(cn) \
-		--key-file       $(config)/ssl/domain.rsa.key \
-		--fullchain-file $(config)/ssl/domain.rsa.pem \
-		--reloadcmd      "service nginx force-reload"
+	@$(acme.sh) --force --issue --dns dns_ali $(sans) \
+		--renew-hook "$(acme.sh) --install-cert -d $(cn) \
+			--key-file       $(config)/ssl/domain.rsa.key \
+			--fullchain-file $(config)/ssl/domain.rsa.pem \
+			--reloadcmd      \"service nginx force-reload\""
 
 	@echo "generate ecc cert..."
-	@$(acme.sh) --force --issue --dns dns_ali $(sans) -k ec-256 --log \
-		--renew-hook "ct-submit ctlog-gen2.api.venafi.com < $(config)/ssl/domain.ecc.pem > $(config)/scts/ecc/venafi.sct \
-		&& ct-submit ctlog.wosign.com < $(config)/ssl/domain.ecc.pem > $(config)/scts/ecc/wosign.sct"
-	@$(acme.sh) --install-cert -d $(cn) --ecc \
-		--key-file       $(config)/ssl/domain.ecc.key \
-		--fullchain-file $(config)/ssl/domain.ecc.pem \
-		--reloadcmd      "service nginx force-reload"
+	@$(acme.sh) --force --issue --dns dns_ali $(sans) -k ec-256 \
+		--renew-hook "$(acme.sh) --install-cert -d $(cn) --ecc \
+			--key-file       $(config)/ssl/domain.ecc.key \
+			--fullchain-file $(config)/ssl/domain.ecc.pem \
+			--reloadcmd      \"service nginx force-reload\""
 
 dhparams:
 	@openssl dhparam -out $(config)/ssl/dhparams.pem 2048
@@ -63,7 +59,7 @@ ssticket:
 	@openssl rand 48 > $(config)/ssl/session_ticket.key
 
 makedir:
-	@mkdir -p $(config)/ssl $(config)/scts/rsa $(config)/scts/ecc
+	@mkdir -p $(config)/ssl
 
 clean:
 
