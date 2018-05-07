@@ -125,7 +125,7 @@ func ConvertStr(str string) string {
 	} else if h := d*24 + h2 - h1; h > 1 || (h == 1 && mi2-mi1 >= 0) {
 		return fmt.Sprintf(HOURS_AGO, h)
 	} else if mi := h*60 + mi2 - mi1; mi > 1 || (mi == 1 && s2-s1 >= 0) {
-		return fmt.Sprintf(MINUTES_AGO, m)
+		return fmt.Sprintf(MINUTES_AGO, mi)
 	}
 	return JUST_NOW
 }
