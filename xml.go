@@ -83,7 +83,7 @@ func doSitemap() {
 		logd.Error(err)
 		return
 	}
-	time.AfterFunc(time.Hour*24, doFeed)
+	time.AfterFunc(time.Hour*24, doSitemap)
 }
 
 // 渲染 opensearch
