@@ -403,20 +403,21 @@ func dropArticle(artc *Article) {
 
 // 替换文章
 func ReplaceArticle(oldArtc *Article, newArtc *Article) {
+	Ei.MapArticles[newArtc.Slug] = newArtc
+	GenerateExcerptAndRender(newArtc)
+	if newArtc.ID < setting.Conf.General.StartID {
+		return
+	}
 	if oldArtc != nil {
 		i, artc := GetArticle(oldArtc.ID)
 		DelFromLinkedList(artc)
 		Ei.Articles = append(Ei.Articles[:i], Ei.Articles[i+1:]...)
-		delete(Ei.MapArticles, artc.Slug)
 
 		dropArticle(oldArtc)
 	}
 
-	Ei.MapArticles[newArtc.Slug] = newArtc
 	Ei.Articles = append(Ei.Articles, newArtc)
 	sort.Sort(Ei.Articles)
-
-	GenerateExcerptAndRender(newArtc)
 	AddToLinkedList(newArtc.ID)
 
 	upArticle(newArtc, true)
