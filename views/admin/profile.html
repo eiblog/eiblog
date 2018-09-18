@@ -7,7 +7,7 @@
     <div class="row typecho-page-main">
         <div class="col-mb-12 col-tb-3">
             <p>
-	    <img class="profile-avatar" src="//{{$.Qiniu.Domain}}/static/img/avatar.jpg" alt="{{.BlogName}}" />
+	    <img class="profile-avatar" src="//{{$.Qiniu.Domain}}/static/img/avatar.png" alt="{{.BlogName}}" />
             </p>
             <h2>{{.BlogName}}</h2>
             <p>{{.SubTitle}}</p>
@@ -68,45 +68,45 @@
                     </ul>
                     <ul class="typecho-option">
                         <li>
-                            <label class="typecho-label" for="blog-0-4">
+                            <label class="typecho-label" for="blog-0-2">
                                 标题显示 *</label>
-                            <input id="blog-0-4" name="bTitle" type="text" class="text" value="{{.BTitle}}" />
+                            <input id="blog-0-2" name="bTitle" type="text" class="text" value="{{.BTitle}}" />
                             <p class="description">
                                 用于所有页面的title组成, 如: Deepzz's Blog</p>
                         </li>
                     </ul>
                     <ul class="typecho-option">
                         <li>
-                            <label class="typecho-label" for="blog-0-2">
+                            <label class="typecho-label" for="blog-0-3">
                                 个人格言</label>
-                            <input id="blog-0-2" name="subTitle" type="text" class="text" value="{{.SubTitle}}" />
+                            <input id="blog-0-3" name="subTitle" type="text" class="text" value="{{.SubTitle}}" />
                             <p class="description">
                                 简介或格言, 如: 生活百般滋味, 人生需要笑对.</p>
                         </li>
                     </ul>
                      <ul class="typecho-option">
                         <li>
-                            <label class="typecho-label" for="blog-0-3">
+                            <label class="typecho-label" for="blog-0-4">
                                 备案号</label>
-                            <input id="blog-0-3" name="beiAn" type="text" class="text" value="{{.BeiAn}}" />
+                            <input id="blog-0-4" name="beiAn" type="text" class="text" value="{{.BeiAn}}" />
                             <p class="description">
                                 用于底部显示, 不添加则不显示, 如: 蜀 ICP 备 16021362 号</p>
                         </li>
                     </ul>
                     <ul class="typecho-option">
                         <li>
-                            <label class="typecho-label" for="blog-0-4">
+                            <label class="typecho-label" for="blog-0-5">
                                 专题前说</label>
-                            <textarea id="blog-0-4" name="seriessay">{{.SeriesSay}}</textarea>
+                            <textarea id="blog-0-5" name="seriessay">{{.SeriesSay}}</textarea>
                             <p class="description">
                                 此文字用于专题前述, 会在专题最前方显示.</p>
                         </li>
                     </ul>
                     <ul class="typecho-option">
                         <li>
-                            <label class="typecho-label" for="blog-0-5">
+                            <label class="typecho-label" for="blog-0-6">
                                 归档前说</label>
-                            <textarea id="blog-0-5" name="archivessay">{{.ArchivesSay}}</textarea>
+                            <textarea id="blog-0-6" name="archivessay">{{.ArchivesSay}}</textarea>
                             <p class="description">
                                 此文字用于归档前述, 会在归档最前方显示.</p>
                         </li>
@@ -123,7 +123,7 @@
             <section id="change-password">
                 <h3>密码修改</h3>
                 <form action="/admin/api/password" method="post" enctype="application/x-www-form-urlencoded">
-                    <ul class="typecho-option" id="typecho-option-item-password-10">
+                    <ul class="typecho-option" id="typecho-option-item-oldpwd-11">
                         <li>
                             <label class="typecho-label" for="password-0-11">
                                 原始密码</label>
@@ -132,26 +132,26 @@
                                 该账户旧密码.</p>
                         </li>
                     </ul>
-                    <ul class="typecho-option" id="typecho-option-item-password-10">
+                    <ul class="typecho-option" id="typecho-option-item-newpwd-12">
                         <li>
-                            <label class="typecho-label" for="password-0-11">
+                            <label class="typecho-label" for="password-0-12">
                                 用户密码</label>
-                            <input id="password-0-11" name="new" type="password" class="w-60" />
+                            <input id="password-0-12" name="new" type="password" class="w-60" />
                             <p class="description">
                                 为此用户分配一个密码.
                                 <br />建议使用特殊字符与字母、数字的混编样式,以增加系统安全性.</p>
                         </li>
                     </ul>
-                    <ul class="typecho-option" id="typecho-option-item-confirm-11">
+                    <ul class="typecho-option" id="typecho-option-item-confirm-13">
                         <li>
-                            <label class="typecho-label" for="confirm-0-12">
+                            <label class="typecho-label" for="confirm-0-13">
                                 用户密码确认</label>
-                            <input id="confirm-0-12" name="confirm" type="password" class="w-60" />
+                            <input id="confirm-0-13" name="confirm" type="password" class="w-60" />
                             <p class="description">
                                 请确认你的密码, 与上面输入的密码保持一致.</p>
                         </li>
                     </ul>
-                    <ul class="typecho-option typecho-option-submit" id="typecho-option-item-submit-13">
+                    <ul class="typecho-option typecho-option-submit" id="typecho-option-item-submit-14">
                         <li>
                             <button type="submit" class="btn primary">
                                 更新密码</button>
