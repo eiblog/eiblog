@@ -12,6 +12,15 @@ config?=/data/eiblog/conf
 
 test:
 
+mongodb:
+	@if ! docker ps | grep mongodb; then \
+	    docker run -d --name mongodb -v mongo-data:/data/db -p 27018:27017 mongo:3.2; \
+	fi
+
+run: mongodb
+	@echo "run eiblog..."
+	@go build && ./eiblog
+
 build:
 	@echo "go build..."
 	@CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build && \
@@ -62,4 +71,3 @@ makedir:
 	@mkdir -p $(config)/ssl
 
 clean:
-

@@ -25,32 +25,35 @@
 可以容易的看到 [httpsecurityreport](https://httpsecurityreport.com/?report=deepzz.com) 评分`96`，[ssllabs](https://www.ssllabs.com/ssltest/analyze.html?d=deepzz.com&latest) 评分`A+`，[myssl](https://myssl.com/deepzz.com) 评分`A+`，堪称完美。这些安全的相关配置会在后面的部署过程中接触到。
 
 相关图片展示：
-![show-home](http://7xokm2.com1.z0.glb.clouddn.com/static/img/show-home1.png)
+![show-home](http://gb.st.deepzz.com/static/img/show-home1.png)
 
-![show-home2](http://7xokm2.com1.z0.glb.clouddn.com/static/img/show-home2.png)
+![show-home2](http://gb.st.deepzz.com/static/img/show-home2.png)
 
-![show-admin](http://7xokm2.com1.z0.glb.clouddn.com/static/img/show-admin.png)
+![show-admin](http://gb.st.deepzz.com/static/img/show-admin.png)
 
-![eiblog-mem](http://7xokm2.com1.z0.glb.clouddn.com/img/eiblog-mem.png)
+![eiblog-mem](http://gb.st.deepzz.com/img/eiblog-mem.png)
 
-> `注`：图片1，图片2是博客界面，图片3是后台界面，图片4是性能展示。
+> `注`：图片1，图片2是博客界面，图片3是后台界面，图片4是内存占用。
 
 ### 极速体验
-1. 到 [这里](https://github.com/eiblog/eiblog/releases) 下载对应平台 `.tar.gz` 文件。
+`eiblog` 默认监听 `:9000` 端口，默认连接 `MongoDB` 地址 `mongodb:27017`，默认连接 `Elasticsearch` 地址 `http://elasticsearch:9200`。
 
-2. 搭建 `MongoDB`（必须）和 `Elasticsearch`（可选）服务，正式部署需要。
+1、手动启动执行
 
-3. 修改 `/etc/hosts` 文件，添加 `MongoDB` 数据库 IP 地址，如：`127.0.0.1       mongodb`。
-
-4. 执行 `./eiblog`，运行博客系统。看到：
-```
-...
-...
-[GIN-debug] Listening and serving HTTP on :9000
-```
-代表运行成功了。
+  1. 到 [这里](https://github.com/eiblog/eiblog/releases) 下载对应平台 `.tar.gz` 文件。
+  2. 搭建 `MongoDB`（必须）和 `Elasticsearch`（可选）服务，正式部署需要。
+  3. `MongoDB` 服务地址也可通过环境变量指定连接地址如：`export EIBLOG_MGO_ADDR=127.0.0.1:27017`。
+  4. 执行 `./eiblog`，运行博客系统。看到 `...Listening and serving HTTP on :9000` 代表运行成功了。
 
 默认监听 `HTTP 9000` 端口，后台 `/admin/login`，默认账号密码均为 `deepzz`。更多详细请查阅 [安装部署](https://github.com/eiblog/eiblog/blob/master/docs/install.md) 文档。
+
+2、Docker 与 Go 环境
+
+如果你有 `docker` 和 `go` 环境，可直接使用如下命令启动：
+```
+$ EIBLOG_MGO_ADDR=127.0.0.1:27017 make run
+```
+请提前指定 `mongodb` 的连接地址。该命令会启动一个 `mognodb` 容器，然后编译 `eiblog` 并运行。
 
 ### 特色功能
 
@@ -73,7 +76,7 @@
 7. 针对 `disqus` 被墙原因，实现 [Jerry Qu](https://imququ.com) 的另类评论方式，保证评论的流畅。
 8. 开源 `Typecho` 完整后台系统，全功能 `markdown` 编辑器，让你体验什么是简洁清爽。
 9. 博客后台直接对接 `七牛 SDK`，实现后台上传文件和删除文件的简单功能。
-10. 采用 `elasticsearch` 作为站内搜索，添加 `google opensearch` 功能，搜索更加自然。
+10. 采用 `Elasticsearch` 作为站内搜索，结合 `google opensearch` 功能，搜索更加自然。
 11. 自动备份数据库数据到七牛云。
 
 ### 文档
