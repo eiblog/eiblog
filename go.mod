@@ -5,7 +5,7 @@ require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/deepzz0/logd v0.0.0-20171206094927-f91dd8c6316f
 	github.com/eiblog/blackfriday v0.0.0-20161010144836-c0ec111761ae
-	github.com/eiblog/utils v0.0.0-20180209055746-a56f1b5e9c3c
+	github.com/eiblog/utils v0.0.0-20181119015747-92c93e218753
 	github.com/gin-contrib/sse v0.0.0-20170109093832-22d885f9ecc7 // indirect
 	github.com/gin-gonic/autotls v0.0.0-20180426091246-be87bd5ef97b
 	github.com/gin-gonic/contrib v0.0.0-20180614032058-39cfb9727134

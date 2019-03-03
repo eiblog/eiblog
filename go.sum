@@ -6,8 +6,8 @@ github.com/deepzz0/logd v0.0.0-20171206094927-f91dd8c6316f h1:hjWy8ptp0ggYgv/3A8
 github.com/deepzz0/logd v0.0.0-20171206094927-f91dd8c6316f/go.mod h1:8jMj6ab9czIU5udq3ovaK9/5sCIyQ1JWteFMn8w2QRI=
 github.com/eiblog/blackfriday v0.0.0-20161010144836-c0ec111761ae h1:V6YC640Gs5jEUYfCimyuXsTW5gzNcIEESG4MGmOJCtA=
 github.com/eiblog/blackfriday v0.0.0-20161010144836-c0ec111761ae/go.mod h1:HzHqTCGEAkSSzBM3shBvQHsHRQYUvjNOIC4mHipZ6tI=
-github.com/eiblog/utils v0.0.0-20180209055746-a56f1b5e9c3c h1:iTojaGfteYN44kmydHUSgTlie7/CBsOQGHiH5xaogCU=
-github.com/eiblog/utils v0.0.0-20180209055746-a56f1b5e9c3c/go.mod h1:mZHWnipRp41yw/rti2DgpbMiBE5i6ifqg7PKooEwRh4=
+github.com/eiblog/utils v0.0.0-20181119015747-92c93e218753 h1:Nygjtnh1nF5zejJF7pZnsoFh77wOPS+jlfhikjkJg60=
+github.com/eiblog/utils v0.0.0-20181119015747-92c93e218753/go.mod h1:mZHWnipRp41yw/rti2DgpbMiBE5i6ifqg7PKooEwRh4=
 github.com/gin-contrib/sse v0.0.0-20170109093832-22d885f9ecc7 h1:AzN37oI0cOS+cougNAV9szl6CVoj2RYwzS3DpUQNtlY=
 github.com/gin-contrib/sse v0.0.0-20170109093832-22d885f9ecc7/go.mod h1:VJ0WA2NBN22VlZ2dKZQPAPnyWw5XTlK1KymzLKsr59s=
 github.com/gin-gonic/autotls v0.0.0-20180426091246-be87bd5ef97b h1:dm/NYytoj7p8Jc6zMvyRz3PCQrTTCXnVRvEzyBcM890=
