@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"io"
@@ -48,7 +49,7 @@ func FileUpload(name string, size int64, data io.Reader) (string, error) {
 	ret := new(storage.PutRet)
 	putExtra := &storage.PutExtra{}
 
-	err := uploader.Put(nil, ret, upToken, key, data, size, putExtra)
+	err := uploader.Put(context.Background(), ret, upToken, key, data, size, putExtra)
 	if err != nil {
 		return "", err
 	}
