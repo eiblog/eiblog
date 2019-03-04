@@ -83,7 +83,7 @@ func getKey(name string) string {
 	ext := filepath.Ext(name)
 	var key string
 	switch ext {
-	case ".bmp", ".png", ".jpg", ".gif", ".ico":
+	case ".bmp", ".png", ".jpg", ".gif", ".ico", ".jpeg":
 		key = "blog/img/" + name
 	case ".mov", ".mp4":
 		key = "blog/video/" + name
@@ -96,6 +96,8 @@ func getKey(name string) string {
 		key = "blog/document/" + name
 	case ".zip", ".rar", ".tar", ".gz":
 		key = "blog/archive/" + name
+	default:
+		key = "blog/other/" + name
 	}
 	return key
 }
