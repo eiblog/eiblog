@@ -31,3 +31,5 @@ require (
 	gopkg.in/yaml.v2 v2.2.1
 	qiniupkg.com/x v7.0.8+incompatible // indirect
 )
+
+go 1.13
