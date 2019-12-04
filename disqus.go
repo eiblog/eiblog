@@ -3,10 +3,12 @@
 package main
 
 import (
+	"crypto/tls"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"net"
 	"net/http"
 	"net/url"
 	"strings"
@@ -58,7 +60,7 @@ func PostsCount() error {
 			count++
 		}
 		count = 0
-		resp, err := http.Get(setting.Conf.Disqus.PostsCount + "?" + vals.Encode())
+		resp, err := Get(setting.Conf.Disqus.PostsCount + "?" + vals.Encode())
 		if err != nil {
 			return err
 		}
@@ -128,7 +130,7 @@ func PostsList(slug, cursor string) (*postsListResp, error) {
 	vals.Set("cursor", cursor)
 	vals.Set("limit", "50")
 
-	resp, err := http.Get(setting.Conf.Disqus.PostsList + "?" + vals.Encode())
+	resp, err := Get(setting.Conf.Disqus.PostsList + "?" + vals.Encode())
 	if err != nil {
 		return nil, err
 	}
@@ -181,12 +183,8 @@ func PostCreate(pc *PostComment) (*postCreateResp, error) {
 	vals.Set("author_name", pc.AuthorName)
 	// vals.Set("state", "approved")
 
-	request, err := http.NewRequest("POST", setting.Conf.Disqus.PostCreate, strings.NewReader(vals.Encode()))
-	if err != nil {
-		return nil, err
-	}
-	request.Header.Set("Referer", "https://disqus.com")
-	resp, err := http.DefaultClient.Do(request)
+	header := http.Header{"Referer": {"https://disqus.com"}}
+	resp, err := PostWithHeader(setting.Conf.Disqus.PostCreate, vals, header)
 	if err != nil {
 		return nil, err
 	}
@@ -225,12 +223,8 @@ func PostApprove(post string) error {
 	vals.Set("access_token", setting.Conf.Disqus.AccessToken)
 	vals.Set("post", post)
 
-	request, err := http.NewRequest("POST", setting.Conf.Disqus.PostApprove, strings.NewReader(vals.Encode()))
-	if err != nil {
-		return err
-	}
-	request.Header.Set("Referer", "https://disqus.com")
-	resp, err := http.DefaultClient.Do(request)
+	header := http.Header{"Referer": {"https://disqus.com"}}
+	resp, err := PostWithHeader(setting.Conf.Disqus.PostApprove, vals, header)
 	if err != nil {
 		return err
 	}
@@ -276,7 +270,7 @@ func ThreadCreate(artc *Article) error {
 	urlPath := fmt.Sprintf("https://%s/post/%s.html", setting.Conf.Mode.Domain, artc.Slug)
 	vals.Set("url", urlPath)
 
-	resp, err := http.PostForm(setting.Conf.Disqus.ThreadCreate, vals)
+	resp, err := PostForm(setting.Conf.Disqus.ThreadCreate, vals)
 	if err != nil {
 		return err
 	}
@@ -298,4 +292,89 @@ func ThreadCreate(artc *Article) error {
 
 	artc.Thread = result.Response.Id
 	return nil
+}
+
+///////////////////////////// HTTP 请求 /////////////////////////////
+
+var httpClient = &http.Client{
+	Transport: &http.Transport{
+		Proxy: http.ProxyFromEnvironment,
+		DialContext: (&net.Dialer{
+			Timeout:   30 * time.Second,
+			KeepAlive: 30 * time.Second,
+			DualStack: true,
+		}).DialContext,
+		ForceAttemptHTTP2:     true,
+		MaxIdleConns:          100,
+		IdleConnTimeout:       90 * time.Second,
+		TLSHandshakeTimeout:   10 * time.Second,
+		ExpectContinueTimeout: 1 * time.Second,
+	},
+}
+
+func newRequest(method, rawurl string, vals url.Values) (*http.Request, error) {
+	u, err := url.Parse(rawurl)
+	if err != nil {
+		return nil, err
+	}
+	host := u.Host
+	// 获取主机IP
+	ips, err := net.LookupHost(u.Host)
+	if err != nil {
+		return nil, err
+	}
+	if len(ips) == 0 {
+		return nil, errors.New("not found ip: " + u.Host)
+	}
+	// 设置ServerName
+	httpClient.Transport.(*http.Transport).TLSClientConfig = &tls.Config{
+		InsecureSkipVerify: true,
+	}
+	u.Host = ips[0]
+	// 创建HTTP Request
+	var req *http.Request
+	if vals != nil {
+		req, err = http.NewRequest(method, u.String(), strings.NewReader(vals.Encode()))
+	} else {
+		req, err = http.NewRequest(method, u.String(), nil)
+	}
+	if err != nil {
+		return nil, err
+	}
+	// 改变Host
+	req.Host = host
+	return req, nil
+}
+
+// Get HTTP Get请求
+func Get(rawurl string) (*http.Response, error) {
+	req, err := newRequest(http.MethodGet, rawurl, nil)
+	if err != nil {
+		return nil, err
+	}
+	// 发起请求
+	return httpClient.Do(req)
+}
+
+// PostForm HTTP Post请求
+func PostForm(rawurl string, vals url.Values) (*http.Response, error) {
+	req, err := newRequest(http.MethodPost, rawurl, vals)
+	if err != nil {
+		return nil, err
+	}
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	// 发起请求
+	return httpClient.Do(req)
+}
+
+// PostWithHeader HTTP Post请求，自定义Header
+func PostWithHeader(rawurl string, vals url.Values, header http.Header) (*http.Response, error) {
+	req, err := newRequest(http.MethodPost, rawurl, vals)
+	if err != nil {
+		return nil, err
+	}
+	// set header
+	req.Header = header
+	// 发起请求
+	return httpClient.Do(req)
 }
