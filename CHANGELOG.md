@@ -1,10 +1,21 @@
-# Eiblog Changelog
+# Changelog
 
-## v1.4.4 (2018-05-07)
+All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+
+### [1.4.9](https://github.com/eiblog/eiblog/compare/v1.4.8...v1.4.9) (2019-12-18)
+
+
+### Bug Fixes
+
+* **disqus:** connect reset by peer ([1bdfb6a](https://github.com/eiblog/eiblog/commit/1bdfb6a))
+
+### v1.4.4 (2018-05-07)
+
 * 修复基础评论分钟数计算错误
 * let's encrypt v2证书内嵌ct，故移除有关ct内容
 
-## v1.4.3 (2018-02-09)
+###  v1.4.3 (2018-02-09)
+
 * 修复博客初始化后，about 页面不能够评论 #6
 * 修复编辑专题，按钮显示“添加专题”错误
 * 优化“添加文章”从同步改为异步推送：feed，es，disqus。速度显著提升
@@ -12,10 +23,12 @@
 * docker-compose.yml mongodb 去掉端口映射，防止用户将端口暴露至外网
 * session key 每次重启随机生成等一些细节的修复
 
-## v1.4.2 (2018-01-25)
+### v1.4.2 (2018-01-25)
+
 * fix archive page bug
 
-## v1.4.1 (2018-01-14)
+### v1.4.1 (2018-01-14)
+
 * 修复创建新文章，disqus 不收录bug
 * 修复创建新文章，归档页面不刷新bug
 * 修复能够删除关于页面和友情链接页面bug
@@ -24,29 +37,35 @@
 * 添加当月数大于12，归档页面使用年份归档
 * 优化代码逻辑
 
-## v1.4.0 (2018-01-01)
+### v1.4.0 (2018-01-01)
+
 * fix 搜索页面 bug
 * CGO_ENABLED=0 关闭 cgo
 * 更新Makefile ct log 服务器
 * 数据库数据终于可以备份了
 
-## v1.3.4 (2017-11-29)
+### v1.3.4 (2017-11-29)
+
 * fix page:admin/write-post autocomplete tag
 
-## v1.3.3 (2017-11-27)
+### v1.3.3 (2017-11-27)
+
 * fix docker image: exec user process caused "no such file or directory"
 
-## v1.3.2 (2017-11-17)
+### v1.3.2 (2017-11-17)
+
 * 修复文章自动保存引起的发布文章不成功的bug
 
-## v1.3.1 (2017-11-05)
+### v1.3.1 (2017-11-05)
+
 * 修复调整 关于、友情链接 创建时间出现文章乱序
 * 修复评论时间计算错误
 * 调整acme文件验证路径
 * 更改七牛SDK包为github包。
 * 调整七牛配置文件名称，app.yml: kodo -> qiniu，name -> bucket，请提高静态文件版本 staticversion
 
-## v1.3.0 (2017-07-13)
+### v1.3.0 (2017-07-13)
+
 * 更改 app.yml 配置项，将大部分配置归在 general 常规配置下。注意，部署时请先更新 app.yml。
 * 静态文件采用动态渲染，即用户不再需要管理 view、static 目录。
 * 通过 acme.sh 使用双证书啦，可到 Makefile 查看相关信息。
@@ -54,28 +73,33 @@
 * 开启配置项 enablehttps， 将自动重定向 http 到 https 啦。
 * disqus.js 文件由配置指定，请看 app.yml 下的 disqus 相关配置。
 
-## v1.2.0 (2017-06-14)
+### v1.2.0 (2017-06-14)
+
 * 更新评论功能，基础评论 0 回复也可评论了。
 * disqus.js 文件由博主自行更新。
 * 更正描述 README.md 描述错误 [#4f996](https://github.com/eiblog/eiblog/commit/4f9965b6bdefe087dd0805c1840afcb2752cd155)。
 * docker 镜像版本化。
 
-## v1.1.3 (2017-05-12)
+### v1.1.3 (2017-05-12)
+
 * 更新 disqus_78bca4.js 到 disqus_921d24.js，具体请参考 docs/install.md
 * 更新 vendor
 
-## v1.1.2 (2017-03-08)
+### v1.1.2 (2017-03-08)
+
 * 解决添加文章描述错误的bug
 * 添加vendor目录
 * 添加文档docs目录
 * 删除多余注释
 
-## v1.1.1 (2017-02-07)
+### v1.1.1 (2017-02-07)
+
 * 添加文章描述功能。
 * 修复评论`jQuery`文件引用错误。
 * 修复`.travis.yml`描述错误。
 
-## v1.0.0 (2016-01-09)
+### v1.0.0 (2016-01-09)
+
 首次发布版本
 
 * 全站`HTTPS`设计，安全、极速。
