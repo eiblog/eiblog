@@ -43,7 +43,6 @@ type Config struct {
 		PostCreate   string
 		PostApprove  string
 		ThreadCreate string
-		Embed        string
 		Interval     int
 	}
 	Google struct { // 谷歌统计

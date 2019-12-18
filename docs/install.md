@@ -86,14 +86,13 @@ $ docker run -d --name eisearch \
 #### 文件准备
 博主是一个有强迫症的人，一些文件的路径我使用了固定的路径，请大家见谅。假如你的 cdn 域名为 `st.example.com`，你需要确定这些文件已经在你的 cdn 中，它们路径分别是：
 
-| 文件                 | 地址                                       | 描述                                       |
-| ------------------ | ---------------------------------------- | ---------------------------------------- |
-| favicon.ico        | st.example.com/static/img/favicon.ico    | cdn 中的文件名为 `static/img/favicon.ico`。你也可以复制 favicon.ico 到 static 文件夹下，通过 example.com/favicon.ico 也是能够访问到。docker 用户可能需要重新打包镜像。 |
-| bg04.jpg           | st.example.com/static/img/bg04.jpg       | 首页左侧的大背景图，需要更名请到 views/st_blog.css 修改。   |
-| avatar.png         | st.example.com/static/img/avatar.png     | 头像                                       |
-| blank.gif          | st.example.com/static/img/blank.gif      | 空白图片，[下载](https://st.deepzz.com/static/img/blank.gif) |
+| 文件               | 地址                                         | 描述                                                         |
+| ------------------ | -------------------------------------------- | ------------------------------------------------------------ |
+| favicon.ico        | st.example.com/static/img/favicon.ico        | cdn 中的文件名为 `static/img/favicon.ico`。你也可以复制 favicon.ico 到 static 文件夹下，通过 example.com/favicon.ico 也是能够访问到。docker 用户可能需要重新打包镜像。 |
+| bg04.jpg           | st.example.com/static/img/bg04.jpg           | 首页左侧的大背景图，需要更名请到 views/st_blog.css 修改。    |
+| avatar.png         | st.example.com/static/img/avatar.png         | 头像                                                         |
+| blank.gif          | st.example.com/static/img/blank.gif          | 空白图片，[下载](https://st.deepzz.com/static/img/blank.gif) |
 | default_avatar.png | st.example.com/static/img/default_avatar.png | disqus 默认图片，[下载](https://st.deepzz.com/static/img/default_avatar.png) |
-| disqus.js          | st.example.com/static/js/disqus_xxx.js   | disqus 文件，你可以通过 https://short_name.disqus.com/embed.js 下载你的专属文件，并上传到七牛。更新配置文件 app.yml。 |
 
 > 注意，cdn 提到的文件下载，请复制链接进行下载，因为博主使用了防盗链功能，还有：  
   1、每次修改 app.yml 文件（如：更换 cdn 域名或更新头像），如果你不知道是否应该提高 staticversion 一个版本，那么最好提高一个 +1。  

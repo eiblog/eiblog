@@ -43,8 +43,6 @@ disqus:
   postcreate: https://disqus.com/api/3.0/posts/create.json
   postapprove: https://disqus.com/api/3.0/posts/approve.json
   threadcreate: https://disqus.com/api/3.0/threads/create.json
-  # disqus.js 文件名
-  embed: disqus_7d3cf2.js  
   # 获取评论数量间隔
   interval: 5
 # 谷歌统计
