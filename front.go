@@ -403,6 +403,7 @@ func HandleDisqusCreate(c *gin.Context) {
 		resp.ErrMsg = "参数错误"
 		return
 	}
+	fmt.Println("disqus: author: ", email)
 	pc := &PostComment{
 		Message:     msg,
 		Parent:      c.PostForm("parent"),
