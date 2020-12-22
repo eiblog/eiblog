@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 
 	"github.com/eiblog/eiblog/setting"
-	"github.com/qiniu/api.v7/auth/qbox"
-	"github.com/qiniu/api.v7/storage"
+	"github.com/qiniu/api.v7/v7/auth/qbox"
+	"github.com/qiniu/api.v7/v7/storage"
 )
 
 // 进度条
