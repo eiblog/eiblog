@@ -3,65 +3,84 @@ name: release image & asset
 on:
  push:
    tags:
-     - 'v*'
+      - "v*"
 
 jobs:
   package:
     runs-on: ubuntu-16.04
     steps:
-    - name: step0
+    - name: Golang env
       uses: actions/setup-go@v2
       with:
         go-version: ^1.15
-    - name: step1
-      run: go mod download && ./dist.sh
-    - name: step2
-      uses: azure/docker-login@v1
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Cache mod
+      uses: actions/cache@v1
       with:
-        login-server: registry.cn-hangzhou.aliyuncs.com
+        path: ~/go/pkg/mod
+        key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+        restore-keys: |
+          ${{ runner.os }}-go-
+    - name: Docker tag
+      id: vars
+      run: echo ::set-output name=tag::$(echo ${GITHUB_REF:10})
+    - name: Docker Buildx
+      uses: docker/setup-buildx-action@v1
+    - name: Docker login
+      uses: docker/login-action@v1
+      with:
+        registry: registry.cn-hangzhou.aliyuncs.com
         password: ${{ secrets.DOCKER_PASSWORD }}
         username: ${{ secrets.DOCKER_USERNAME }}
-    - name: step3
-      run: |
-        GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build \
-        && docker build -t registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog . \
-        && docker push registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog \
-        && docker tag registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog:${{ github.ref }} \
-        && docker push registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog:${{ github.ref }}
-    - name: step4
+    - name: Build binary
+      run: GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build
+    - name: Build and push
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: ./Dockerfile
+        push: true
+        tags: |
+          registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog:latest
+          registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog:${{ steps.vars.outputs.tag }}
+
+    - name: Package tar
+      run: ./dist.sh
+    - name: Create release
       id: create_release
       uses: actions/create-release@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ github.ref }}
-        release_name: Release ${{ github.ref }}
+        tag_name: ${{ steps.vars.outputs.tag }}
+        release_name: Release ${{ steps.vars.outputs.tag }}
         draft: false
         prerelease: false
-    - name: step5
+    - name: Upload asset darwin
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} 
-        asset_path: eiblog-${{ github.ref }}.darwin-amd64.tar.gz
-        asset_name: eiblog-${{ github.ref }}.darwin-amd64.tar.gz
+        asset_path: eiblog-${{ steps.vars.outputs.tag }}.darwin-amd64.tar.gz
+        asset_name: eiblog-${{ steps.vars.outputs.tag }}.darwin-amd64.tar.gz
         asset_content_type: application/gzip
-    - name: step6
+    - name: Upload asset linux
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} 
-        asset_path: eiblog-${{ github.ref }}.linux-amd64.tar.gz
-        asset_name: eiblog-${{ github.ref }}.linux-amd64.tar.gz
+        asset_path: eiblog-${{ steps.vars.outputs.tag }}.linux-amd64.tar.gz
+        asset_name: eiblog-${{ steps.vars.outputs.tag }}.linux-amd64.tar.gz
         asset_content_type: application/gzip
-    - name: step7
+    - name: Upload asset windows
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }} 
-        asset_path: eiblog-${{ github.ref }}.windows-amd64.tar.gz
-        asset_name: eiblog-${{ github.ref }}.windows-amd64.tar.gz
+        asset_path: eiblog-${{ steps.vars.outputs.tag }}.windows-amd64.tar.gz
+        asset_name: eiblog-${{ steps.vars.outputs.tag }}.windows-amd64.tar.gz
         asset_content_type: application/gzip
