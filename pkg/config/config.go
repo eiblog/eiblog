@@ -42,7 +42,7 @@ type Database struct {
 type General struct {
 	PageNum    int    `yaml:"pagenum"`    // 前台每页文章数量
 	PageSize   int    `yaml:"pagesize"`   // 后台每页文章数量
-	StartID    int32  `yaml:"startid"`    // 文章启始ID
+	StartID    int    `yaml:"startid"`    // 文章启始ID
 	DescPrefix string `yaml:"descprefix"` // 文章描述前缀
 	Identifier string `yaml:"identifier"` // 文章截取标识
 	Length     int    `yaml:"length"`     // 文章预览长度

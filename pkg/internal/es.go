@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/eiblog/eiblog/v2/pkg/config"
+	"github.com/eiblog/eiblog/pkg/config"
 
 	"github.com/sirupsen/logrus"
 )
@@ -30,7 +30,7 @@ func init() {
 	}
 
 	mappings := fmt.Sprintf(`{"mappings":{"%s":{"properties":{"content":{"analyzer":"ik_syno","search_analyzer":"ik_syno","term_vector":"with_positions_offsets","type":"string"},"date":{"index":"not_analyzed","type":"date"},"slug":{"type":"string"},"tag":{"index":"not_analyzed","type":"string"},"title":{"analyzer":"ik_syno","search_analyzer":"ik_syno","term_vector":"with_positions_offsets","type":"string"}}}}}`, "article")
-	err := createIndexAndMappings("article", "eiblog", []byte(mappings))
+	err := createIndexAndMappings("eiblog", "article", []byte(mappings))
 	if err != nil {
 		panic(err)
 	}
@@ -130,7 +130,7 @@ func createIndexAndMappings(index, typ string, mappings []byte) error {
 	result := indicesCreateResult{}
 	err = json.Unmarshal(data, &result)
 	if err != nil {
-		return err
+		return errors.New(string(data))
 	}
 	if !result.Acknowledged {
 		return errors.New(string(data))

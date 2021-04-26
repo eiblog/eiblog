@@ -8,12 +8,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/eiblog/eiblog/v2/pkg/cache/render"
-	"github.com/eiblog/eiblog/v2/pkg/cache/store"
-	"github.com/eiblog/eiblog/v2/pkg/config"
-	"github.com/eiblog/eiblog/v2/pkg/internal"
-	"github.com/eiblog/eiblog/v2/pkg/model"
-	"github.com/eiblog/eiblog/v2/tools"
+	"github.com/eiblog/eiblog/pkg/cache/render"
+	"github.com/eiblog/eiblog/pkg/cache/store"
+	"github.com/eiblog/eiblog/pkg/config"
+	"github.com/eiblog/eiblog/pkg/internal"
+	"github.com/eiblog/eiblog/pkg/model"
+	"github.com/eiblog/eiblog/tools"
 
 	"github.com/sirupsen/logrus"
 )

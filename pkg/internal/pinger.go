@@ -9,7 +9,8 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/eiblog/eiblog/v2/pkg/config"
+	"github.com/eiblog/eiblog/pkg/config"
+	
 	"github.com/sirupsen/logrus"
 )
 

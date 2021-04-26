@@ -5,7 +5,7 @@ import "time"
 
 // Article 文章
 type Article struct {
-	ID      int32  `gorm:"primaryKey;autoIncrement"` // 自增ID
+	ID      int    `gorm:"primaryKey;autoIncrement"` // 自增ID
 	Author  string `gorm:"not null"`                 // 作者名
 	Slug    string `gorm:"not null;uniqueIndex"`     // 文章缩略名
 	Title   string `gorm:"not null"`                 // 标题

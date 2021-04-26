@@ -13,13 +13,12 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/eiblog/eiblog/setting"
-	"github.com/eiblog/eiblog/v2/pkg/cache"
-	"github.com/eiblog/eiblog/v2/pkg/config"
-	"github.com/eiblog/eiblog/v2/pkg/internal"
-	"github.com/eiblog/eiblog/v2/tools"
-	"github.com/eiblog/utils/tmpl"
+	"github.com/eiblog/eiblog/pkg/cache"
+	"github.com/eiblog/eiblog/pkg/config"
+	"github.com/eiblog/eiblog/pkg/internal"
+	"github.com/eiblog/eiblog/tools"
 
+	"github.com/eiblog/utils/tmpl"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
@@ -239,9 +238,9 @@ func handleBeaconPage(c *gin.Context) {
 	ua := c.Request.UserAgent()
 
 	vals := c.Request.URL.Query()
-	vals.Set("v", setting.Conf.Google.V)
-	vals.Set("tid", setting.Conf.Google.Tid)
-	vals.Set("t", setting.Conf.Google.T)
+	vals.Set("v", config.Conf.BlogApp.Google.V)
+	vals.Set("tid", config.Conf.BlogApp.Google.Tid)
+	vals.Set("t", config.Conf.BlogApp.Google.T)
 	cookie, _ := c.Cookie("u")
 	vals.Set("cid", cookie)
 

@@ -5,11 +5,11 @@ import (
 	"fmt"
 	"path/filepath"
 
-	"github.com/eiblog/eiblog/v2/pkg/config"
-	"github.com/eiblog/eiblog/v2/pkg/core/blog/file"
-	"github.com/eiblog/eiblog/v2/pkg/core/blog/page"
-	"github.com/eiblog/eiblog/v2/pkg/core/blog/swag"
-	"github.com/eiblog/eiblog/v2/pkg/mid"
+	"github.com/eiblog/eiblog/pkg/config"
+	"github.com/eiblog/eiblog/pkg/core/blog/file"
+	"github.com/eiblog/eiblog/pkg/core/blog/page"
+	"github.com/eiblog/eiblog/pkg/core/blog/swag"
+	"github.com/eiblog/eiblog/pkg/mid"
 
 	"github.com/gin-gonic/gin"
 )

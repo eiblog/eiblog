@@ -10,8 +10,8 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/eiblog/eiblog/v2/pkg/config"
-	"github.com/eiblog/eiblog/v2/pkg/model"
+	"github.com/eiblog/eiblog/pkg/config"
+	"github.com/eiblog/eiblog/pkg/model"
 )
 
 // disqus api

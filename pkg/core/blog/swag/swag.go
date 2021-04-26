@@ -2,7 +2,7 @@
 package swag
 
 import (
-	_ "github.com/eiblog/eiblog/v2/pkg/core/blog/docs" // docs
+	_ "github.com/eiblog/eiblog/pkg/core/blog/docs" // docs
 
 	"github.com/gin-gonic/gin"
 	ginSwagger "github.com/swaggo/gin-swagger"

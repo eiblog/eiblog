@@ -2,11 +2,12 @@
 package store
 
 import (
+	"context"
 	"fmt"
 	"sort"
 	"sync"
 
-	"github.com/eiblog/eiblog/v2/pkg/model"
+	"github.com/eiblog/eiblog/pkg/model"
 )
 
 var (
@@ -16,14 +17,41 @@ var (
 
 // Store 存储后端
 type Store interface {
-	LoadOrCreateAccount(acct *model.Account) (*model.Account, error)
-	LoadOrCreateBlogger(blogger *model.Blogger) (*model.Blogger, error)
-	LoadAllArticles() ([]*model.Article, error)
+	// LoadInsertAccount 读取或创建账户
+	LoadInsertAccount(ctx context.Context, acct *model.Account) (*model.Account, error)
+	// LoadInsertBlogger 读取或创建博客
+	LoadInsertBlogger(ctx context.Context, blogger *model.Blogger) (*model.Blogger, error)
+	// LoadAllArticle 读取所有文章
+	LoadAllArticle(ctx context.Context) (model.SortedArticles, error)
+	// LoadTrashArticles 读取回收箱
+	LoadTrashArticles(ctx context.Context) (model.SortedArticles, error)
+	// LoadDraftArticles 读取草稿箱
+	LoadDraftArticles(ctx context.Context) (model.SortedArticles, error)
 
-	UpdateAccount(name string, fields map[string]interface{}) error
-	UpdateBlogger(fields map[string]interface{}) error
-	UpdateArticle(article *model.Article) error
-	CleanArticles() error
+	// InsertSeries 创建专题
+	InsertSeries(ctx context.Context, series *model.Series) error
+	// RemoveSeries 删除专题
+	RemoveSeries(ctx context.Context, id int) error
+	// UpdateSeries 更新专题
+	UpdateSeries(ctx context.Context, series *model.Series) error
+
+	// InsertArticle 创建文章
+	InsertArticle(ctx context.Context, article *model.Article) error
+	// DeleteArticle 软删除文章,放入回收箱
+	DeleteArticle(ctx context.Context, id int) error
+	// RemoveArticle 硬删除文章
+	RemoveArticle(ctx context.Context, id int) error
+	// CleanArticles 清理回收站文章
+	CleanArticles(ctx context.Context) error
+	// RecoverArticle 恢复文章到草稿
+	RecoverArticle(ctx context.Context, id int) error
+
+	// UpdateAccount 更新账户
+	UpdateAccount(ctx context.Context, name string, fields map[string]interface{}) error
+	// UpdateBlogger 更新博客
+	UpdateBlogger(ctx context.Context, fields map[string]interface{}) error
+	// UpdateArticle 更新文章
+	UpdateArticle(ctx context.Context, article *model.Article) error
 }
 
 // Driver 存储驱动

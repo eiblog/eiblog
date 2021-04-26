@@ -7,8 +7,8 @@ import (
 	"text/template"
 	"time"
 
-	"github.com/eiblog/eiblog/v2/pkg/cache"
-	"github.com/eiblog/eiblog/v2/pkg/config"
+	"github.com/eiblog/eiblog/pkg/cache"
+	"github.com/eiblog/eiblog/pkg/config"
 
 	"github.com/eiblog/utils/tmpl"
 	"github.com/sirupsen/logrus"

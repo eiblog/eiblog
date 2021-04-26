@@ -5,7 +5,7 @@ import "time"
 
 // Series 专题
 type Series struct {
-	ID         int32     `gorm:"primaryKey;autoIncrement"` // 自增ID
+	ID         int       `gorm:"primaryKey;autoIncrement"` // 自增ID
 	Slug       string    `gorm:"not null;uniqueIndex"`     // 缩略名
 	Name       string    `gorm:"not null"`                 // 专题名
 	Desc       string    `gorm:"not null"`                 // 专题描述

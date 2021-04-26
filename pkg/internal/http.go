@@ -36,16 +36,21 @@ func newRequest(method, rawurl string, data interface{}) (*http.Request, error) 
 	if err != nil {
 		return nil, err
 	}
-	host := u.Host
+	originHost := u.Host
 	// 获取主机IP
-	ips, err := net.LookupHost(u.Host)
+	host, port, err := net.SplitHostPort(u.Host)
+	if err != nil {
+		return nil, err
+	}
+	ips, err := net.LookupHost(host)
 	if err != nil {
 		return nil, err
 	}
 	if len(ips) == 0 {
 		return nil, fmt.Errorf("http: not found ip(%s)", u.Host)
 	}
-	u.Host = ips[0]
+	host = net.JoinHostPort(ips[0], port)
+	u.Host = host
 	// 创建HTTP Request
 	var req *http.Request
 	switch raw := data.(type) {
@@ -65,7 +70,7 @@ func newRequest(method, rawurl string, data interface{}) (*http.Request, error) 
 		return nil, err
 	}
 	// 设置Host
-	req.Host = host
+	req.Host = originHost
 	return req, nil
 }
 
