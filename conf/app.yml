@@ -1,101 +1,68 @@
-# 运行模式 dev or prod
-runmode: dev
-# 静态文件版本
-staticversion: 1
-# superfeedr url
-feedrurl: https://deepzz.superfeedr.com/
-# 热搜词配置
-hotwords:
-  - docker
-  - mongodb
-  - curl
-  - dns
-# ping rpcs 地址
-pingrpcs:
-  - http://ping.baidu.com/ping/RPC2
-  - http://blogsearch.google.com/ping/RPC2
-  - http://rpc.pingomatic.com/
-# 常规配置
-general:
-  # 首页展示文章数量
-  pagenum: 10
-  # 管理界面
-  pagesize: 20
-  # 起始ID，预留id不时之需, 不用管
-  startid: 11
-  # 文章描述前缀
-  descprefix: "Desc:"
-  # 截取预览标识
-  identifier: <!--more-->
-  # 自动截取预览, 字符数
-  length: 400
-  # 回收箱保留48小时
-  trash: -48
-  # 定时清理回收箱，每 %d 小时
-  clean: 1
-# 评论相关
-disqus:
-  shortname: xxxxxx
-  publickey: wdSgxRm9rdGAlLKFcFdToBe3GT4SibmV7Y8EjJQ0r4GWXeKtxpopMAeIeoI2dTEg
-  accesstoken: 50023908f39f4607957e909b495326af
-  postscount: https://disqus.com/api/3.0/threads/set.json
-  postslist: https://disqus.com/api/3.0/threads/listPosts.json
-  postcreate: https://disqus.com/api/3.0/posts/create.json
-  postapprove: https://disqus.com/api/3.0/posts/approve.json
-  threadcreate: https://disqus.com/api/3.0/threads/create.json
-  # 获取评论数量间隔
-  interval: 5
-# 谷歌统计
-google:
-  url: https://www.google-analytics.com/collect
-  tid: UA-xxxxxx-1
-  v: "1"
-  t: pageview
-# 七牛CDN
-qiniu:
-  bucket: eiblog
-  domain: st.deepzz.com
-  accesskey: MB6AXl_Sj_mmFsL-Lt59Dml2Vmy2o8XMmiCbbSeC
-  secretkey: BIrMy0fsZ0_SHNceNXk3eDuo7WmVYzj2-zrmd5Tf
-# 运行模式
-mode:
-  # http server
+appname: eiblog
+database:
+  driver: postgres
+  source: host=127.0.0.1 port=5432 user=postgres dbname=example sslmode=disable password=MTI3LjAuMC4x
+eshost: http://localhost:9200
+blogapp:
+  mode:
+    name: cmd-blog
+    enablehttp: true
+    httpport: 9000
+    host: example.com
+  staticversion: 1 # 静态文件版本
+  hotwords: # 热搜词
+    - docker
+    - mongodb
+    - curl
+    - dns
+  general: # 常规配置
+    pagenum: 10 # 首页展示文章数量
+    pagesize: 20 # 管理界面
+    startid: 11 # 起始ID，预留id不时之需, 不用管
+    descprefix: "Desc:" # 文章描述前缀
+    identifier: <!--more--> # 截取预览标识
+    length: 400 # 自动截取预览, 字符数
+    trash: -48 # 回收箱保留48小时
+    clean: 1 # 定时清理回收箱，每 %d 小时
+  disqus: # 评论相关
+    shortname: xxxxxx
+    publickey: wdSgxRm9rdGAlLKFcFdToBe3GT4SibmV7Y8EjJQ0r4GWXeKtxpopMAeIeoI2dTEg
+    accesstoken: 50023908f39f4607957e909b495326af
+  google:
+    url: https://www.google-analytics.com/collect
+    tid: UA-xxxxxx-1
+    v: "1"
+    t: pageview
+  qiniu: # 七牛OSS
+    bucket: eiblog
+    domain: st.deepzz.com
+    accesskey: MB6AXl_Sj_mmFsL-Lt59Dml2Vmy2o8XMmiCbbSeC
+    secretkey: BIrMy0fsZ0_SHNceNXk3eDuo7WmVYzj2-zrmd5Tf
+  twitter: # twitter card
+    card: summary
+    site: deepzz02
+    image: st.deepzz.com/static/img/avatar.jpg
+    address: twitter.com/deepzz02
+  feedrpc:
+    feedrurl: https://deepzz.superfeedr.com/
+    pingrpc:
+      - http://ping.baidu.com/ping/RPC2
+      - http://blogsearch.google.com/ping/RPC2
+      - http://rpc.pingomatic.com/
+  # 数据初始化操作，可到博客后台修改
+  account:
+    username: deepzz # *后台登录用户名
+    password: deepzz # *登录明文密码
+    email: chenqijing2@163.com # 邮箱，用于通知: chenqijing2@163.com
+    phonenumber: "+8615100000000" # 手机号, "+8615100000000"
+    address: "" # 家庭住址
+  blogger:
+    blogname: Deepzz # left显示名称: Deepzz
+    subtitle: 不抛弃，不放弃 # 小标题: 不抛弃，不放弃
+    beian: 蜀 ICP 备 16021362 号 # 备案号: 蜀 ICP 备 16021362 号
+    btitle: Deepzz's Blog # footer显示名称及tab标题: Deepzz's Blog
+    copyright: 本站使用「<a href="//creativecommons.org/licenses/by/4.0/">署名 4.0 国际</a>」创作共享协议，转载请注明作者及原网址。 # 版权声明
+backupapp:
+  name: cmd-backup
   enablehttp: true
   httpport: 9000
-  # https server
-  enablehttps: false
-  autocert: false
-  httpsport: 9001
-  certfile: conf/ssl/domain.rsa.pem
-  keyfile: conf/ssl/domain.rsa.key
-  domain: deepzz.com
-# twitter地址: twitter.com/chenqijing2
-twitter: 
-  card: summary
-  site: deepzz02
-  image: st.deepzz.com/static/img/avatar.jpg
-  address: twitter.com/deepzz02
-
-# 数据初始化操作，可到博客后台修改
-account:
-  # *后台登录用户名
-  username: deepzz
-  # *登录明文密码
-  password: deepzz
-  # 邮箱，用于通知: chenqijing2@163.com
-  email: chenqijing2@163.com
-  # 手机号, "+8615100000000"
-  phonenumber: "+8615100000000"
-  # 家庭住址
-  address: ""
-blogger:
-  # left显示名称: Deepzz
-  blogname: Deepzz
-  # 小标题: 不抛弃，不放弃
-  subtitle: 不抛弃，不放弃
-  # 备案号: 蜀 ICP 备 16021362 号
-  beian: 蜀 ICP 备 16021362 号
-  # footer显示名称及tab标题: Deepzz's Blog
-  btitle: Deepzz's Blog
-  # 版权声明
-  copyright: 本站使用「<a href="//creativecommons.org/licenses/by/4.0/">署名 4.0 国际</a>」创作共享协议，转载请注明作者及原网址。

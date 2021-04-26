@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option go_package = "proto/cmd-demo;cmd_demo";
+
+package demo;
+
+message UserInfoReq {
+  int64 user_id = 1;
+}
+
+message UserInfoResp {
+  int64 user_id = 1;
+  string username = 2;
+}
+
+// User service
+service User {
+  rpc UserInfo(UserInfoReq) returns (UserInfoResp) {}
+}

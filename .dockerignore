@@ -1,16 +1,10 @@
-.git
-conf
-vendor
-setting
-docs
-static/*.*
-!static/favicon.ico
-**/.DS_Store
-Dockerfile
-glide.yaml
-glide.lock
-*.yml
-*.go
-*.sh
-.gitignore
-.dockerignore
+# Ignore all files and dirs
+*
+
+# Unignore files or dirs
+!build
+!bin
+!conf
+!CHANGELOG.md
+!LICENSE
+!README.md
