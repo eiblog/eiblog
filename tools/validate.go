@@ -1,7 +1,9 @@
 // Package tools provides ...
 package tools
 
-import "regexp"
+import (
+	"regexp"
+)
 
 var regexpEmail = regexp.MustCompile(`^(\w)+([\.\-]\w+)*@(\w)+((\.\w+)+)$`)
 

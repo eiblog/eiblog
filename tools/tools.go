@@ -7,6 +7,7 @@ import (
 	"io"
 	"io/ioutil"
 	"path"
+	"regexp"
 	"time"
 )
 
@@ -101,4 +102,28 @@ var monthToDays = map[time.Month]int{
 // isLeapYear是否是闰年
 func isLeapYear(year int) bool {
 	return year%4 == 0 && (year%100 != 0 || year%400 == 0)
+}
+
+var regexpImg = regexp.MustCompile(`data-src="(.*?)"`)
+
+// PickFirstImage 获取第一张图片
+func PickFirstImage(html string) string {
+	sli := regexpImg.FindAllStringSubmatch(html, 1)
+	if len(sli) > 0 && len(sli[0]) > 1 {
+		return sli[0][1]
+	}
+	return ""
+}
+
+var (
+	regexpBrackets = regexp.MustCompile(`<[\S\s]+?>`)
+	regexpEnter    = regexp.MustCompile(`\s+`)
+)
+
+// IgnoreHtmlTag 去掉 html tag
+func IgnoreHtmlTag(src string) string {
+	// 去除所有尖括号内的HTML代码
+	src = regexpBrackets.ReplaceAllString(src, "")
+	// 去除换行符
+	return regexpEnter.ReplaceAllString(src, "")
 }

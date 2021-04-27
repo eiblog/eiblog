@@ -73,7 +73,7 @@ func handleAdminPost(c *gin.Context) {
 	params["Domain"] = config.Conf.BlogApp.Host
 	params["Series"] = cache.Ei.Series
 	var tags []T
-	for tag, _ := range cache.Ei.TagArticles {
+	for tag := range cache.Ei.TagArticles {
 		tags = append(tags, T{tag, tag})
 	}
 	str, _ := json.Marshal(tags)

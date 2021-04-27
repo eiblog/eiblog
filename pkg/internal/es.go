@@ -13,6 +13,8 @@ import (
 	"time"
 
 	"github.com/eiblog/eiblog/pkg/config"
+	"github.com/eiblog/eiblog/pkg/model"
+	"github.com/eiblog/eiblog/tools"
 
 	"github.com/sirupsen/logrus"
 )
@@ -22,6 +24,9 @@ const (
 	SearchFilter = `"filter":{"bool":{"must":[%s]}}`
 	SearchTerm   = `{"term":{"%s":"%s"}}`
 	SearchDate   = `{"range":{"date":{"gte":"%s","lte": "%s","format": "yyyy-MM-dd||yyyy-MM||yyyy"}}}` // 2016-10||/M
+
+	ElasticIndex = "eiblog"
+	ElasticType  = "article"
 )
 
 func init() {
@@ -30,7 +35,7 @@ func init() {
 	}
 
 	mappings := fmt.Sprintf(`{"mappings":{"%s":{"properties":{"content":{"analyzer":"ik_syno","search_analyzer":"ik_syno","term_vector":"with_positions_offsets","type":"string"},"date":{"index":"not_analyzed","type":"date"},"slug":{"type":"string"},"tag":{"index":"not_analyzed","type":"string"},"title":{"analyzer":"ik_syno","search_analyzer":"ik_syno","term_vector":"with_positions_offsets","type":"string"}}}}}`, "article")
-	err := createIndexAndMappings("eiblog", "article", []byte(mappings))
+	err := createIndexAndMappings(ElasticIndex, ElasticType, []byte(mappings))
 	if err != nil {
 		panic(err)
 	}
@@ -97,7 +102,40 @@ func ElasticSearch(query string, size, from int) (*searchIndexResult, error) {
 	if kw != "" {
 		dsl = strings.Replace(strings.Replace(`{"highlight":{"fields":{"content":{},"title":{}},"post_tags":["\u003c/b\u003e"],"pre_tags":["\u003cb\u003e"]},"query":{"dis_max":{"queries":[{"match":{"title":{"boost":4,"minimum_should_match":"50%","query":"$1"}}},{"match":{"content":{"boost":4,"minimum_should_match":"75%","query":"$1"}}},{"match":{"tag":{"boost":2,"minimum_should_match":"100%","query":"$1"}}},{"match":{"slug":{"boost":1,"minimum_should_match":"100%","query":"$1"}}}],"tie_breaker":0.3}},$2}`, "$1", kw, -1), "$2", fmt.Sprintf(SearchFilter, strings.Join(filter, ",")), -1)
 	}
-	return indexQueryDSL("article", "eiblog", size, from, []byte(dsl))
+	return indexQueryDSL(ElasticIndex, ElasticType, size, from, []byte(dsl))
+}
+
+// ElasticAddIndex 添加或更新索引
+func ElasticAddIndex(article *model.Article) error {
+	if err := checkESConfig(); err != nil {
+		return err
+	}
+
+	tags := strings.Split(article.Tags, ",")
+	img := tools.PickFirstImage(article.Content)
+	mapping := map[string]interface{}{
+		"title":   article.Title,
+		"content": tools.IgnoreHtmlTag(article.Content),
+		"slug":    article.Slug,
+		"tag":     tags,
+		"img":     img,
+		"date":    article.CreatedAt,
+	}
+	data, _ := json.Marshal(mapping)
+	return indexOrUpdateDocument(ElasticIndex, ElasticType, article.ID, data)
+}
+
+// ElasticDelIndex 删除索引
+func ElasticDelIndex(ids []int) error {
+	if err := checkESConfig(); err != nil {
+		return err
+	}
+
+	var target []string
+	for _, id := range ids {
+		target = append(target, fmt.Sprint(id))
+	}
+	return deleteIndexDocument(ElasticIndex, ElasticType, target)
 }
 
 // indicesCreateResult 索引创建结果
@@ -139,7 +177,7 @@ func createIndexAndMappings(index, typ string, mappings []byte) error {
 }
 
 // indexOrUpdateDocument 创建或更新索引
-func indexOrUpdateDocument(index, typ string, id int32, doc []byte) (err error) {
+func indexOrUpdateDocument(index, typ string, id int, doc []byte) (err error) {
 	rawurl := fmt.Sprintf("%s/%s/%s/%d", config.Conf.ESHost, index, typ, id)
 	resp, err := httpPut(rawurl, doc)
 	if err != nil {
