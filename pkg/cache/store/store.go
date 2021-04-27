@@ -18,12 +18,12 @@ var (
 // Store 存储后端
 type Store interface {
 	// LoadInsertBlogger 读取或创建博客
-	LoadInsertBlogger(ctx context.Context, blogger *model.Blogger) (*model.Blogger, error)
+	LoadInsertBlogger(ctx context.Context, blogger *model.Blogger) (bool, error)
 	// UpdateBlogger 更新博客
 	UpdateBlogger(ctx context.Context, fields map[string]interface{}) error
 
 	// LoadInsertAccount 读取或创建账户
-	LoadInsertAccount(ctx context.Context, acct *model.Account) (*model.Account, error)
+	LoadInsertAccount(ctx context.Context, acct *model.Account) (bool, error)
 	// UpdateAccount 更新账户
 	UpdateAccount(ctx context.Context, name string, fields map[string]interface{}) error
 
@@ -58,6 +58,7 @@ type Store interface {
 
 // Driver 存储驱动
 type Driver interface {
+	// Init 数据库初始化, 建表, 加索引操作等
 	Init(source string) (Store, error)
 }
 

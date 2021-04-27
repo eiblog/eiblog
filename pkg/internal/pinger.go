@@ -10,12 +10,12 @@ import (
 	"net/url"
 
 	"github.com/eiblog/eiblog/pkg/config"
-	
+
 	"github.com/sirupsen/logrus"
 )
 
 // feedrPingFunc http://<your-hub-name>.superfeedr.com/
-var feedrPingFunc = func(slug string) error {
+var feedrPingFunc = func(btitle, slug string) error {
 	feedrHost := config.Conf.BlogApp.FeedRPC.FeedrURL
 	if feedrHost == "" {
 		return nil
@@ -60,13 +60,13 @@ type rpcValue struct {
 }
 
 // rpcPingFunc ping rpc
-var rpcPingFunc = func(slug string) error {
+var rpcPingFunc = func(btitle, slug string) error {
 	if len(config.Conf.BlogApp.FeedRPC.PingRPC) == 0 {
 		return nil
 	}
 	param := rpcPingParam{MethodName: "weblogUpdates.extendedPing"}
 	param.Params.Param = [4]rpcValue{
-		0: rpcValue{Value: config.Conf.BlogApp.Blogger.BTitle},
+		0: rpcValue{Value: btitle},
 		1: rpcValue{Value: "https://" + config.Conf.BlogApp.Host},
 		2: rpcValue{Value: fmt.Sprintf("https://%s/post/%s.html", config.Conf.BlogApp.Host, slug)},
 		3: rpcValue{Value: "https://" + config.Conf.BlogApp.Host + "/rss.html"},
@@ -100,12 +100,12 @@ var rpcPingFunc = func(slug string) error {
 }
 
 // PingFunc ping blog article to SE
-func PingFunc(slug string) {
-	err := feedrPingFunc(slug)
+func PingFunc(btitle, slug string) {
+	err := feedrPingFunc(btitle, slug)
 	if err != nil {
 		logrus.Error("pinger: PingFunc feedr: ", err)
 	}
-	err = rpcPingFunc(slug)
+	err = rpcPingFunc(btitle, slug)
 	if err != nil {
 		logrus.Error("pinger: PingFunc: rpc: ", err)
 	}

@@ -41,17 +41,7 @@ func init() {
 		TagArticles: make(map[string]model.SortedArticles),
 		ArticlesMap: make(map[string]*model.Article),
 	}
-	err = Ei.loadAccount()
-	if err != nil {
-		panic(err)
-	}
-	// blogger
-	err = Ei.loadBlogger()
-	if err != nil {
-		panic(err)
-	}
-	// articles
-	err = Ei.loadArticles()
+	err = Ei.loadOrInit()
 	if err != nil {
 		panic(err)
 	}
@@ -151,47 +141,60 @@ func (c *Cache) PageArticles(page int, pageSize int) (prev,
 	return
 }
 
-// loadBlogger 博客信息
-func (c *Cache) loadBlogger() error {
+// loadOrInit 读取数据或初始化
+func (c *Cache) loadOrInit() error {
 	blogapp := config.Conf.BlogApp
+	// blogger
 	blogger := &model.Blogger{
-		BlogName:  blogapp.Blogger.BlogName,
-		SubTitle:  blogapp.Blogger.SubTitle,
-		BeiAn:     blogapp.Blogger.BeiAn,
-		BTitle:    blogapp.Blogger.BTitle,
-		Copyright: blogapp.Blogger.Copyright,
+		BlogName:  strings.Title(blogapp.Account.Username),
+		SubTitle:  "Rome was not built in one day.",
+		BeiAn:     "蜀ICP备xxxxxxxx号-1",
+		BTitle:    fmt.Sprintf("%s's Blog", strings.Title(blogapp.Account.Username)),
+		Copyright: `本站使用「<a href="//creativecommons.org/licenses/by/4.0/">署名 4.0 国际</a>」创作共享协议，转载请注明作者及原网址。`,
 	}
-	blogger, err := c.LoadInsertBlogger(context.Background(), blogger)
+	created, err := c.LoadInsertBlogger(context.Background(), blogger)
 	if err != nil {
 		return err
 	}
 	c.Blogger = blogger
-	return nil
-}
-
-// loadAccount 账户账户信息
-func (c *Cache) loadAccount() error {
-	blogapp := config.Conf.BlogApp
+	if created { // init articles: about blogroll
+		about := &model.Article{
+			ID:     1, // 固定ID
+			Author: blogapp.Account.Username,
+			Title:  "关于",
+			Slug:   "about",
+		}
+		err = c.InsertArticle(context.Background(), about)
+		if err != nil {
+			return err
+		}
+		// 推送到 disqus
+		go internal.ThreadCreate(about, blogger.BTitle)
+		blogroll := &model.Article{
+			ID:     2, // 固定ID
+			Author: blogapp.Account.Username,
+			Title:  "友情链接",
+			Slug:   "blogroll",
+		}
+		err = c.InsertArticle(context.Background(), blogroll)
+		if err != nil {
+			return err
+		}
+	}
+	// account
 	pwd := tools.EncryptPasswd(blogapp.Account.Password,
 		blogapp.Account.Password)
 
 	account := &model.Account{
 		Username: blogapp.Account.Username,
 		Password: pwd,
-		Email:    blogapp.Account.Email,
-		PhoneN:   blogapp.Account.PhoneNumber,
-		Address:  blogapp.Account.Address,
 	}
-	account, err := c.LoadInsertAccount(context.Background(), account)
+	_, err = c.LoadInsertAccount(context.Background(), account)
 	if err != nil {
 		return err
 	}
 	c.Account = account
-	return nil
-}
-
-// loadArticles 文章信息
-func (c *Cache) loadArticles() error {
+	// all articles
 	articles, err := c.LoadAllArticle(context.Background())
 	if err != nil {
 		return err
@@ -204,13 +207,13 @@ func (c *Cache) loadArticles() error {
 
 		c.ArticlesMap[v.Slug] = v
 		// 分析文章
-		if v.ID < config.Conf.BlogApp.General.StartID {
+		if v.ID < blogapp.General.StartID {
 			continue
 		}
 		if i > 0 {
 			v.Prev = Ei.Articles[i-1]
 		}
-		if Ei.Articles[i+1].ID >= config.Conf.BlogApp.General.StartID {
+		if Ei.Articles[i+1].ID >= blogapp.General.StartID {
 			v.Next = Ei.Articles[i+1]
 		}
 		c.rebuildArticle(v, false)

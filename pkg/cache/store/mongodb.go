@@ -50,27 +50,50 @@ func (db *mongodb) Init(source string) (Store, error) {
 		return nil, err
 	}
 	db.Client = client
+	// create index
+	indexModel := mongo.IndexModel{
+		Keys:    bson.D{{"username", 1}},
+		Options: options.Index().SetUnique(true).SetSparse(true),
+	}
+	db.Database(mongoDBName).Collection(collectionAccount).
+		Indexes().
+		CreateOne(context.Background(), indexModel)
+	indexModel = mongo.IndexModel{
+		Keys:    bson.D{{"slug", 1}},
+		Options: options.Index().SetUnique(true).SetSparse(true),
+	}
+	db.Database(mongoDBName).Collection(collectionArticle).
+		Indexes().
+		CreateOne(context.Background(), indexModel)
+	indexModel = mongo.IndexModel{
+		Keys:    bson.D{{"slug", 1}},
+		Options: options.Index().SetUnique(true).SetSparse(true),
+	}
+	db.Database(mongoDBName).Collection(collectionSeries).
+		Indexes().
+		CreateOne(context.Background(), indexModel)
 	return db, nil
 }
 
 // LoadInsertBlogger 读取或创建博客
 func (db *mongodb) LoadInsertBlogger(ctx context.Context,
-	blogger *model.Blogger) (*model.Blogger, error) {
+	blogger *model.Blogger) (created bool, err error) {
 
 	collection := db.Database(mongoDBName).Collection(collectionBlogger)
 
 	filter := bson.M{}
 	result := collection.FindOne(ctx, filter)
-	err := result.Err()
+	err = result.Err()
 	if err != nil {
 		if err != mongo.ErrNoDocuments {
-			return nil, err
+			return
 		}
 		_, err = collection.InsertOne(ctx, blogger)
+		created = true
 	} else {
 		err = result.Decode(blogger)
 	}
-	return blogger, err
+	return
 }
 
 // UpdateBlogger 更新博客
@@ -91,22 +114,23 @@ func (db *mongodb) UpdateBlogger(ctx context.Context,
 
 // LoadInsertAccount 读取或创建账户
 func (db *mongodb) LoadInsertAccount(ctx context.Context,
-	acct *model.Account) (*model.Account, error) {
+	acct *model.Account) (created bool, err error) {
 
 	collection := db.Database(mongoDBName).Collection(collectionAccount)
 
 	filter := bson.M{"username": config.Conf.BlogApp.Account.Username}
 	result := collection.FindOne(ctx, filter)
-	err := result.Err()
+	err = result.Err()
 	if err != nil {
 		if err != mongo.ErrNoDocuments {
-			return nil, err
+			return
 		}
 		_, err = collection.InsertOne(ctx, acct)
+		created = true
 	} else {
 		err = result.Decode(acct)
 	}
-	return acct, err
+	return
 }
 
 // UpdateAccount 更新账户
@@ -185,14 +209,13 @@ func (db *mongodb) LoadAllSeries(ctx context.Context) (model.SortedSeries, error
 
 // InsertArticle 创建文章
 func (db *mongodb) InsertArticle(ctx context.Context, article *model.Article) error {
-	// 分配ID, 占位至起始id
-	for {
+	// 可手动分配ID或者分配ID, 占位至起始id
+	for article.ID == 0 {
 		id := db.nextValue(ctx, counterNameArticle)
 		if id < config.Conf.BlogApp.General.StartID {
 			continue
 		} else {
 			article.ID = id
-			break
 		}
 	}
 

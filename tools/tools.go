@@ -7,6 +7,7 @@ import (
 	"io"
 	"io/ioutil"
 	"path"
+	"time"
 )
 
 // EncryptPasswd encrypt password
@@ -36,4 +37,68 @@ func ReadDirFiles(dir string, filter func(name string) bool) (files []string) {
 		files = append(files, path.Join(dir, fi.Name()))
 	}
 	return
+}
+
+// 2016-10-22T07:03:01
+const (
+	JUST_NOW    = "几秒前"
+	MINUTES_AGO = "%d分钟前"
+	HOURS_AGO   = "%d小时前"
+	DAYS_AGO    = "%d天前"
+	MONTH_AGO   = "%d月前"
+	YEARS_AGO   = "%d年前"
+)
+
+// ConvertStr 时间转换为间隔
+func ConvertStr(str string) string {
+	t, err := time.ParseInLocation("2006-01-02T15:04:05", str, time.UTC)
+	if err != nil {
+		return JUST_NOW
+	}
+	now := time.Now().UTC()
+	y1, m1, d1 := t.Date()
+	y2, m2, d2 := now.Date()
+	h1, mi1, s1 := t.Clock()
+	h2, mi2, s2 := now.Clock()
+	if y := y2 - y1; y > 1 || (y == 1 && m2-m1 >= 0) {
+		return fmt.Sprintf(YEARS_AGO, y)
+	} else if m := y*12 + int(m2-m1); m > 1 || (m == 1 && d2-d1 >= 0) {
+		return fmt.Sprintf(MONTH_AGO, m)
+	} else if d := m*dayIn(y1, m1) + d2 - d1; d > 1 || (d == 1 && h2-h1 >= 0) {
+		return fmt.Sprintf(DAYS_AGO, d)
+	} else if h := d*24 + h2 - h1; h > 1 || (h == 1 && mi2-mi1 >= 0) {
+		return fmt.Sprintf(HOURS_AGO, h)
+	} else if mi := h*60 + mi2 - mi1; mi > 1 || (mi == 1 && s2-s1 >= 0) {
+		return fmt.Sprintf(MINUTES_AGO, mi)
+	}
+	return JUST_NOW
+}
+
+// dayIn 获取天数
+func dayIn(year int, m time.Month) int {
+	if m == time.February && isLeapYear(year) {
+		return 29
+	}
+	return monthToDays[m]
+}
+
+// monthToDays 月份转换
+var monthToDays = map[time.Month]int{
+	time.January:   31,
+	time.February:  28,
+	time.March:     31,
+	time.April:     30,
+	time.May:       31,
+	time.June:      30,
+	time.July:      31,
+	time.August:    31,
+	time.September: 30,
+	time.October:   31,
+	time.November:  30,
+	time.December:  31,
+}
+
+// isLeapYear是否是闰年
+func isLeapYear(year int) bool {
+	return year%4 == 0 && (year%100 != 0 || year%400 == 0)
 }

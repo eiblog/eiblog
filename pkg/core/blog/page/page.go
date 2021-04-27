@@ -50,7 +50,9 @@ func RegisterRoutes(e *gin.Engine) {
 	e.GET("/series.html", handleSeriesPage)
 	e.GET("/archives.html", handleArchivePage)
 	e.GET("/search.html", handleSearchPage)
+	e.GET("/disqus/post-:slug", handleDisqusList)
 	e.GET("/disqus/form/post-:slug", handleDisqusPage)
+	e.POST("/disqus/create", handleDisqusCreate)
 	e.GET("/beacon.html", handleBeaconPage)
 }
 
@@ -80,7 +82,7 @@ func baseParams(c *gin.Context) gin.H {
 // handleNotFound not found page
 func handleNotFound(c *gin.Context) {
 	params := baseParams(c)
-	params["title"] = "Not Found"
+	params["Title"] = "Not Found"
 	params["Description"] = "404 Not Found"
 	params["Path"] = ""
 	c.Status(http.StatusNotFound)
@@ -90,7 +92,7 @@ func handleNotFound(c *gin.Context) {
 // handleHomePage 首页
 func handleHomePage(c *gin.Context) {
 	params := baseParams(c)
-	params["title"] = cache.Ei.Blogger.BTitle + " | " + cache.Ei.Blogger.SubTitle
+	params["Title"] = cache.Ei.Blogger.BTitle + " | " + cache.Ei.Blogger.SubTitle
 	params["Description"] = "博客首页，" + cache.Ei.Blogger.SubTitle
 	params["Path"] = c.Request.URL.Path
 	params["CurrentPage"] = "blog-home"
@@ -212,6 +214,58 @@ func handleSearchPage(c *gin.Context) {
 	renderHTMLHomeLayout(c, "search", params)
 }
 
+// disqusComments 服务端获取评论详细
+type disqusComments struct {
+	ErrNo  int    `json:"errno"`
+	ErrMsg string `json:"errmsg"`
+	Data   struct {
+		Next     string           `json:"next"`
+		Total    int              `json:"total"`
+		Comments []commentsDetail `json:"comments"`
+		Thread   string           `json:"thread"`
+	} `json:"data"`
+}
+
+// handleDisqusList 获取评论列表
+func handleDisqusList(c *gin.Context) {
+	dcs := &disqusComments{}
+	defer c.JSON(http.StatusOK, dcs)
+
+	slug := c.Param("slug")
+	cursor := c.Query("cursor")
+	if artc := cache.Ei.ArticlesMap[slug]; artc != nil {
+		dcs.Data.Thread = artc.Thread
+	}
+	postsList, err := internal.PostsList(slug, cursor)
+	if err != nil {
+		logrus.Error("hadnleDisqusList.PostsList: ", err)
+		dcs.ErrNo = 0
+		dcs.ErrMsg = "系统错误"
+		return
+	}
+	dcs.ErrNo = postsList.Code
+	if postsList.Cursor.HasNext {
+		dcs.Data.Next = postsList.Cursor.Next
+	}
+	dcs.Data.Total = len(postsList.Response)
+	dcs.Data.Comments = make([]commentsDetail, len(postsList.Response))
+	for i, v := range postsList.Response {
+		if dcs.Data.Thread == "" {
+			dcs.Data.Thread = v.Thread
+		}
+		dcs.Data.Comments[i] = commentsDetail{
+			ID:           v.ID,
+			Name:         v.Author.Name,
+			Parent:       v.Parent,
+			Url:          v.Author.ProfileUrl,
+			Avatar:       v.Author.Avatar.Cache,
+			CreatedAtStr: tools.ConvertStr(v.CreatedAt),
+			Message:      v.Message,
+			IsDeleted:    v.IsDeleted,
+		}
+	}
+}
+
 // handleDisqusPage 评论页
 func handleDisqusPage(c *gin.Context) {
 	array := strings.Split(c.Param("slug"), "|")
@@ -221,7 +275,7 @@ func handleDisqusPage(c *gin.Context) {
 	}
 	article := cache.Ei.ArticlesMap[array[0]]
 	params := gin.H{
-		"Titile": "发表评论 | " + config.Conf.BlogApp.Blogger.BTitle,
+		"Titile": "发表评论 | " + cache.Ei.Blogger.BTitle,
 		"ATitle": article.Title,
 		"Thread": array[1],
 		"Slug":   article.Slug,
@@ -231,6 +285,78 @@ func handleDisqusPage(c *gin.Context) {
 		panic(err)
 	}
 	c.Header("Content-Type", "text/html; charset=utf-8")
+}
+
+// 发表评论
+// [thread:[5279901489] parent:[] identifier:[post-troubleshooting-https]
+// next:[] author_name:[你好] author_email:[chenqijing2@163.com] message:[fdsfdsf]]
+type disqusCreate struct {
+	ErrNo  int            `json:"errno"`
+	ErrMsg string         `json:"errmsg"`
+	Data   commentsDetail `json:"data"`
+}
+
+type commentsDetail struct {
+	ID           string `json:"id"`
+	Parent       int    `json:"parent"`
+	Name         string `json:"name"`
+	Url          string `json:"url"`
+	Avatar       string `json:"avatar"`
+	CreatedAtStr string `json:"createdAtStr"`
+	Message      string `json:"message"`
+	IsDeleted    bool   `json:"isDeleted"`
+}
+
+// handleDisqusCreate 评论文章
+func handleDisqusCreate(c *gin.Context) {
+	resp := &disqusCreate{}
+	defer c.JSON(http.StatusOK, resp)
+
+	msg := c.PostForm("message")
+	email := c.PostForm("author_name")
+	name := c.PostForm("author_name")
+	thread := c.PostForm("thread")
+	identifier := c.PostForm("identifier")
+	if msg == "" || email == "" || name == "" || thread == "" || identifier == "" {
+		resp.ErrNo = 1
+		resp.ErrMsg = "参数错误"
+		return
+	}
+	logrus.Info("email: %s comments: %s", email, thread)
+
+	comment := internal.PostComment{
+		Message:     msg,
+		Parent:      c.PostForm("parent"),
+		Thread:      thread,
+		AuthorEmail: email,
+		AuthorName:  name,
+		Identifier:  identifier,
+		IpAddress:   c.ClientIP(),
+	}
+	postDetail, err := internal.PostCreate(&comment)
+	if err != nil {
+		logrus.Error("handleDisqusCreate.PostCreate: ", err)
+		resp.ErrNo = 1
+		resp.ErrMsg = "提交评论失败，请重试"
+		return
+	}
+	err = internal.PostApprove(postDetail.Response.ID)
+	if err != nil {
+		logrus.Error("handleDisqusCreate.PostApprove: ", err)
+		resp.ErrNo = 1
+		resp.ErrMsg = "提交评论失败，请重试"
+	}
+	resp.ErrNo = 0
+	resp.Data = commentsDetail{
+		ID:           postDetail.Response.ID,
+		Name:         name,
+		Parent:       postDetail.Response.Parent,
+		Url:          postDetail.Response.Author.ProfileUrl,
+		Avatar:       postDetail.Response.Author.Avatar.Cache,
+		CreatedAtStr: tools.ConvertStr(postDetail.Response.CreatedAt),
+		Message:      postDetail.Response.Message,
+		IsDeleted:    postDetail.Response.IsDeleted,
+	}
 }
 
 // handleBeaconPage 服务端推送谷歌统计
@@ -281,7 +407,7 @@ func renderHTMLHomeLayout(c *gin.Context, name string, data gin.H) {
 		panic(err)
 	}
 	data["LayoutContent"] = htemplate.HTML(buf.String())
-	err = htmlTmpl.ExecuteTemplate(c.Writer, "homelayout.html", data)
+	err = htmlTmpl.ExecuteTemplate(c.Writer, "homeLayout.html", data)
 	if err != nil {
 		panic(err)
 	}

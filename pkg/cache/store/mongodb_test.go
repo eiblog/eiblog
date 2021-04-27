@@ -135,6 +135,7 @@ func TestLoadAllSeries(t *testing.T) {
 }
 
 func TestInsertArticle(t *testing.T) {
+	article.ID = 12
 	err := store.InsertArticle(context.Background(), article)
 	if err != nil {
 		t.Fatal(err)
