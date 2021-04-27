@@ -50,5 +50,17 @@ func RegisterRoutes(e *gin.Engine) {
 
 // RegisterRoutesAuthz register admin
 func RegisterRoutesAuthz(group gin.IRoutes) {
-
+	// console
+	group.GET("/profile", handleAdminProfile)
+	// write
+	group.GET("/write-post", handleAdminPost)
+	// manage
+	group.GET("/manage-posts", handleAdminPosts)
+	group.GET("/manage-series", handleAdminSeries)
+	group.GET("/add-serie", handleAdminSerie)
+	group.GET("/manage-tags", handleAdminTags)
+	group.GET("/manage-draft", handleAdminDraft)
+	group.GET("/manage-trash", handleAdminTrash)
+	group.GET("/options-general", handleAdminGeneral)
+	group.GET("/options-discussion", handleAdminDiscussion)
 }

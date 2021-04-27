@@ -48,6 +48,8 @@ type Store interface {
 	UpdateArticle(ctx context.Context, id int, fields map[string]interface{}) error
 	// RecoverArticle 恢复文章到草稿
 	RecoverArticle(ctx context.Context, id int) error
+	// LoadArticle 查找文章
+	LoadArticle(ctx context.Context, id int) (*model.Article, error)
 	// LoadAllArticle 读取所有文章
 	LoadAllArticle(ctx context.Context) (model.SortedArticles, error)
 	// LoadTrashArticles 读取回收箱

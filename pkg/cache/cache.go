@@ -24,9 +24,9 @@ var (
 	Ei *Cache
 
 	// regenerate pages chan
-	pagesCh     = make(chan string, 2)
-	pageSeries  = "series-md"
-	pageArchive = "archive-md"
+	PagesCh     = make(chan string, 2)
+	PageSeries  = "series-md"
+	PageArchive = "archive-md"
 )
 
 func init() {
@@ -141,6 +141,11 @@ func (c *Cache) PageArticles(page int, pageSize int) (prev,
 	return
 }
 
+// PageArticlesBE 后台文章分页
+// func (c *Cache) PageArticleBE(se int, kw string, draft, del bool, p, n int)(max int, artcs []*model.Article){
+//
+// }
+
 // loadOrInit 读取数据或初始化
 func (c *Cache) loadOrInit() error {
 	blogapp := config.Conf.BlogApp
@@ -218,8 +223,8 @@ func (c *Cache) loadOrInit() error {
 	}
 	Ei.Articles = articles
 	// 重建专题与归档
-	pagesCh <- pageSeries
-	pagesCh <- pageArchive
+	PagesCh <- PageSeries
+	PagesCh <- PageArchive
 	return nil
 }
 
@@ -239,7 +244,7 @@ func (c *Cache) rebuildArticle(article *model.Article, needSort bool) {
 			c.Series[i].Articles = append(c.Series[i].Articles, article)
 			if needSort {
 				sort.Sort(c.Series[i].Articles)
-				pagesCh <- pageSeries // 重建专题
+				PagesCh <- PageSeries // 重建专题
 			}
 		}
 	}
@@ -251,7 +256,7 @@ func (c *Cache) rebuildArticle(article *model.Article, needSort bool) {
 		}
 		if needSort {
 			sort.Sort(c.Archives[i].Articles)
-			pagesCh <- pageArchive // 重建归档
+			PagesCh <- PageArchive // 重建归档
 		}
 		return
 	}
@@ -261,15 +266,15 @@ func (c *Cache) rebuildArticle(article *model.Article, needSort bool) {
 		Articles: model.SortedArticles{article},
 	})
 	if needSort { // 重建归档
-		pagesCh <- pageArchive
+		PagesCh <- PageArchive
 	}
 }
 
 // regeneratePages 重新生成series,archive页面
 func (c *Cache) regeneratePages() {
 	for {
-		switch page := <-pagesCh; page {
-		case pageSeries:
+		switch page := <-PagesCh; page {
+		case PageSeries:
 			sort.Sort(c.Series)
 			buf := bytes.Buffer{}
 			buf.WriteString(c.Blogger.SeriesSay)
@@ -288,7 +293,7 @@ func (c *Cache) regeneratePages() {
 				buf.WriteString("\n\n")
 			}
 			c.PageSeries = string(render.RenderPage(buf.Bytes()))
-		case pageArchive:
+		case PageArchive:
 			sort.Sort(c.Archives)
 			buf := bytes.Buffer{}
 			buf.WriteString(c.Blogger.ArchivesSay + "\n")

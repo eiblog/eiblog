@@ -3,12 +3,18 @@ package page
 
 import (
 	"bytes"
+	"context"
+	"encoding/json"
+	"fmt"
 	htemplate "html/template"
 	"net/http"
+	"strconv"
 
 	"github.com/eiblog/eiblog/pkg/cache"
 	"github.com/eiblog/eiblog/pkg/config"
 	"github.com/eiblog/eiblog/pkg/core/blog"
+	"github.com/eiblog/eiblog/pkg/model"
+	"github.com/sirupsen/logrus"
 
 	"github.com/gin-gonic/gin"
 )
@@ -32,6 +38,181 @@ func handleLoginPage(c *gin.Context) {
 	}
 	params := gin.H{"BTitle": cache.Ei.Blogger.BTitle}
 	renderHTMLAdminLayout(c, "login.html", params)
+}
+
+// handleAdminProfile 个人配置
+func handleAdminProfile(c *gin.Context) {
+	params := baseBEParams(c)
+	params["Title"] = "个人配置 | " + cache.Ei.Blogger.BTitle
+	params["Path"] = c.Request.URL.Path
+	params["Console"] = true
+	params["Ei"] = cache.Ei
+	renderHTMLAdminLayout(c, "admin-profile", params)
+}
+
+type T struct {
+	ID   string `json:"id"`
+	Tags string `json:"tags"`
+}
+
+// handleAdminPost 写文章页
+func handleAdminPost(c *gin.Context) {
+	params := baseBEParams(c)
+	id, err := strconv.Atoi(c.Query("cid"))
+	if err == nil && id > 0 {
+		article, _ := cache.Ei.LoadArticle(context.Background(), id)
+		if article != nil {
+			params["Title"] = "编辑文章 | " + cache.Ei.Blogger.BTitle
+			params["Edit"] = article
+		}
+	}
+	if params["Title"] == nil {
+		params["Title"] = "撰写文章 | " + cache.Ei.Blogger.BTitle
+	}
+	params["Path"] = c.Request.URL.Path
+	params["Domain"] = config.Conf.BlogApp.Host
+	params["Series"] = cache.Ei.Series
+	var tags []T
+	for tag, _ := range cache.Ei.TagArticles {
+		tags = append(tags, T{tag, tag})
+	}
+	str, _ := json.Marshal(tags)
+	params["Tags"] = string(str)
+	renderHTMLAdminLayout(c, "admin-post", params)
+}
+
+// handleAdminPosts 文章管理页
+func handleAdminPosts(c *gin.Context) {
+	kw := c.Query("keywords")
+	tmp := c.Query("serie")
+	se, err := strconv.Atoi(tmp)
+	if err != nil || se < 1 {
+		se = 0
+	}
+	pg, err := strconv.Atoi(c.Query("page"))
+	if err != nil || pg < 1 {
+		pg = 1
+	}
+	vals := c.Request.URL.Query()
+
+	params := baseBEParams(c)
+	params["Title"] = "文章管理 | " + cache.Ei.Blogger.BTitle
+	params["Manage"] = true
+	params["Path"] = c.Request.URL.Path
+	params["Series"] = cache.Ei.Series
+	params["Serie"] = se
+	params["KW"] = kw
+	var max int
+	// TODO
+	// max, params["List"] = cache.Ei.PageListBack(se, kw, false, false, pg, setting.Conf.General.PageSize)
+	if pg < max {
+		vals.Set("page", fmt.Sprint(pg+1))
+		params["Next"] = vals.Encode()
+	}
+	if pg > 1 {
+		vals.Set("page", fmt.Sprint(pg-1))
+		params["Prev"] = vals.Encode()
+	}
+	params["PP"] = make(map[int]string, max)
+	for i := 0; i < max; i++ {
+		vals.Set("page", fmt.Sprint(i+1))
+		params["PP"].(map[int]string)[i+1] = vals.Encode()
+	}
+	params["Cur"] = pg
+	renderHTMLAdminLayout(c, "admin-posts", params)
+}
+
+// handleAdminSeries 专题列表
+func handleAdminSeries(c *gin.Context) {
+	params := baseBEParams(c)
+	params["Title"] = "专题管理 | " + cache.Ei.Blogger.BTitle
+	params["Manage"] = true
+	params["Path"] = c.Request.URL.Path
+	params["List"] = cache.Ei.Series
+	renderHTMLAdminLayout(c, "admin-series", params)
+}
+
+// handleAdminSerie 编辑专题
+func handleAdminSerie(c *gin.Context) {
+	params := baseBEParams(c)
+
+	id, err := strconv.Atoi(c.Query("mid"))
+	params["Title"] = "新增专题 | " + cache.Ei.Blogger.BTitle
+	if err == nil && id > 0 {
+		var serie *model.Serie
+		for _, v := range cache.Ei.Series {
+			if v.ID == id {
+				params["Title"] = "编辑专题 | " + cache.Ei.Blogger.BTitle
+				params["Edit"] = serie
+				break
+			}
+		}
+	}
+	params["Manage"] = true
+	params["Path"] = c.Request.URL.Path
+	renderHTMLAdminLayout(c, "admin-serie", params)
+}
+
+// handleAdminTags 标签列表
+func handleAdminTags(c *gin.Context) {
+	params := baseBEParams(c)
+	params["Title"] = "标签管理 | " + cache.Ei.Blogger.BTitle
+	params["Manage"] = true
+	params["Path"] = c.Request.URL.Path
+	params["List"] = cache.Ei.TagArticles
+	renderHTMLAdminLayout(c, "admin-tags", params)
+}
+
+// handleAdminDraft 草稿箱页
+func handleAdminDraft(c *gin.Context) {
+	params := baseBEParams(c)
+
+	params["Title"] = "草稿箱 | " + cache.Ei.Blogger.BTitle
+	params["Manage"] = true
+	params["Path"] = c.Request.URL.Path
+	var err error
+	params["List"], err = cache.Ei.LoadDraftArticles(context.Background())
+	if err != nil {
+		logrus.Error("handleDraft.LoadDraftArticles: ", err)
+		c.Status(http.StatusBadRequest)
+	} else {
+		c.Status(http.StatusOK)
+	}
+	renderHTMLAdminLayout(c, "admin-draft", params)
+}
+
+// handleAdminTrash 回收箱页
+func handleAdminTrash(c *gin.Context) {
+	params := baseBEParams(c)
+	params["Title"] = "回收箱 | " + cache.Ei.Blogger.BTitle
+	params["Manage"] = true
+	params["Path"] = c.Request.URL.Path
+	var err error
+	params["List"], err = cache.Ei.LoadTrashArticles(context.Background())
+	if err != nil {
+		logrus.Error("handleTrash.LoadTrashArticles: ", err)
+		c.HTML(http.StatusBadRequest, "backLayout.html", params)
+		return
+	}
+	renderHTMLAdminLayout(c, "admin-trash", params)
+}
+
+// handleAdminGeneral 基本设置
+func handleAdminGeneral(c *gin.Context) {
+	params := baseBEParams(c)
+	params["Title"] = "基本设置 | " + cache.Ei.Blogger.BTitle
+	params["Setting"] = true
+	params["Path"] = c.Request.URL.Path
+	renderHTMLAdminLayout(c, "admin-general", params)
+}
+
+// handleAdminDiscussion 阅读设置
+func handleAdminDiscussion(c *gin.Context) {
+	params := baseBEParams(c)
+	params["Title"] = "阅读设置 | " + cache.Ei.Blogger.BTitle
+	params["Setting"] = true
+	params["Path"] = c.Request.URL.Path
+	renderHTMLAdminLayout(c, "admin-discussion", params)
 }
 
 // renderHTMLAdminLayout 渲染admin页面

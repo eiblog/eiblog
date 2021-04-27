@@ -280,6 +280,21 @@ func (db *mongodb) RecoverArticle(ctx context.Context, id int) error {
 	return err
 }
 
+// LoadArticle 查找文章
+func (db *mongodb) LoadArticle(ctx context.Context, id int) (*model.Article, error) {
+	collection := db.Database(mongoDBName).Collection(collectionArticle)
+
+	filter := bson.M{"id": id}
+	result := collection.FindOne(ctx, filter)
+	err := result.Err()
+	if err != nil {
+		return nil, err
+	}
+	article := &model.Article{}
+	err = result.Decode(article)
+	return article, err
+}
+
 // LoadAllArticle 读取所有文章
 func (db *mongodb) LoadAllArticle(ctx context.Context) (model.SortedArticles, error) {
 	collection := db.Database(mongoDBName).Collection(collectionArticle)
