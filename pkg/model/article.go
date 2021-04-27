@@ -3,21 +3,23 @@ package model
 
 import "time"
 
+// use snake_case as column name
+
 // Article 文章
 type Article struct {
-	ID      int    `gorm:"primaryKey;autoIncrement"` // 自增ID
-	Author  string `gorm:"not null"`                 // 作者名
-	Slug    string `gorm:"not null;uniqueIndex"`     // 文章缩略名
-	Title   string `gorm:"not null"`                 // 标题
-	Count   int    `gorm:"not null"`                 // 评论数量
-	Content string `gorm:"not null"`                 // markdown内容
-	SerieID int    `gorm:"not null"`                 // 专题ID
-	Tags    string `gorm:"not null"`                 // tag,以逗号隔开
-	IsDraft bool   `gorm:"not null"`                 // 是否是草稿
+	ID       int    `gorm:"column:id;primaryKey" bson:"id"`               // 自增ID
+	Author   string `gorm:"column:author;not null" bson:"author"`         // 作者名
+	Slug     string `gorm:"column:slug;not null;uniqueIndex" bson:"slug"` // 文章缩略名
+	Title    string `gorm:"column:title;not null" bson:"title"`           // 标题
+	Count    int    `gorm:"column:count;not null" bson:"count"`           // 评论数量
+	Content  string `gorm:"column:content;not null" bson:"content"`       // markdown内容
+	SeriesID int    `gorm:"column:series_id;not null" bson:"series_id"`   // 专题ID
+	Tags     string `gorm:"column:tags;not null" bson:"tags"`             // tag,以逗号隔开
+	IsDraft  bool   `gorm:"column:is_draft;not null" bson:"is_draft"`     // 是否是草稿
 
-	DeleteTime time.Time `gorm:"default:null"`  // 删除时间
-	UpdateTime time.Time `gorm:"default:now()"` // 更新时间
-	CreateTime time.Time `gorm:"default:now()"` // 创建时间
+	DeletedAt time.Time `gorm:"column:deleted_at;default:null" bson:"deleted_at"`  // 删除时间
+	UpdatedAt time.Time `gorm:"column:updated_at;default:now()" bson:"updated_at"` // 更新时间
+	CreatedAt time.Time `gorm:"column:created_at;default:now()" bson:"created_at"` // 创建时间
 
 	Header  string   `gorm:"-" bson:"-"` // header
 	Excerpt string   `gorm:"-" bson:"-"` // 预览信息
@@ -34,7 +36,7 @@ type SortedArticles []*Article
 func (s SortedArticles) Len() int { return len(s) }
 
 // Less 对比
-func (s SortedArticles) Less(i, j int) bool { return s[i].CreateTime.After(s[j].CreateTime) }
+func (s SortedArticles) Less(i, j int) bool { return s[i].CreatedAt.After(s[j].CreatedAt) }
 
 // Swap 交换
 func (s SortedArticles) Swap(i, j int) { s[i], s[j] = s[j], s[i] }

@@ -1,5 +1,5 @@
-// Package eiblog provides ...
-package eiblog
+// Package blog provides ...
+package blog
 
 import (
 	"net/http"
@@ -14,67 +14,43 @@ import (
 
 // @BasePath /api
 
-// LogStatus log status
-type LogStatus int
-
-// user log status
-var (
-	LogStatusOut LogStatus = 0
-	LogStatusTFA LogStatus = 1
-	LogStatusIn  LogStatus = 2
-)
-
 // AuthFilter auth filter
 func AuthFilter(c *gin.Context) {
 	if !IsLogined(c) {
 		c.Abort()
 		c.Status(http.StatusUnauthorized)
+		c.Redirect(http.StatusFound, "/admin/login")
 		return
 	}
 
 	c.Next()
 }
 
-// SetLogStatus login user
-func SetLogStatus(c *gin.Context, uid string, status LogStatus) {
+// SetLogin login user
+func SetLogin(c *gin.Context, username string) {
 	session := sessions.Default(c)
-	session.Set("uid", uid)
-	session.Set("status", int(status))
+	session.Set("username", username)
 	session.Save()
 }
 
 // SetLogout logout user
 func SetLogout(c *gin.Context) {
 	session := sessions.Default(c)
-	session.Set("status", int(LogStatusOut))
+	session.Delete("username")
 	session.Save()
 }
 
 // IsLogined account logined
 func IsLogined(c *gin.Context) bool {
-	status := GetLogStatus(c)
-	if status < 0 {
-		return false
-	}
-	return status == LogStatusIn
+	return GetUsername(c) != ""
 }
 
-// GetUserID get logined account uuid
-func GetUserID(c *gin.Context) string {
+// GetUsername get logined account
+func GetUsername(c *gin.Context) string {
 	session := sessions.Default(c)
-	uid := session.Get("uid")
-	if uid == nil {
+	username := session.Get("username")
+	if username == nil {
 		return ""
 	}
-	return uid.(string)
-}
-
-// GetLogStatus get account log status
-func GetLogStatus(c *gin.Context) LogStatus {
-	session := sessions.Default(c)
-	status := session.Get("status")
-	if status == nil {
-		return -1
-	}
-	return LogStatus(status.(int))
+	return username.(string)
 }

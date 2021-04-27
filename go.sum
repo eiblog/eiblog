@@ -22,6 +22,8 @@ github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d/go.mod h1:ma
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
+github.com/deepzz0/logd v0.0.0-20171206094927-f91dd8c6316f h1:hjWy8ptp0ggYgv/3A8dixSB9KTRgDcZH2D3Ap5hrwOs=
+github.com/deepzz0/logd v0.0.0-20171206094927-f91dd8c6316f/go.mod h1:8jMj6ab9czIU5udq3ovaK9/5sCIyQ1JWteFMn8w2QRI=
 github.com/eiblog/blackfriday v0.0.0-20161010144836-c0ec111761ae h1:V6YC640Gs5jEUYfCimyuXsTW5gzNcIEESG4MGmOJCtA=
 github.com/eiblog/blackfriday v0.0.0-20161010144836-c0ec111761ae/go.mod h1:HzHqTCGEAkSSzBM3shBvQHsHRQYUvjNOIC4mHipZ6tI=
 github.com/eiblog/utils v0.0.0-20181119015747-92c93e218753 h1:Nygjtnh1nF5zejJF7pZnsoFh77wOPS+jlfhikjkJg60=
@@ -350,6 +352,8 @@ gopkg.in/errgo.v2 v2.1.0/go.mod h1:hNsd1EY+bozCKY1Ytp96fpM3vjJbqLJn88ws8XvfDNI=
 gopkg.in/go-playground/assert.v1 v1.2.1/go.mod h1:9RXL0bg/zibRAgZUYszZSwO/z8Y/a8bDuhia5mkpMnE=
 gopkg.in/go-playground/validator.v8 v8.18.2/go.mod h1:RX2a/7Ha8BgOhfk7j780h4/u/RRjR0eouCJSH80/M2Y=
 gopkg.in/go-playground/validator.v9 v9.29.1/go.mod h1:+c9/zcJMFNgbLvly1L1V+PpxWdVbfP1avr/N00E2vyQ=
+gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22 h1:VpOs+IwYnYBaFnrNAeB8UUWtL3vEUnzSCL1nVjPhqrw=
+gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22/go.mod h1:yeKp02qBN3iKW1OzL3MGk2IdtZzaj7SFntXj72NppTA=
 gopkg.in/yaml.v2 v2.2.1/go.mod h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=
 gopkg.in/yaml.v2 v2.2.2/go.mod h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=
 gopkg.in/yaml.v2 v2.2.4/go.mod h1:hI93XBmqTisBFMUTm0b8Fm+jr3Dg1NNxqwp+5A1VGuI=

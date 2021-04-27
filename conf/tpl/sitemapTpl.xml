@@ -3,7 +3,7 @@
     {{range .Articles}}
     <url>
         <loc>https://{{$.Host}}/post/{{.Slug}}.html</loc>
-        <lastmod>{{dateformat .CreateTime "2006-01-02"}}</lastmod>
+        <lastmod>{{dateformat .CreatedAt "2006-01-02"}}</lastmod>
         <priority>0.6</priority>
     </url>
     {{end}}

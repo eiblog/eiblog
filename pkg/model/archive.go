@@ -3,9 +3,11 @@ package model
 
 import "time"
 
+// use snake_case as column name
+
 // Archive 归档
 type Archive struct {
-	Time time.Time
+	Time time.Time `gorm:"column:time;not null" bson:"time"`
 
 	Articles SortedArticles `gorm:"-" bson:"-"` // 归档下的文章
 }

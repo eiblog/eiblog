@@ -52,21 +52,21 @@ func (db *mongodb) Init(source string) (Store, error) {
 	db.Client = client
 	// create index
 	indexModel := mongo.IndexModel{
-		Keys:    bson.D{{"username", 1}},
+		Keys:    bson.D{bson.E{Key: "username", Value: 1}},
 		Options: options.Index().SetUnique(true).SetSparse(true),
 	}
 	db.Database(mongoDBName).Collection(collectionAccount).
 		Indexes().
 		CreateOne(context.Background(), indexModel)
 	indexModel = mongo.IndexModel{
-		Keys:    bson.D{{"slug", 1}},
+		Keys:    bson.D{bson.E{Key: "slug", Value: 1}},
 		Options: options.Index().SetUnique(true).SetSparse(true),
 	}
 	db.Database(mongoDBName).Collection(collectionArticle).
 		Indexes().
 		CreateOne(context.Background(), indexModel)
 	indexModel = mongo.IndexModel{
-		Keys:    bson.D{{"slug", 1}},
+		Keys:    bson.D{bson.E{Key: "slug", Value: 1}},
 		Options: options.Index().SetUnique(true).SetSparse(true),
 	}
 	db.Database(mongoDBName).Collection(collectionSeries).

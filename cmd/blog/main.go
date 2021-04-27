@@ -6,6 +6,8 @@ import (
 	"path/filepath"
 
 	"github.com/eiblog/eiblog/pkg/config"
+	"github.com/eiblog/eiblog/pkg/core/blog"
+	"github.com/eiblog/eiblog/pkg/core/blog/admin"
 	"github.com/eiblog/eiblog/pkg/core/blog/file"
 	"github.com/eiblog/eiblog/pkg/core/blog/page"
 	"github.com/eiblog/eiblog/pkg/core/blog/swag"
@@ -51,8 +53,15 @@ func runHTTPServer(endRun chan bool) {
 	page.RegisterRoutes(e)
 	// static files
 	file.RegisterRoutes(e)
+	// unauthz api
+	admin.RegisterRoutes(e)
 
-	// api router
+	// admin router
+	group := e.Group("/admin", blog.AuthFilter)
+	{
+		page.RegisterRoutesAuthz(group)
+		admin.RegisterRoutesAuthz(group)
+	}
 
 	// start
 	address := fmt.Sprintf(":%d", config.Conf.BlogApp.HTTPPort)
