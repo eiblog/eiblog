@@ -199,9 +199,7 @@ func (c *Cache) loadOrInit() error {
 	if err != nil {
 		return err
 	}
-	sort.Sort(model.SortedArticles(articles))
-
-	for i, v := range Ei.Articles {
+	for i, v := range articles {
 		// 渲染页面
 		render.GenerateExcerptMarkdown(v)
 
@@ -218,6 +216,7 @@ func (c *Cache) loadOrInit() error {
 		}
 		c.rebuildArticle(v, false)
 	}
+	Ei.Articles = articles
 	// 重建专题与归档
 	pagesCh <- pageSeries
 	pagesCh <- pageArchive
