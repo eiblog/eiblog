@@ -11,7 +11,7 @@ type Article struct {
 	Title   string `gorm:"not null"`                 // 标题
 	Count   int    `gorm:"not null"`                 // 评论数量
 	Content string `gorm:"not null"`                 // markdown内容
-	SerieID int32  `gorm:"not null"`                 // 专题ID
+	SerieID int    `gorm:"not null"`                 // 专题ID
 	Tags    string `gorm:"not null"`                 // tag,以逗号隔开
 	IsDraft bool   `gorm:"not null"`                 // 是否是草稿
 

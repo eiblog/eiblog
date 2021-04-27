@@ -3,6 +3,7 @@ package store
 
 import (
 	"context"
+	"fmt"
 	"sort"
 	"time"
 
@@ -50,7 +51,9 @@ func (db *mongodb) Init(source string) (Store, error) {
 }
 
 // LoadInsertAccount 读取或创建账户
-func (db *mongodb) LoadInsertAccount(ctx context.Context, acct *model.Account) (*model.Account, error) {
+func (db *mongodb) LoadInsertAccount(ctx context.Context,
+	acct *model.Account) (*model.Account, error) {
+
 	collection := db.Database(mongoDBName).Collection(collectionAccount)
 
 	filter := bson.M{"username": config.Conf.BlogApp.Account.Username}
@@ -67,8 +70,26 @@ func (db *mongodb) LoadInsertAccount(ctx context.Context, acct *model.Account) (
 	return acct, err
 }
 
+// UpdateAccount 更新账户
+func (db *mongodb) UpdateAccount(ctx context.Context, name string,
+	fields map[string]interface{}) error {
+
+	collection := db.Database(mongoDBName).Collection(collectionAccount)
+
+	filter := bson.M{"username": name}
+	params := bson.M{}
+	for k, v := range fields {
+		params[k] = v
+	}
+	update := bson.M{"$set": params}
+	_, err := collection.UpdateOne(ctx, filter, update)
+	return err
+}
+
 // LoadInsertBlogger 读取或创建博客
-func (db *mongodb) LoadInsertBlogger(ctx context.Context, blogger *model.Blogger) (*model.Blogger, error) {
+func (db *mongodb) LoadInsertBlogger(ctx context.Context,
+	blogger *model.Blogger) (*model.Blogger, error) {
+
 	collection := db.Database(mongoDBName).Collection(collectionBlogger)
 
 	filter := bson.M{}
@@ -85,76 +106,20 @@ func (db *mongodb) LoadInsertBlogger(ctx context.Context, blogger *model.Blogger
 	return blogger, err
 }
 
-// LoadAllArticle 读取所有文章
-func (db *mongodb) LoadAllArticle(ctx context.Context) (model.SortedArticles, error) {
-	collection := db.Database(mongoDBName).Collection(collectionArticle)
+// UpdateBlogger 更新博客
+func (db *mongodb) UpdateBlogger(ctx context.Context,
+	fields map[string]interface{}) error {
 
-	filter := bson.M{"isdraft": false, "deletetime": bson.M{"$eq": time.Time{}}}
-	cur, err := collection.Find(ctx, filter)
-	if err != nil {
-		return nil, err
+	collection := db.Database(mongoDBName).Collection(collectionBlogger)
+
+	filter := bson.M{}
+	params := bson.M{}
+	for k, v := range fields {
+		params[k] = v
 	}
-	defer cur.Close(ctx)
-
-	var articles model.SortedArticles
-	for cur.Next(ctx) {
-		article := model.Article{}
-		err = cur.Decode(&article)
-		if err != nil {
-			return nil, err
-		}
-		articles = append(articles, &article)
-	}
-	sort.Sort(articles)
-	return articles, nil
-}
-
-// LoadTrashArticles 读取回收箱
-func (db *mongodb) LoadTrashArticles(ctx context.Context) (model.SortedArticles, error) {
-	collection := db.Database(mongoDBName).Collection(collectionArticle)
-
-	filter := bson.M{"deletetime": bson.M{"$ne": time.Time{}}}
-	cur, err := collection.Find(ctx, filter)
-	if err != nil {
-		return nil, err
-	}
-	defer cur.Close(ctx)
-
-	var articles model.SortedArticles
-	for cur.Next(ctx) {
-		article := model.Article{}
-		err = cur.Decode(&article)
-		if err != nil {
-			return nil, err
-		}
-		articles = append(articles, &article)
-	}
-	sort.Sort(articles)
-	return articles, nil
-}
-
-// LoadDraftArticles 读取草稿箱
-func (db *mongodb) LoadDraftArticles(ctx context.Context) (model.SortedArticles, error) {
-	collection := db.Database(mongoDBName).Collection(collectionArticle)
-
-	filter := bson.M{"isdraft": true}
-	cur, err := collection.Find(ctx, filter)
-	if err != nil {
-		return nil, err
-	}
-	defer cur.Close(ctx)
-
-	var articles model.SortedArticles
-	for cur.Next(ctx) {
-		article := model.Article{}
-		err = cur.Decode(&article)
-		if err != nil {
-			return nil, err
-		}
-		articles = append(articles, &article)
-	}
-	sort.Sort(articles)
-	return articles, nil
+	update := bson.M{"$set": params}
+	_, err := collection.UpdateOne(ctx, filter, update)
+	return err
 }
 
 // InsertSeries 创建专题
@@ -176,13 +141,43 @@ func (db *mongodb) RemoveSeries(ctx context.Context, id int) error {
 }
 
 // UpdateSeries 更新专题
-func (db *mongodb) UpdateSeries(ctx context.Context, series *model.Series) error {
+func (db *mongodb) UpdateSeries(ctx context.Context, id int,
+	fields map[string]interface{}) error {
+
 	collection := db.Database(mongoDBName).Collection(collectionSeries)
 
-	filter := bson.M{"id": series.ID}
-	update := bson.M{"$set": bson.M{"desc": series.Desc}}
+	filter := bson.M{"id": id}
+	params := bson.M{}
+	for k, v := range fields {
+		params[k] = v
+	}
+	update := bson.M{"$set": params}
 	_, err := collection.UpdateOne(ctx, filter, update)
 	return err
+}
+
+// LoadAllSeries 查询所有专题
+func (db *mongodb) LoadAllSeries(ctx context.Context) (model.SortedSeries, error) {
+	collection := db.Database(mongoDBName).Collection(collectionSeries)
+
+	filter := bson.M{}
+	cur, err := collection.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cur.Close(ctx)
+
+	var series model.SortedSeries
+	for cur.Next(ctx) {
+		obj := model.Series{}
+		err = cur.Decode(&obj)
+		if err != nil {
+			return nil, err
+		}
+		series = append(series, &obj)
+	}
+	sort.Sort(series)
+	return series, nil
 }
 
 // InsertArticle 创建文章
@@ -203,6 +198,15 @@ func (db *mongodb) InsertArticle(ctx context.Context, article *model.Article) er
 	return err
 }
 
+// RemoveArticle 硬删除文章
+func (db *mongodb) RemoveArticle(ctx context.Context, id int) error {
+	collection := db.Database(mongoDBName).Collection(collectionArticle)
+
+	filter := bson.M{"id": id}
+	_, err := collection.DeleteOne(ctx, filter)
+	return err
+}
+
 // DeleteArticle 软删除文章,放入回收箱
 func (db *mongodb) DeleteArticle(ctx context.Context, id int) error {
 	collection := db.Database(mongoDBName).Collection(collectionArticle)
@@ -213,22 +217,31 @@ func (db *mongodb) DeleteArticle(ctx context.Context, id int) error {
 	return err
 }
 
-// RemoveArticle 硬删除文章
-func (db *mongodb) RemoveArticle(ctx context.Context, id int) error {
-	collection := db.Database(mongoDBName).Collection(collectionArticle)
-
-	filter := bson.M{"id": id}
-	_, err := collection.DeleteOne(ctx, filter)
-	return err
-}
-
 // CleanArticles 清理回收站文章
 func (db *mongodb) CleanArticles(ctx context.Context) error {
 	collection := db.Database(mongoDBName).Collection(collectionArticle)
 
 	exp := time.Now().Add(time.Duration(config.Conf.BlogApp.General.Trash) * time.Hour)
+	fmt.Println(exp)
 	filter := bson.M{"deletetime": bson.M{"$gt": time.Time{}, "$lt": exp}}
 	_, err := collection.DeleteMany(ctx, filter)
+	return err
+}
+
+// UpdateArticle 更新文章
+func (db *mongodb) UpdateArticle(ctx context.Context, id int,
+	fields map[string]interface{}) error {
+
+	collection := db.Database(mongoDBName).Collection(collectionArticle)
+
+	filter := bson.M{"id": id}
+	params := bson.M{}
+	for k, v := range fields {
+		params[k] = v
+	}
+	update := bson.M{"$set": params}
+	fmt.Println(update)
+	_, err := collection.UpdateOne(ctx, filter, update)
 	return err
 }
 
@@ -242,45 +255,76 @@ func (db *mongodb) RecoverArticle(ctx context.Context, id int) error {
 	return err
 }
 
-// UpdateAccount 更新账户
-func (db *mongodb) UpdateAccount(ctx context.Context, name string, fields map[string]interface{}) error {
-	collection := db.Database(mongoDBName).Collection(collectionAccount)
+// LoadAllArticle 读取所有文章
+func (db *mongodb) LoadAllArticle(ctx context.Context) (model.SortedArticles, error) {
+	collection := db.Database(mongoDBName).Collection(collectionArticle)
 
-	filter := bson.M{"username": name}
-	update := bson.M{}
-	for k, v := range fields {
-		update[k] = v
+	filter := bson.M{"isdraft": false, "deletetime": bson.M{"$eq": time.Time{}}}
+	cur, err := collection.Find(ctx, filter)
+	if err != nil {
+		return nil, err
 	}
-	_, err := collection.UpdateOne(ctx, filter, update)
-	return err
+	defer cur.Close(ctx)
+
+	var articles model.SortedArticles
+	for cur.Next(ctx) {
+		obj := model.Article{}
+		err = cur.Decode(&obj)
+		if err != nil {
+			return nil, err
+		}
+		articles = append(articles, &obj)
+	}
+	sort.Sort(articles)
+	return articles, nil
 }
 
-// UpdateBlogger 更新博客
-func (db *mongodb) UpdateBlogger(ctx context.Context, fields map[string]interface{}) error {
-	collection := db.Database(mongoDBName).Collection(collectionBlogger)
+// LoadTrashArticles 读取回收箱
+func (db *mongodb) LoadTrashArticles(ctx context.Context) (model.SortedArticles, error) {
+	collection := db.Database(mongoDBName).Collection(collectionArticle)
 
-	filter := bson.M{}
-	update := bson.M{}
-	for k, v := range fields {
-		update[k] = v
+	filter := bson.M{"deletetime": bson.M{"$ne": time.Time{}}}
+	cur, err := collection.Find(ctx, filter)
+	if err != nil {
+		return nil, err
 	}
-	_, err := collection.UpdateOne(ctx, filter, update)
-	return err
+	defer cur.Close(ctx)
+
+	var articles model.SortedArticles
+	for cur.Next(ctx) {
+		obj := model.Article{}
+		err = cur.Decode(&obj)
+		if err != nil {
+			return nil, err
+		}
+		articles = append(articles, &obj)
+	}
+	sort.Sort(articles)
+	return articles, nil
 }
 
-// UpdateArticle 更新文章
-func (db *mongodb) UpdateArticle(ctx context.Context, article *model.Article) error {
-	collection := db.Database(mongoDBName).Collection(collectionBlogger)
+// LoadDraftArticles 读取草稿箱
+func (db *mongodb) LoadDraftArticles(ctx context.Context) (model.SortedArticles, error) {
+	collection := db.Database(mongoDBName).Collection(collectionArticle)
 
-	filter := bson.M{"id": article.ID}
-	update := bson.M{"$set": bson.M{
-		"title":      article.Title,
-		"content":    article.Content,
-		"updatetime": article.UpdateTime,
-		"createtime": article.CreateTime,
-	}}
-	_, err := collection.UpdateOne(ctx, filter, update)
-	return err
+	filter := bson.M{"isdraft": true}
+	cur, err := collection.Find(ctx, filter)
+	if err != nil {
+		return nil, err
+	}
+	defer cur.Close(ctx)
+
+	var articles model.SortedArticles
+	for cur.Next(ctx) {
+		obj := model.Article{}
+		err = cur.Decode(&obj)
+		if err != nil {
+			return nil, err
+		}
+		articles = append(articles, &obj)
+	}
+	sort.Sort(articles)
+	return articles, nil
 }
 
 // counter counter
