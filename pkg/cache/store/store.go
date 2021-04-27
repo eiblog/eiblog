@@ -27,14 +27,14 @@ type Store interface {
 	// UpdateAccount 更新账户
 	UpdateAccount(ctx context.Context, name string, fields map[string]interface{}) error
 
-	// InsertSeries 创建专题
-	InsertSeries(ctx context.Context, series *model.Series) error
-	// RemoveSeries 删除专题
-	RemoveSeries(ctx context.Context, id int) error
-	// UpdateSeries 更新专题
-	UpdateSeries(ctx context.Context, id int, fields map[string]interface{}) error
-	// LoadAllSeries 读取所有专题
-	LoadAllSeries(ctx context.Context) (model.SortedSeries, error)
+	// InsertSerie 创建专题
+	InsertSerie(ctx context.Context, series *model.Serie) error
+	// RemoveSerie 删除专题
+	RemoveSerie(ctx context.Context, id int) error
+	// UpdateSerie 更新专题
+	UpdateSerie(ctx context.Context, id int, fields map[string]interface{}) error
+	// LoadAllSerie 读取所有专题
+	LoadAllSerie(ctx context.Context) (model.SortedSeries, error)
 
 	// InsertArticle 创建文章
 	InsertArticle(ctx context.Context, article *model.Article) error

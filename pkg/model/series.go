@@ -3,8 +3,8 @@ package model
 
 import "time"
 
-// Series 专题
-type Series struct {
+// Serie 专题
+type Serie struct {
 	ID        int       `gorm:"column:id;primaryKey" bson:"id"`                    // 自增ID
 	Slug      string    `gorm:"column:slug;not null;uniqueIndex" bson:"slug"`      // 缩略名
 	Name      string    `gorm:"column:name;not null" bson:"name"`                  // 专题名
@@ -15,7 +15,7 @@ type Series struct {
 }
 
 // SortedSeries 排序后专题
-type SortedSeries []*Series
+type SortedSeries []*Serie
 
 // Len 长度
 func (s SortedSeries) Len() int { return len(s) }

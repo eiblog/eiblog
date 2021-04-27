@@ -234,8 +234,8 @@ func (c *Cache) rebuildArticle(article *model.Article, needSort bool) {
 		}
 	}
 	// series
-	for i, series := range c.Series {
-		if series.ID == article.SeriesID {
+	for i, serie := range c.Series {
+		if serie.ID == article.SerieID {
 			c.Series[i].Articles = append(c.Series[i].Articles, article)
 			if needSort {
 				sort.Sort(c.Series[i].Articles)
@@ -291,7 +291,7 @@ func (c *Cache) regeneratePages() {
 		case pageArchive:
 			sort.Sort(c.Archives)
 			buf := bytes.Buffer{}
-			buf.WriteString(c.Blogger.ArchiveSay + "\n")
+			buf.WriteString(c.Blogger.ArchivesSay + "\n")
 			var (
 				currentYear string
 				gt12Month   = len(Ei.Archives) > 12

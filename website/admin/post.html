@@ -35,7 +35,7 @@
                     <section class="typecho-post-option" role="application">
                         <label for="date" class="typecho-label">发布日期</label>
                         <p>
-                            <input class="typecho-date w-100" type="text" name="date" id="date" {{with .Edit}}value="{{dateformat .CreateTime "2006-01-02 15:04"}}"{{end}} />
+                            <input class="typecho-date w-100" type="text" name="date" id="date" {{with .Edit}}value="{{dateformat .CreatedAt "2006-01-02 15:04"}}"{{end}} />
                         </p>
                     </section>
                     <section class="typecho-post-option category-option">

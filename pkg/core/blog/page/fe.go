@@ -101,9 +101,9 @@ func handleArticlePage(c *gin.Context) {
 		} else {
 			params["Days"] = int(time.Now().Sub(article.CreatedAt).Hours()) / 24
 		}
-		if article.SeriesID > 0 {
+		if article.SerieID > 0 {
 			for _, series := range cache.Ei.Series {
-				if series.ID == article.SeriesID {
+				if series.ID == article.SerieID {
 					params["Serie"] = series
 				}
 			}

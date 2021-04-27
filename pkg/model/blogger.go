@@ -9,6 +9,6 @@ type Blogger struct {
 	BTitle    string `gorm:"column:b_title;not null" bson:"b_title"`     // 底部title
 	Copyright string `gorm:"column:copyright;not null" bson:"copyright"` // 版权声明
 
-	SeriesSay  string `gorm:"column:series_say;not null" bson:"series_say"`   // 专题说明
-	ArchiveSay string `gorm:"column:archive_say;not null" bson:"archive_say"` // 归档说明
+	SeriesSay   string `gorm:"column:series_say;not null" bson:"series_say"`     // 专题说明
+	ArchivesSay string `gorm:"column:archives_say;not null" bson:"archives_say"` // 归档说明
 }

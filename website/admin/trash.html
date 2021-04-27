@@ -51,8 +51,8 @@
                                 <td>{{.Title}}</td>
                                 <td>{{.Author}}</td>
                                 <td>{{if gt .SerieID 0}}专题ID:{{.SerieID}}{{else}}--{{end}}</td>
-                                <td>{{dateformat .CreateTime "2006/01/02 15:04"}}</td>
-                                <td>{{dateformat .DeleteTime "2006/01/02 15:04"}}</td>
+                                <td>{{dateformat .CreatedAt "2006/01/02 15:04"}}</td>
+                                <td>{{dateformat .DeletedAt "2006/01/02 15:04"}}</td>
                             </tr>
                             {{end}}
                         </tbody>

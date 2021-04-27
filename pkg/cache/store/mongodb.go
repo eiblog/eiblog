@@ -25,7 +25,7 @@ const (
 	collectionArticle = "article"
 	collectionBlogger = "blogger"
 	collectionCounter = "counter"
-	collectionSeries  = "series"
+	collectionSerie   = "serie"
 
 	counterNameSerie   = "serie"
 	counterNameArticle = "article"
@@ -69,7 +69,7 @@ func (db *mongodb) Init(source string) (Store, error) {
 		Keys:    bson.D{bson.E{Key: "slug", Value: 1}},
 		Options: options.Index().SetUnique(true).SetSparse(true),
 	}
-	db.Database(mongoDBName).Collection(collectionSeries).
+	db.Database(mongoDBName).Collection(collectionSerie).
 		Indexes().
 		CreateOne(context.Background(), indexModel)
 	return db, nil
@@ -149,29 +149,29 @@ func (db *mongodb) UpdateAccount(ctx context.Context, name string,
 	return err
 }
 
-// InsertSeries 创建专题
-func (db *mongodb) InsertSeries(ctx context.Context, series *model.Series) error {
-	collection := db.Database(mongoDBName).Collection(collectionSeries)
+// InsertSerie 创建专题
+func (db *mongodb) InsertSerie(ctx context.Context, serie *model.Serie) error {
+	collection := db.Database(mongoDBName).Collection(collectionSerie)
 
-	series.ID = db.nextValue(ctx, counterNameSerie)
-	_, err := collection.InsertOne(ctx, series)
+	serie.ID = db.nextValue(ctx, counterNameSerie)
+	_, err := collection.InsertOne(ctx, serie)
 	return err
 }
 
-// RemoveSeries 删除专题
-func (db *mongodb) RemoveSeries(ctx context.Context, id int) error {
-	collection := db.Database(mongoDBName).Collection(collectionSeries)
+// RemoveSerie 删除专题
+func (db *mongodb) RemoveSerie(ctx context.Context, id int) error {
+	collection := db.Database(mongoDBName).Collection(collectionSerie)
 
 	filter := bson.M{"id": id}
 	_, err := collection.DeleteOne(ctx, filter)
 	return err
 }
 
-// UpdateSeries 更新专题
-func (db *mongodb) UpdateSeries(ctx context.Context, id int,
+// UpdateSerie 更新专题
+func (db *mongodb) UpdateSerie(ctx context.Context, id int,
 	fields map[string]interface{}) error {
 
-	collection := db.Database(mongoDBName).Collection(collectionSeries)
+	collection := db.Database(mongoDBName).Collection(collectionSerie)
 
 	filter := bson.M{"id": id}
 	params := bson.M{}
@@ -183,9 +183,9 @@ func (db *mongodb) UpdateSeries(ctx context.Context, id int,
 	return err
 }
 
-// LoadAllSeries 查询所有专题
-func (db *mongodb) LoadAllSeries(ctx context.Context) (model.SortedSeries, error) {
-	collection := db.Database(mongoDBName).Collection(collectionSeries)
+// LoadAllSerie 查询所有专题
+func (db *mongodb) LoadAllSerie(ctx context.Context) (model.SortedSeries, error) {
+	collection := db.Database(mongoDBName).Collection(collectionSerie)
 
 	filter := bson.M{}
 	cur, err := collection.Find(ctx, filter)
@@ -196,7 +196,7 @@ func (db *mongodb) LoadAllSeries(ctx context.Context) (model.SortedSeries, error
 
 	var series model.SortedSeries
 	for cur.Next(ctx) {
-		obj := model.Series{}
+		obj := model.Serie{}
 		err = cur.Decode(&obj)
 		if err != nil {
 			return nil, err
