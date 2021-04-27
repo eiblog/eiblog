@@ -26,6 +26,9 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+	generateOpensearch()
+	generateRobots()
+	generateCrossdomain()
 	go timerFeed()
 	go timerSitemap()
 }
@@ -38,29 +41,28 @@ func timerFeed() {
 		return
 	}
 
-	t := time.NewTicker(time.Hour * 4)
-	for now := range t.C {
-		_, _, articles := cache.Ei.PageArticles(1, 20)
-		params := map[string]interface{}{
-			"Titile":    cache.Ei.Blogger.BTitle,
-			"SubTitle":  cache.Ei.Blogger.SubTitle,
-			"Host":      config.Conf.BlogApp.Host,
-			"FeedrURL":  config.Conf.BlogApp.FeedRPC.FeedrURL,
-			"BuildDate": now.Format(time.RFC1123Z),
-			"Articles":  articles,
-		}
-		f, err := os.OpenFile("assets/feed.xml", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
-		if err != nil {
-			logrus.Error("file: timerFeed.OpenFile: ", err)
-			continue
-		}
-		defer f.Close()
-		err = tpl.Execute(f, params)
-		if err != nil {
-			logrus.Error("file: timerFeed.Execute: ", err)
-			continue
-		}
+	now := time.Now()
+	_, _, articles := cache.Ei.PageArticles(1, 20)
+	params := map[string]interface{}{
+		"Titile":    cache.Ei.Blogger.BTitle,
+		"SubTitle":  cache.Ei.Blogger.SubTitle,
+		"Host":      config.Conf.BlogApp.Host,
+		"FeedrURL":  config.Conf.BlogApp.FeedRPC.FeedrURL,
+		"BuildDate": now.Format(time.RFC1123Z),
+		"Articles":  articles,
 	}
+	f, err := os.OpenFile("assets/feed.xml", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
+	if err != nil {
+		logrus.Error("file: timerFeed.OpenFile: ", err)
+		return
+	}
+	defer f.Close()
+	err = tpl.Execute(f, params)
+	if err != nil {
+		logrus.Error("file: timerFeed.Execute: ", err)
+		return
+	}
+	time.AfterFunc(time.Hour*4, timerFeed)
 }
 
 // timerSitemap 定时刷新sitemap
@@ -71,24 +73,22 @@ func timerSitemap() {
 		return
 	}
 
-	t := time.NewTicker(time.Hour * 4)
-	for range t.C {
-		params := map[string]interface{}{
-			"Articles": cache.Ei.Articles,
-			"Host":     config.Conf.BlogApp.Host,
-		}
-		f, err := os.OpenFile("assets/sitemap.xml", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
-		if err != nil {
-			logrus.Error("file: timerSitemap.OpenFile: ", err)
-			continue
-		}
-		defer f.Close()
-		err = tpl.Execute(f, params)
-		if err != nil {
-			logrus.Error("file: timerSitemap.Execute: ", err)
-			continue
-		}
+	params := map[string]interface{}{
+		"Articles": cache.Ei.Articles,
+		"Host":     config.Conf.BlogApp.Host,
 	}
+	f, err := os.OpenFile("assets/sitemap.xml", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
+	if err != nil {
+		logrus.Error("file: timerSitemap.OpenFile: ", err)
+		return
+	}
+	defer f.Close()
+	err = tpl.Execute(f, params)
+	if err != nil {
+		logrus.Error("file: timerSitemap.Execute: ", err)
+		return
+	}
+	time.AfterFunc(time.Hour*24, timerSitemap)
 }
 
 // generateOpensearch 生成opensearch.xml
@@ -103,7 +103,7 @@ func generateOpensearch() {
 		"SubTitle": cache.Ei.Blogger.SubTitle,
 		"Host":     config.Conf.BlogApp.Host,
 	}
-	f, err := os.OpenFile("static/opensearch.xml", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
+	f, err := os.OpenFile("assets/opensearch.xml", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
 		logrus.Error("file: generateOpensearch.OpenFile: ", err)
 		return
@@ -126,7 +126,7 @@ func generateRobots() {
 	params := map[string]string{
 		"Host": config.Conf.BlogApp.Host,
 	}
-	f, err := os.OpenFile("static/robots.txt", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
+	f, err := os.OpenFile("assets/robots.txt", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
 		logrus.Error("file: generateRobots.OpenFile: ", err)
 		return
@@ -149,7 +149,7 @@ func generateCrossdomain() {
 	params := map[string]string{
 		"Host": config.Conf.BlogApp.Host,
 	}
-	f, err := os.OpenFile("static/crossdomain.xml", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
+	f, err := os.OpenFile("assets/crossdomain.xml", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
 		logrus.Error("file: generateCrossdomain.OpenFile: ", err)
 		return

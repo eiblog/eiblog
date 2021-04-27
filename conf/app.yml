@@ -1,7 +1,7 @@
 appname: eiblog
 database:
   driver: mongodb
-  source: localhost:27017
+  source: mongodb://localhost:27017
 eshost: http://localhost:9200
 blogapp:
   mode:
@@ -28,6 +28,7 @@ blogapp:
     shortname: xxxxxx
     publickey: wdSgxRm9rdGAlLKFcFdToBe3GT4SibmV7Y8EjJQ0r4GWXeKtxpopMAeIeoI2dTEg
     accesstoken: 50023908f39f4607957e909b495326af
+    interval: 5 # 获取评论数量间隔h
   google:
     url: https://www.google-analytics.com/collect
     tid: UA-xxxxxx-1

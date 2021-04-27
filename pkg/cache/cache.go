@@ -3,6 +3,7 @@ package cache
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"sort"
 	"strings"
@@ -23,7 +24,7 @@ var (
 	Ei *Cache
 
 	// regenerate pages chan
-	pagesCh     = make(chan string, 1)
+	pagesCh     = make(chan string, 2)
 	pageSeries  = "series-md"
 	pageArchive = "archive-md"
 )
@@ -77,6 +78,79 @@ type Cache struct {
 	ArticlesMap  map[string]*model.Article       // slug:article
 }
 
+// // LoadInsertAccount 读取或创建账户
+// LoadInsertAccount(ctx context.Context, acct *model.Account) (*model.Account, error)
+// // UpdateAccount 更新账户
+// UpdateAccount(ctx context.Context, name string, fields map[string]interface{}) error
+//
+// // LoadInsertBlogger 读取或创建博客
+// LoadInsertBlogger(ctx context.Context, blogger *model.Blogger) (*model.Blogger, error)
+// // UpdateBlogger 更新博客
+// UpdateBlogger(ctx context.Context, fields map[string]interface{}) error
+//
+// // InsertSeries 创建专题
+// InsertSeries(ctx context.Context, series *model.Series) error
+// // RemoveSeries 删除专题
+// RemoveSeries(ctx context.Context, id int) error
+// // UpdateSeries 更新专题
+// UpdateSeries(ctx context.Context, id int, fields map[string]interface{}) error
+// // LoadAllSeries 读取所有专题
+// LoadAllSeries(ctx context.Context) (model.SortedSeries, error)
+//
+// // InsertArticle 创建文章
+// InsertArticle(ctx context.Context, article *model.Article) error
+// // RemoveArticle 硬删除文章
+// RemoveArticle(ctx context.Context, id int) error
+// // DeleteArticle 软删除文章,放入回收箱
+// DeleteArticle(ctx context.Context, id int) error
+// // CleanArticles 清理回收站文章
+// CleanArticles(ctx context.Context) error
+// // UpdateArticle 更新文章
+// UpdateArticle(ctx context.Context, id int, fields map[string]interface{}) error
+// // RecoverArticle 恢复文章到草稿
+// RecoverArticle(ctx context.Context, id int) error
+// // LoadAllArticle 读取所有文章
+// LoadAllArticle(ctx context.Context) (model.SortedArticles, error)
+// // LoadTrashArticles 读取回收箱
+// LoadTrashArticles(ctx context.Context) (model.SortedArticles, error)
+// // LoadDraftArticles 读取草稿箱
+// LoadDraftArticles(ctx context.Context) (model.SortedArticles, error)
+
+// PageArticles 文章翻页
+func (c *Cache) PageArticles(page int, pageSize int) (prev,
+	next int, articles []*model.Article) {
+
+	var l int
+	for l = len(c.Articles); l > 0; l-- {
+		if c.Articles[l-1].ID >= config.Conf.BlogApp.General.StartID {
+			break
+		}
+	}
+	if l == 0 {
+		return 0, 0, nil
+	}
+	m := l / pageSize
+	if d := l % pageSize; d > 0 {
+		m++
+	}
+	if page > m {
+		page = m
+	}
+	if page > 1 {
+		prev = page - 1
+	}
+	if page < m {
+		next = page + 1
+	}
+	s := (page - 1) * pageSize
+	e := page * pageSize
+	if e > l {
+		e = l
+	}
+	articles = c.Articles[s:e]
+	return
+}
+
 // loadBlogger 博客信息
 func (c *Cache) loadBlogger() error {
 	blogapp := config.Conf.BlogApp
@@ -87,7 +161,7 @@ func (c *Cache) loadBlogger() error {
 		BTitle:    blogapp.Blogger.BTitle,
 		Copyright: blogapp.Blogger.Copyright,
 	}
-	blogger, err := c.LoadOrCreateBlogger(blogger)
+	blogger, err := c.LoadInsertBlogger(context.Background(), blogger)
 	if err != nil {
 		return err
 	}
@@ -108,7 +182,7 @@ func (c *Cache) loadAccount() error {
 		PhoneN:   blogapp.Account.PhoneNumber,
 		Address:  blogapp.Account.Address,
 	}
-	account, err := c.LoadOrCreateAccount(account)
+	account, err := c.LoadInsertAccount(context.Background(), account)
 	if err != nil {
 		return err
 	}
@@ -118,7 +192,7 @@ func (c *Cache) loadAccount() error {
 
 // loadArticles 文章信息
 func (c *Cache) loadArticles() error {
-	articles, err := c.LoadAllArticles()
+	articles, err := c.LoadAllArticle(context.Background())
 	if err != nil {
 		return err
 	}
@@ -254,7 +328,7 @@ func (c *Cache) timerClean() {
 	ticker := time.NewTicker(dur * time.Hour)
 
 	for range ticker.C {
-		err := c.CleanArticles()
+		err := c.CleanArticles(context.Background())
 		if err != nil {
 			logrus.Error("cache.timerClean.CleanArticles: ", err)
 		}
@@ -272,39 +346,4 @@ func (c *Cache) timerDisqus() {
 			logrus.Error("cache.timerDisqus.PostsCount: ", err)
 		}
 	}
-}
-
-// PageArticles 文章翻页
-func (c *Cache) PageArticles(page int, pageSize int) (prev,
-	next int, articles []*model.Article) {
-
-	var l int
-	for l = len(c.Articles); l > 0; l-- {
-		if c.Articles[l-1].ID >= config.Conf.BlogApp.General.StartID {
-			break
-		}
-	}
-	if l == 0 {
-		return 0, 0, nil
-	}
-	m := l / pageSize
-	if d := l % pageSize; d > 0 {
-		m++
-	}
-	if page > m {
-		page = m
-	}
-	if page > 1 {
-		prev = page - 1
-	}
-	if page < m {
-		next = page + 1
-	}
-	s := (page - 1) * pageSize
-	e := page * pageSize
-	if e > l {
-		e = l
-	}
-	articles = c.Articles[s:e]
-	return
 }

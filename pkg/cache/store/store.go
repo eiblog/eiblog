@@ -17,15 +17,15 @@ var (
 
 // Store 存储后端
 type Store interface {
-	// LoadInsertAccount 读取或创建账户
-	LoadInsertAccount(ctx context.Context, acct *model.Account) (*model.Account, error)
-	// UpdateAccount 更新账户
-	UpdateAccount(ctx context.Context, name string, fields map[string]interface{}) error
-
 	// LoadInsertBlogger 读取或创建博客
 	LoadInsertBlogger(ctx context.Context, blogger *model.Blogger) (*model.Blogger, error)
 	// UpdateBlogger 更新博客
 	UpdateBlogger(ctx context.Context, fields map[string]interface{}) error
+
+	// LoadInsertAccount 读取或创建账户
+	LoadInsertAccount(ctx context.Context, acct *model.Account) (*model.Account, error)
+	// UpdateAccount 更新账户
+	UpdateAccount(ctx context.Context, name string, fields map[string]interface{}) error
 
 	// InsertSeries 创建专题
 	InsertSeries(ctx context.Context, series *model.Series) error

@@ -155,7 +155,6 @@ func TestDeleteArticle(t *testing.T) {
 	}
 }
 
-// TODO
 func TestCleanArticles(t *testing.T) {
 	err := store.CleanArticles(context.Background())
 	if err != nil {

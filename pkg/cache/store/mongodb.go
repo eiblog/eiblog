@@ -16,6 +16,9 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
+// driver: mongodb
+// source: mongodb://localhost:27017
+
 const (
 	mongoDBName       = "eiblog"
 	collectionAccount = "account"
@@ -50,42 +53,6 @@ func (db *mongodb) Init(source string) (Store, error) {
 	return db, nil
 }
 
-// LoadInsertAccount 读取或创建账户
-func (db *mongodb) LoadInsertAccount(ctx context.Context,
-	acct *model.Account) (*model.Account, error) {
-
-	collection := db.Database(mongoDBName).Collection(collectionAccount)
-
-	filter := bson.M{"username": config.Conf.BlogApp.Account.Username}
-	result := collection.FindOne(ctx, filter)
-	err := result.Err()
-	if err != nil {
-		if err != mongo.ErrNoDocuments {
-			return nil, err
-		}
-		_, err = collection.InsertOne(ctx, acct)
-	} else {
-		err = result.Decode(acct)
-	}
-	return acct, err
-}
-
-// UpdateAccount 更新账户
-func (db *mongodb) UpdateAccount(ctx context.Context, name string,
-	fields map[string]interface{}) error {
-
-	collection := db.Database(mongoDBName).Collection(collectionAccount)
-
-	filter := bson.M{"username": name}
-	params := bson.M{}
-	for k, v := range fields {
-		params[k] = v
-	}
-	update := bson.M{"$set": params}
-	_, err := collection.UpdateOne(ctx, filter, update)
-	return err
-}
-
 // LoadInsertBlogger 读取或创建博客
 func (db *mongodb) LoadInsertBlogger(ctx context.Context,
 	blogger *model.Blogger) (*model.Blogger, error) {
@@ -113,6 +80,42 @@ func (db *mongodb) UpdateBlogger(ctx context.Context,
 	collection := db.Database(mongoDBName).Collection(collectionBlogger)
 
 	filter := bson.M{}
+	params := bson.M{}
+	for k, v := range fields {
+		params[k] = v
+	}
+	update := bson.M{"$set": params}
+	_, err := collection.UpdateOne(ctx, filter, update)
+	return err
+}
+
+// LoadInsertAccount 读取或创建账户
+func (db *mongodb) LoadInsertAccount(ctx context.Context,
+	acct *model.Account) (*model.Account, error) {
+
+	collection := db.Database(mongoDBName).Collection(collectionAccount)
+
+	filter := bson.M{"username": config.Conf.BlogApp.Account.Username}
+	result := collection.FindOne(ctx, filter)
+	err := result.Err()
+	if err != nil {
+		if err != mongo.ErrNoDocuments {
+			return nil, err
+		}
+		_, err = collection.InsertOne(ctx, acct)
+	} else {
+		err = result.Decode(acct)
+	}
+	return acct, err
+}
+
+// UpdateAccount 更新账户
+func (db *mongodb) UpdateAccount(ctx context.Context, name string,
+	fields map[string]interface{}) error {
+
+	collection := db.Database(mongoDBName).Collection(collectionAccount)
+
+	filter := bson.M{"username": name}
 	params := bson.M{}
 	for k, v := range fields {
 		params[k] = v
@@ -222,7 +225,6 @@ func (db *mongodb) CleanArticles(ctx context.Context) error {
 	collection := db.Database(mongoDBName).Collection(collectionArticle)
 
 	exp := time.Now().Add(time.Duration(config.Conf.BlogApp.General.Trash) * time.Hour)
-	fmt.Println(exp)
 	filter := bson.M{"deletetime": bson.M{"$gt": time.Time{}, "$lt": exp}}
 	_, err := collection.DeleteMany(ctx, filter)
 	return err

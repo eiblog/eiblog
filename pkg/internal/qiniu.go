@@ -9,8 +9,8 @@ import (
 
 	"github.com/eiblog/eiblog/pkg/config"
 
-	"github.com/qiniu/api.v7/v7/auth/qbox"
-	"github.com/qiniu/api.v7/v7/storage"
+	"github.com/qiniu/go-sdk/v7/auth/qbox"
+	"github.com/qiniu/go-sdk/v7/storage"
 )
 
 // QiniuUpload 上传文件
