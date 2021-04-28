@@ -64,7 +64,7 @@ func handleHomePage(c *gin.Context) {
 	if err != nil || pn < 1 {
 		pn = 1
 	}
-	params["Prev"], params["Next"], params["List"] = cache.Ei.PageArticles(pn,
+	params["Prev"], params["Next"], params["List"] = cache.Ei.PageArticleFE(pn,
 		config.Conf.BlogApp.General.PageNum)
 
 	renderHTMLHomeLayout(c, "home", params)

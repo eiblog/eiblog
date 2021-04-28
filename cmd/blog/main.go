@@ -49,10 +49,10 @@ func runHTTPServer(endRun chan bool) {
 	root := filepath.Join(config.WorkDir, "assets")
 	e.Static("/static", root)
 
-	// frontend pages
-	page.RegisterRoutes(e)
 	// static files
 	file.RegisterRoutes(e)
+	// frontend pages
+	page.RegisterRoutes(e)
 	// unauthz api
 	admin.RegisterRoutes(e)
 

@@ -233,16 +233,6 @@ func (db *mongodb) RemoveArticle(ctx context.Context, id int) error {
 	return err
 }
 
-// DeleteArticle 软删除文章,放入回收箱
-func (db *mongodb) DeleteArticle(ctx context.Context, id int) error {
-	collection := db.Database(mongoDBName).Collection(collectionArticle)
-
-	filter := bson.M{"id": id}
-	update := bson.M{"$set": bson.M{"deletetime": time.Now()}}
-	_, err := collection.UpdateOne(ctx, filter, update)
-	return err
-}
-
 // CleanArticles 清理回收站文章
 func (db *mongodb) CleanArticles(ctx context.Context) error {
 	collection := db.Database(mongoDBName).Collection(collectionArticle)
@@ -270,16 +260,6 @@ func (db *mongodb) UpdateArticle(ctx context.Context, id int,
 	return err
 }
 
-// RecoverArticle 恢复文章到草稿
-func (db *mongodb) RecoverArticle(ctx context.Context, id int) error {
-	collection := db.Database(mongoDBName).Collection(collectionArticle)
-
-	filter := bson.M{"id": id}
-	update := bson.M{"$set": bson.M{"deletetime": time.Time{}, "isdraft": true}}
-	_, err := collection.UpdateOne(ctx, filter, update)
-	return err
-}
-
 // LoadArticle 查找文章
 func (db *mongodb) LoadArticle(ctx context.Context, id int) (*model.Article, error) {
 	collection := db.Database(mongoDBName).Collection(collectionArticle)
@@ -295,76 +275,55 @@ func (db *mongodb) LoadArticle(ctx context.Context, id int) (*model.Article, err
 	return article, err
 }
 
-// LoadAllArticle 读取所有文章
-func (db *mongodb) LoadAllArticle(ctx context.Context) (model.SortedArticles, error) {
+// LoadArticleList 获取文章列表
+func (db *mongodb) LoadArticleList(ctx context.Context, search SearchArticles) (
+	model.SortedArticles, int, error) {
 	collection := db.Database(mongoDBName).Collection(collectionArticle)
 
-	filter := bson.M{"isdraft": false, "deletetime": bson.M{"$eq": time.Time{}}}
-	cur, err := collection.Find(ctx, filter)
-	if err != nil {
-		return nil, err
+	filter := bson.M{}
+	for k, v := range search.Fields {
+		switch k {
+		case SearchArticleDraft:
+			if ok := v.(bool); ok {
+				filter["is_draft"] = true
+			} else {
+				filter["is_draft"] = false
+				filter["deleted_at"] = bson.M{"$eq": time.Time{}}
+			}
+		case SearchArticleTitle:
+			filter["title"] = bson.M{
+				"$regex":   v.(string),
+				"$options": "$i",
+			}
+		case SearchArticleSerieID:
+			filter["serie_id"] = v.(int)
+		case SearchArticleTrash:
+			filter["deleted_at"] = bson.M{"$nq": time.Time{}}
+		}
 	}
-	defer cur.Close(ctx)
-
+	// search count
+	count, err := collection.CountDocuments(ctx, filter)
+	if err != nil {
+		return nil, 0, err
+	}
+	opts := options.Find().SetLimit(int64(search.Limit)).
+		SetSkip(int64((search.Page - 1) * search.Limit)).
+		SetSort(bson.M{"created_at": -1})
+	cur, err := collection.Find(ctx, filter, opts)
+	if err != nil {
+		return nil, 0, err
+	}
 	var articles model.SortedArticles
 	for cur.Next(ctx) {
 		obj := model.Article{}
 		err = cur.Decode(&obj)
 		if err != nil {
-			return nil, err
+			return nil, 0, err
 		}
 		articles = append(articles, &obj)
 	}
 	sort.Sort(articles)
-	return articles, nil
-}
-
-// LoadTrashArticles 读取回收箱
-func (db *mongodb) LoadTrashArticles(ctx context.Context) (model.SortedArticles, error) {
-	collection := db.Database(mongoDBName).Collection(collectionArticle)
-
-	filter := bson.M{"deletetime": bson.M{"$ne": time.Time{}}}
-	cur, err := collection.Find(ctx, filter)
-	if err != nil {
-		return nil, err
-	}
-	defer cur.Close(ctx)
-
-	var articles model.SortedArticles
-	for cur.Next(ctx) {
-		obj := model.Article{}
-		err = cur.Decode(&obj)
-		if err != nil {
-			return nil, err
-		}
-		articles = append(articles, &obj)
-	}
-	sort.Sort(articles)
-	return articles, nil
-}
-
-// LoadDraftArticles 读取草稿箱
-func (db *mongodb) LoadDraftArticles(ctx context.Context) (model.SortedArticles, error) {
-	collection := db.Database(mongoDBName).Collection(collectionArticle)
-
-	filter := bson.M{"isdraft": true}
-	cur, err := collection.Find(ctx, filter)
-	if err != nil {
-		return nil, err
-	}
-	defer cur.Close(ctx)
-
-	var articles model.SortedArticles
-	for cur.Next(ctx) {
-		obj := model.Article{}
-		err = cur.Decode(&obj)
-		if err != nil {
-			return nil, err
-		}
-		articles = append(articles, &obj)
-	}
-	sort.Sort(articles)
-	return articles, nil
+	return articles, int(count), nil
 }
 
 // counter counter

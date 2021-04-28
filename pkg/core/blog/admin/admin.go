@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/eiblog/eiblog/pkg/cache"
@@ -37,6 +38,18 @@ func RegisterRoutesAuthz(group gin.IRoutes) {
 	group.GET("/draft-delete", handleDraftDelete)
 
 	group.POST("/api/account", handleAPIAccount)
+	group.POST("/api/blog", handleAPIBlogger)
+	group.POST("/api/password", handleAPIPassword)
+	group.POST("/api/post-delete", handleAPIPostDelete)
+	group.POST("/api/post-add", handleAPIPostCreate)
+	group.POST("/api/serie-delete", handleAPISerieDelete)
+	group.POST("/api/serie-add", handleAPISerieCreate)
+	group.POST("/api/serie-sort", handleAPISerieSort)
+	group.POST("/api/draft-delete", handleDraftDelete)
+	group.POST("/api/trash-delete", handleAPITrashDelete)
+	group.POST("/api/trash-recover", handleAPITrashRecover)
+	group.POST("/api/file-upload", handleAPIQiniuUpload)
+	group.POST("/api/file-delete", handleAPIQiniuDelete)
 }
 
 // handleAcctLogin 登录接口
@@ -67,7 +80,7 @@ func handleAcctLogin(c *gin.Context) {
 	c.Redirect(http.StatusFound, "/admin/profile")
 }
 
-// handleDraftDelete 删除草稿
+// handleDraftDelete 删除草稿, 物理删除
 func handleDraftDelete(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("cid"))
 	if err != nil || id < 1 {
@@ -189,7 +202,7 @@ func handleAPIPostDelete(c *gin.Context) {
 		}
 		ids = append(ids, id)
 	}
-	err := cache.Ei.DeleteArticles(ids)
+	err := cache.Ei.DelArticles(ids)
 	if err != nil {
 		logrus.Error("handleAPIPostDelete.DeleteArticles: ", err)
 
@@ -261,7 +274,7 @@ func handleAPIPostCreate(c *gin.Context) {
 	if err != nil || cid < 1 {
 		err = cache.Ei.AddArticle(article)
 		if err != nil {
-			logrus.Error("handleAPIPostCreate.InsertArticle: ", err)
+			logrus.Error("handleAPIPostCreate.AddArticle: ", err)
 			return
 		}
 		if !article.IsDraft {
@@ -289,12 +302,12 @@ func handleAPIPostCreate(c *gin.Context) {
 		artc.UpdatedAt = time.Now()
 	}
 	// 数据库更新
-	err = cache.Ei.UpdateArticle(context.Background(), artc.ID, map[string]interface{}{
+	err = cache.Ei.UpdateArticle(context.Background(), article.ID, map[string]interface{}{
 		"title":      article.Title,
 		"content":    article.Content,
 		"serie_id":   article.SerieID,
-		"tags":       article.Tags,
 		"is_draft":   article.IsDraft,
+		"tags":       article.Tags,
 		"updated_at": article.UpdatedAt,
 		"created_at": article.CreatedAt,
 	})
@@ -303,7 +316,7 @@ func handleAPIPostCreate(c *gin.Context) {
 		return
 	}
 	if !artc.IsDraft {
-		cache.Ei.ReplaceArticle(artc, article)
+		cache.Ei.RepArticle(artc, article)
 		// 异步执行，快
 		go func() {
 			// elastic
@@ -347,6 +360,12 @@ func handleAPISerieDelete(c *gin.Context) {
 		}
 	}
 	responseNotice(c, NoticeSuccess, "删除成功", "")
+}
+
+// handleAPISerieSort 专题排序
+func handleAPISerieSort(c *gin.Context) {
+	v := c.PostFormArray("mid[]")
+	logrus.Debug(v)
 }
 
 // handleAPISerieCreate 添加专题，如果专题有提交 mid 即更新专题
@@ -394,6 +413,92 @@ func handleAPISerieCreate(c *gin.Context) {
 		}
 	}
 	responseNotice(c, NoticeSuccess, "操作成功", "")
+}
+
+// handleAPITrashDelete 删除回收箱, 物理删除
+func handleAPITrashDelete(c *gin.Context) {
+	for _, v := range c.PostFormArray("mid[]") {
+		id, err := strconv.Atoi(v)
+		if err != nil || id < 1 {
+			responseNotice(c, NoticeNotice, "参数错误", "")
+			return
+		}
+		err = cache.Ei.RemoveArticle(context.Background(), id)
+		if err != nil {
+			responseNotice(c, NoticeNotice, err.Error(), "")
+			return
+		}
+	}
+	responseNotice(c, NoticeSuccess, "删除成功", "")
+}
+
+// handleAPITrashRecover 恢复到草稿
+func handleAPITrashRecover(c *gin.Context) {
+	for _, v := range c.PostFormArray("mid[]") {
+		id, err := strconv.Atoi(v)
+		if err != nil || id < 1 {
+			responseNotice(c, NoticeNotice, "参数错误", "")
+			return
+
+		}
+		err = cache.Ei.UpdateArticle(context.Background(), id, map[string]interface{}{
+			"deleted_at": time.Time{},
+			"is_draft":   true,
+		})
+		if err != nil {
+			responseNotice(c, NoticeNotice, err.Error(), "")
+			return
+		}
+	}
+	responseNotice(c, NoticeSuccess, "恢复成功", "")
+}
+
+// handleAPIQiniuUpload 上传文件
+func handleAPIQiniuUpload(c *gin.Context) {
+	type Size interface {
+		Size() int64
+	}
+	file, header, err := c.Request.FormFile("file")
+	if err != nil {
+		logrus.Error("handleAPIQiniuUpload.FormFile: ", err)
+		c.String(http.StatusBadRequest, err.Error())
+		return
+	}
+	s, ok := file.(Size)
+	if !ok {
+		logrus.Error("assert failed")
+		c.String(http.StatusBadRequest, "false")
+		return
+	}
+	filename := strings.ToLower(header.Filename)
+	url, err := internal.QiniuUpload(filename, s.Size(), file)
+	if err != nil {
+		logrus.Error("handleAPIQiniuUpload.QiniuUpload: ", err)
+		c.String(http.StatusBadRequest, err.Error())
+		return
+	}
+	typ := header.Header.Get("Content-Type")
+	c.JSON(http.StatusOK, gin.H{
+		"title":   filename,
+		"isImage": typ[:5] == "image",
+		"url":     url,
+		"bytes":   fmt.Sprintf("%dkb", s.Size()/1000),
+	})
+}
+
+// handleAPIQiniuDelete 删除文件
+func handleAPIQiniuDelete(c *gin.Context) {
+	defer c.String(http.StatusOK, "删掉了吗？鬼知道。。。")
+
+	name := c.PostForm("title")
+	if name == "" {
+		logrus.Error("handleAPIQiniuDelete.PostForm: 参数错误")
+		return
+	}
+	err := internal.QiniuDelete(name)
+	if err != nil {
+		logrus.Error("handleAPIQiniuDelete.QiniuDelete: ", err)
+	}
 }
 
 // parseLocationDate 解析日期

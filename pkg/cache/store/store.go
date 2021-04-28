@@ -15,6 +15,21 @@ var (
 	stores  = make(map[string]Driver)
 )
 
+// search field
+const (
+	SearchArticleDraft   = "draft"
+	SearchArticleTrash   = "trash"
+	SearchArticleTitle   = "title"
+	SearchArticleSerieID = "serieid"
+)
+
+// SearchArticles 搜索字段
+type SearchArticles struct {
+	Page   int                    // 第几页/1
+	Limit  int                    // 每页大小
+	Fields map[string]interface{} // 字段:值
+}
+
 // Store 存储后端
 type Store interface {
 	// LoadInsertBlogger 读取或创建博客
@@ -40,22 +55,14 @@ type Store interface {
 	InsertArticle(ctx context.Context, article *model.Article) error
 	// RemoveArticle 硬删除文章
 	RemoveArticle(ctx context.Context, id int) error
-	// DeleteArticle 软删除文章,放入回收箱
-	DeleteArticle(ctx context.Context, id int) error
 	// CleanArticles 清理回收站文章
 	CleanArticles(ctx context.Context) error
 	// UpdateArticle 更新文章
 	UpdateArticle(ctx context.Context, id int, fields map[string]interface{}) error
-	// RecoverArticle 恢复文章到草稿
-	RecoverArticle(ctx context.Context, id int) error
 	// LoadArticle 查找文章
 	LoadArticle(ctx context.Context, id int) (*model.Article, error)
-	// LoadAllArticle 读取所有文章
-	LoadAllArticle(ctx context.Context) (model.SortedArticles, error)
-	// LoadTrashArticles 读取回收箱
-	LoadTrashArticles(ctx context.Context) (model.SortedArticles, error)
-	// LoadDraftArticles 读取草稿箱
-	LoadDraftArticles(ctx context.Context) (model.SortedArticles, error)
+	// LoadArticleList 查找文章列表
+	LoadArticleList(ctx context.Context, search SearchArticles) (model.SortedArticles, int, error)
 }
 
 // Driver 存储驱动

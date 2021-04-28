@@ -11,6 +11,7 @@ import (
 	"strconv"
 
 	"github.com/eiblog/eiblog/pkg/cache"
+	"github.com/eiblog/eiblog/pkg/cache/store"
 	"github.com/eiblog/eiblog/pkg/config"
 	"github.com/eiblog/eiblog/pkg/core/blog"
 	"github.com/eiblog/eiblog/pkg/model"
@@ -23,7 +24,7 @@ import (
 func baseBEParams(c *gin.Context) gin.H {
 	return gin.H{
 		"Author": cache.Ei.Account.Username,
-		"Qiniu":  config.Conf.BlogApp.Qiniu.Domain,
+		"Qiniu":  config.Conf.BlogApp.Qiniu,
 	}
 }
 
@@ -103,8 +104,8 @@ func handleAdminPosts(c *gin.Context) {
 	params["Serie"] = se
 	params["KW"] = kw
 	var max int
-	// TODO
-	// max, params["List"] = cache.Ei.PageListBack(se, kw, false, false, pg, setting.Conf.General.PageSize)
+	params["List"], max = cache.Ei.PageArticleBE(se, kw, false, false,
+		pg, config.Conf.BlogApp.General.PageSize)
 	if pg < max {
 		vals.Set("page", fmt.Sprint(pg+1))
 		params["Next"] = vals.Encode()
@@ -171,7 +172,12 @@ func handleAdminDraft(c *gin.Context) {
 	params["Manage"] = true
 	params["Path"] = c.Request.URL.Path
 	var err error
-	params["List"], err = cache.Ei.LoadDraftArticles(context.Background())
+	search := store.SearchArticles{
+		Page:   1,
+		Limit:  9999,
+		Fields: map[string]interface{}{store.SearchArticleDraft: true},
+	}
+	params["List"], _, err = cache.Ei.LoadArticleList(context.Background(), search)
 	if err != nil {
 		logrus.Error("handleDraft.LoadDraftArticles: ", err)
 		c.Status(http.StatusBadRequest)
@@ -188,9 +194,14 @@ func handleAdminTrash(c *gin.Context) {
 	params["Manage"] = true
 	params["Path"] = c.Request.URL.Path
 	var err error
-	params["List"], err = cache.Ei.LoadTrashArticles(context.Background())
+	search := store.SearchArticles{
+		Page:   1,
+		Limit:  9999,
+		Fields: map[string]interface{}{store.SearchArticleTrash: true},
+	}
+	params["List"], _, err = cache.Ei.LoadArticleList(context.Background(), search)
 	if err != nil {
-		logrus.Error("handleTrash.LoadTrashArticles: ", err)
+		logrus.Error("handleTrash.LoadArticleList: ", err)
 		c.HTML(http.StatusBadRequest, "backLayout.html", params)
 		return
 	}

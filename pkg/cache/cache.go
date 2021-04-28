@@ -71,8 +71,64 @@ type Cache struct {
 	ArticlesMap  map[string]*model.Article       // slug:article
 }
 
-// PageArticles 文章翻页
-func (c *Cache) PageArticles(page int, pageSize int) (prev,
+// AddArticle 添加文章
+func (c *Cache) AddArticle(article *model.Article) error {
+	c.lock.Lock()
+	defer c.lock.Unlock()
+
+	// store
+	err := c.InsertArticle(context.Background(), article)
+	if err != nil {
+		return err
+	}
+	// 是否是草稿
+	if article.IsDraft {
+		return nil
+	}
+	// 正式发布文章
+	c.refreshCache(article, false)
+	return nil
+}
+
+// RepArticle 替换文章
+func (c *Cache) RepArticle(oldArticle, newArticle *model.Article) {
+	c.lock.Lock()
+	defer c.lock.Unlock()
+
+	c.ArticlesMap[newArticle.Slug] = newArticle
+	render.GenerateExcerptMarkdown(newArticle)
+	if newArticle.ID < config.Conf.BlogApp.General.StartID {
+		return
+	}
+	if oldArticle != nil { // 移除旧文章
+		c.refreshCache(oldArticle, true)
+	}
+	c.refreshCache(newArticle, false)
+}
+
+// DelArticles 删除文章
+func (c *Cache) DelArticles(ids []int) error {
+	c.lock.Lock()
+	defer c.lock.Unlock()
+
+	for _, id := range ids {
+		article, _ := c.FindArticleByID(id)
+
+		// set delete
+		err := c.UpdateArticle(context.Background(), id, map[string]interface{}{
+			"deleted_at": time.Now(),
+		})
+		if err != nil {
+			return err
+		}
+		// drop from tags,series,archives
+		c.refreshCache(article, true)
+	}
+	return nil
+}
+
+// PageArticleFE 文章翻页
+func (c *Cache) PageArticleFE(page int, pageSize int) (prev,
 	next int, articles []*model.Article) {
 
 	var l int
@@ -106,114 +162,37 @@ func (c *Cache) PageArticles(page int, pageSize int) (prev,
 	return
 }
 
-// PageArticlesBE 后台文章分页
-// func (c *Cache) PageArticleBE(se int, kw string, draft, del bool, p, n int)(max int, artcs []*model.Article){
-//
-// }
+// PageArticleBE 后台文章分页
+func (c *Cache) PageArticleBE(se int, kw string, draft, del bool, p,
+	n int) ([]*model.Article, int) {
 
-// DeleteArticles 删除文章
-func (c *Cache) DeleteArticles(ids []int) error {
-	c.lock.Lock()
-	defer c.lock.Unlock()
-
-	for _, id := range ids {
-		article, idx := c.FindArticleByID(id)
-		// drop from linkedList
-		if article.Prev == nil && article.Next != nil {
-			article.Next.Prev = nil
-		} else if article.Prev != nil && article.Next == nil {
-			article.Prev.Next = nil
-		} else if article.Prev != nil && article.Next != nil {
-			article.Prev.Next = article.Next
-			article.Next.Prev = article.Prev
-		}
-		// drop from articles
-		c.Articles = append(c.Articles[:idx], c.Articles[idx+1:]...)
-		delete(c.ArticlesMap, article.Slug)
-		// set delete
-		err := c.UpdateArticle(context.Background(), id, map[string]interface{}{
-			"deletetime": time.Now(),
-		})
-		if err != nil {
-			return err
-		}
-		// drop from tags,series,archives
-		c.redelArticle(article)
+	search := store.SearchArticles{
+		Page:   p,
+		Limit:  n,
+		Fields: make(map[string]interface{}),
 	}
-	return nil
-}
-
-// AddArticle 添加文章
-func (c *Cache) AddArticle(article *model.Article) error {
-	err := c.InsertArticle(context.Background(), article)
+	if draft {
+		search.Fields[store.SearchArticleDraft] = true
+	} else if del {
+		search.Fields[store.SearchArticleTrash] = true
+	} else {
+		search.Fields[store.SearchArticleDraft] = false
+		if se > 0 {
+			search.Fields[store.SearchArticleSerieID] = se
+		}
+		if kw != "" {
+			search.Fields[store.SearchArticleTitle] = kw
+		}
+	}
+	articles, count, err := c.LoadArticleList(context.Background(), search)
 	if err != nil {
-		return err
+		return nil, 0
 	}
-	// 正式发布文章
-	if !article.IsDraft {
-		defer render.GenerateExcerptMarkdown(article)
-
-		c.ArticlesMap[article.Slug] = article
-		c.Articles = append([]*model.Article{article}, c.Articles...)
-		sort.Sort(c.Articles)
-
-		article, idx := c.FindArticleByID(article.ID)
-		if idx == 0 && c.Articles[idx+1].ID >=
-			config.Conf.BlogApp.General.StartID {
-			article.Next = c.Articles[idx+1]
-			c.Articles[idx+1].Prev = article
-		} else if idx > 0 && c.Articles[idx-1].ID >=
-			config.Conf.BlogApp.General.StartID {
-			article.Prev = c.Articles[idx-1]
-			if c.Articles[idx-1].Next != nil {
-				article.Next = c.Articles[idx-1].Next
-				c.Articles[idx-1].Next.Prev = article
-			}
-			c.Articles[idx-1].Next = article
-		}
-		c.readdArticle(article, true)
+	max := count / n
+	if max%n > 0 {
+		max++
 	}
-	return nil
-}
-
-// ReplaceArticle 替换文章
-func (c *Cache) ReplaceArticle(oldArticle, newArticle *model.Article) {
-	c.ArticlesMap[newArticle.Slug] = newArticle
-	render.GenerateExcerptMarkdown(newArticle)
-	if newArticle.ID < config.Conf.BlogApp.General.StartID {
-		return
-	}
-	if oldArticle != nil {
-		article, idx := c.FindArticleByID(oldArticle.ID)
-		if article.Prev == nil && article.Next != nil {
-			article.Next.Prev = nil
-		} else if article.Prev != nil && article.Next == nil {
-			article.Prev.Next = nil
-		} else if article.Prev != nil && article.Next != nil {
-			article.Prev.Next = article.Next
-			article.Next.Prev = article.Prev
-		}
-		c.Articles = append(Ei.Articles[:idx], Ei.Articles[idx+1:]...)
-
-		c.redelArticle(article)
-	}
-
-	c.Articles = append(c.Articles, newArticle)
-	sort.Sort(c.Articles)
-	_, idx := c.FindArticleByID(newArticle.ID)
-	if idx == 0 && c.Articles[idx+1].ID >= config.Conf.BlogApp.General.StartID {
-		newArticle.Next = c.Articles[idx+1]
-		c.Articles[idx+1].Prev = newArticle
-	} else if idx > 0 && c.Articles[idx-1].ID >=
-		config.Conf.BlogApp.General.StartID {
-		newArticle.Prev = Ei.Articles[idx-1]
-		if c.Articles[idx-1].Next != nil {
-			newArticle.Next = Ei.Articles[idx-1].Next
-			c.Articles[idx-1].Next.Prev = newArticle
-		}
-		c.Articles[idx-1].Next = newArticle
-	}
-	c.readdArticle(newArticle, true)
+	return articles, max
 }
 
 // FindArticleByID 通过ID查找文章
@@ -226,86 +205,59 @@ func (c *Cache) FindArticleByID(id int) (*model.Article, int) {
 	return nil, -1
 }
 
-// loadOrInit 读取数据或初始化
-func (c *Cache) loadOrInit() error {
-	blogapp := config.Conf.BlogApp
-	// blogger
-	blogger := &model.Blogger{
-		BlogName:  strings.Title(blogapp.Account.Username),
-		SubTitle:  "Rome was not built in one day.",
-		BeiAn:     "蜀ICP备xxxxxxxx号-1",
-		BTitle:    fmt.Sprintf("%s's Blog", strings.Title(blogapp.Account.Username)),
-		Copyright: `本站使用「<a href="//creativecommons.org/licenses/by/4.0/">署名 4.0 国际</a>」创作共享协议，转载请注明作者及原网址。`,
-	}
-	created, err := c.LoadInsertBlogger(context.Background(), blogger)
-	if err != nil {
-		return err
-	}
-	c.Blogger = blogger
-	if created { // init articles: about blogroll
-		about := &model.Article{
-			ID:     1, // 固定ID
-			Author: blogapp.Account.Username,
-			Title:  "关于",
-			Slug:   "about",
-		}
-		err = c.InsertArticle(context.Background(), about)
-		if err != nil {
-			return err
-		}
-		// 推送到 disqus
-		go internal.ThreadCreate(about, blogger.BTitle)
-		blogroll := &model.Article{
-			ID:     2, // 固定ID
-			Author: blogapp.Account.Username,
-			Title:  "友情链接",
-			Slug:   "blogroll",
-		}
-		err = c.InsertArticle(context.Background(), blogroll)
-		if err != nil {
-			return err
-		}
-	}
-	// account
-	pwd := tools.EncryptPasswd(blogapp.Account.Password,
-		blogapp.Account.Password)
+// refreshCache 刷新缓存
+func (c *Cache) refreshCache(article *model.Article, del bool) {
+	if del {
+		_, idx := c.FindArticleByID(article.ID)
 
-	account := &model.Account{
-		Username: blogapp.Account.Username,
-		Password: pwd,
+		delete(c.ArticlesMap, article.Slug)
+		c.Articles = append(Ei.Articles[:idx], Ei.Articles[idx+1:]...)
+		// 从链表移除
+		c.recalcLinkedList(article, true)
+		// 从tag、serie、archive移除
+		c.redelArticle(article)
 	}
-	_, err = c.LoadInsertAccount(context.Background(), account)
-	if err != nil {
-		return err
-	}
-	c.Account = account
-	// all articles
-	articles, err := c.LoadAllArticle(context.Background())
-	if err != nil {
-		return err
-	}
-	for i, v := range articles {
-		// 渲染页面
-		render.GenerateExcerptMarkdown(v)
+	// 添加文章
+	defer render.GenerateExcerptMarkdown(article)
 
-		c.ArticlesMap[v.Slug] = v
-		// 分析文章
-		if v.ID < blogapp.General.StartID {
-			continue
+	c.ArticlesMap[article.Slug] = article
+	c.Articles = append([]*model.Article{article}, c.Articles...)
+	sort.Sort(c.Articles)
+	// 从链表添加
+	c.recalcLinkedList(article, false)
+	// 从tag、serie、archive添加
+	c.readdArticle(article, true)
+}
+
+// recalcLinkedList 重算文章链表
+func (c *Cache) recalcLinkedList(article *model.Article, del bool) {
+	// 删除操作
+	if del {
+		if article.Prev == nil && article.Next != nil {
+			article.Next.Prev = nil
+		} else if article.Prev != nil && article.Next == nil {
+			article.Prev.Next = nil
+		} else if article.Prev != nil && article.Next != nil {
+			article.Prev.Next = article.Next
+			article.Next.Prev = article.Prev
 		}
-		if i > 0 {
-			v.Prev = Ei.Articles[i-1]
-		}
-		if Ei.Articles[i+1].ID >= blogapp.General.StartID {
-			v.Next = Ei.Articles[i+1]
-		}
-		c.readdArticle(v, false)
+		return
 	}
-	Ei.Articles = articles
-	// 重建专题与归档
-	PagesCh <- PageSeries
-	PagesCh <- PageArchive
-	return nil
+	// 添加操作
+	_, idx := c.FindArticleByID(article.ID)
+	if idx == 0 && c.Articles[idx+1].ID >=
+		config.Conf.BlogApp.General.StartID {
+		article.Next = c.Articles[idx+1]
+		c.Articles[idx+1].Prev = article
+	} else if idx > 0 && c.Articles[idx-1].ID >=
+		config.Conf.BlogApp.General.StartID {
+		article.Prev = c.Articles[idx-1]
+		if c.Articles[idx-1].Next != nil {
+			article.Next = c.Articles[idx-1].Next
+			c.Articles[idx-1].Next.Prev = article
+		}
+		c.Articles[idx-1].Next = article
+	}
 }
 
 // readdArticle 添加文章到tag、series、archive
@@ -394,6 +346,97 @@ func (c *Cache) redelArticle(article *model.Article) {
 			}
 		}
 	}
+}
+
+// loadOrInit 读取数据或初始化
+func (c *Cache) loadOrInit() error {
+	blogapp := config.Conf.BlogApp
+	// blogger
+	blogger := &model.Blogger{
+		BlogName:  strings.Title(blogapp.Account.Username),
+		SubTitle:  "Rome was not built in one day.",
+		BeiAn:     "蜀ICP备xxxxxxxx号-1",
+		BTitle:    fmt.Sprintf("%s's Blog", strings.Title(blogapp.Account.Username)),
+		Copyright: `本站使用「<a href="//creativecommons.org/licenses/by/4.0/">署名 4.0 国际</a>」创作共享协议，转载请注明作者及原网址。`,
+	}
+	created, err := c.LoadInsertBlogger(context.Background(), blogger)
+	if err != nil {
+		return err
+	}
+	c.Blogger = blogger
+	if created { // init articles: about blogroll
+		about := &model.Article{
+			ID:        1, // 固定ID
+			Author:    blogapp.Account.Username,
+			Title:     "关于",
+			Slug:      "about",
+			UpdatedAt: time.Now(),
+			CreatedAt: time.Now(),
+		}
+		err = c.InsertArticle(context.Background(), about)
+		if err != nil {
+			return err
+		}
+		// 推送到 disqus
+		go internal.ThreadCreate(about, blogger.BTitle)
+		blogroll := &model.Article{
+			ID:        2, // 固定ID
+			Author:    blogapp.Account.Username,
+			Title:     "友情链接",
+			Slug:      "blogroll",
+			UpdatedAt: time.Now(),
+			CreatedAt: time.Now(),
+		}
+		err = c.InsertArticle(context.Background(), blogroll)
+		if err != nil {
+			return err
+		}
+	}
+	// account
+	pwd := tools.EncryptPasswd(blogapp.Account.Password,
+		blogapp.Account.Password)
+
+	account := &model.Account{
+		Username: blogapp.Account.Username,
+		Password: pwd,
+	}
+	_, err = c.LoadInsertAccount(context.Background(), account)
+	if err != nil {
+		return err
+	}
+	c.Account = account
+	// all articles
+	search := store.SearchArticles{
+		Page:   1,
+		Limit:  9999,
+		Fields: map[string]interface{}{store.SearchArticleDraft: false},
+	}
+	articles, _, err := c.LoadArticleList(context.Background(), search)
+	if err != nil {
+		return err
+	}
+	for i, v := range articles {
+		// 渲染页面
+		render.GenerateExcerptMarkdown(v)
+
+		c.ArticlesMap[v.Slug] = v
+		// 分析文章
+		if v.ID < blogapp.General.StartID {
+			continue
+		}
+		if i > 0 {
+			v.Prev = Ei.Articles[i-1]
+		}
+		if Ei.Articles[i+1].ID >= blogapp.General.StartID {
+			v.Next = Ei.Articles[i+1]
+		}
+		c.readdArticle(v, false)
+	}
+	Ei.Articles = articles
+	// 重建专题与归档
+	PagesCh <- PageSeries
+	PagesCh <- PageArchive
+	return nil
 }
 
 // regeneratePages 重新生成series,archive页面
