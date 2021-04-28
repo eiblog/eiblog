@@ -298,7 +298,7 @@ func (db *mongodb) LoadArticleList(ctx context.Context, search SearchArticles) (
 		case SearchArticleSerieID:
 			filter["serie_id"] = v.(int)
 		case SearchArticleTrash:
-			filter["deleted_at"] = bson.M{"$nq": time.Time{}}
+			filter["deleted_at"] = bson.M{"$ne": time.Time{}}
 		}
 	}
 	// search count

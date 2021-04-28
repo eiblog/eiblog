@@ -35,8 +35,6 @@ func RegisterRoutes(e *gin.Engine) {
 
 // RegisterRoutesAuthz register routes
 func RegisterRoutesAuthz(group gin.IRoutes) {
-	group.GET("/draft-delete", handleDraftDelete)
-
 	group.POST("/api/account", handleAPIAccount)
 	group.POST("/api/blog", handleAPIBlogger)
 	group.POST("/api/password", handleAPIPassword)
@@ -80,49 +78,6 @@ func handleAcctLogin(c *gin.Context) {
 	c.Redirect(http.StatusFound, "/admin/profile")
 }
 
-// handleDraftDelete 删除草稿, 物理删除
-func handleDraftDelete(c *gin.Context) {
-	id, err := strconv.Atoi(c.Query("cid"))
-	if err != nil || id < 1 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "参数错误"})
-		return
-	}
-	err = cache.Ei.RemoveArticle(context.Background(), id)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "删除错误"})
-		return
-	}
-	c.Redirect(http.StatusFound, "/admin/write-post")
-}
-
-// handleAPIAccount 更新账户信息
-func handleAPIAccount(c *gin.Context) {
-	e := c.PostForm("email")
-	pn := c.PostForm("phoneNumber")
-	ad := c.PostForm("address")
-	if (e != "" && !tools.ValidateEmail(e)) || (pn != "" &&
-		!tools.ValidatePhoneNo(pn)) {
-		responseNotice(c, NoticeNotice, "参数错误", "")
-		return
-	}
-
-	err := cache.Ei.UpdateAccount(context.Background(), cache.Ei.Account.Username,
-		map[string]interface{}{
-			"email":   e,
-			"phone_n": pn,
-			"address": ad,
-		})
-	if err != nil {
-		logrus.Error("handleAPIAccount.UpdateAccount: ", err)
-		responseNotice(c, NoticeNotice, err.Error(), "")
-		return
-	}
-	cache.Ei.Account.Email = e
-	cache.Ei.Account.PhoneN = pn
-	cache.Ei.Account.Address = ad
-	responseNotice(c, NoticeSuccess, "更新成功", "")
-}
-
 // handleAPIBlogger 更新博客信息
 func handleAPIBlogger(c *gin.Context) {
 	bn := c.PostForm("blogName")
@@ -159,6 +114,34 @@ func handleAPIBlogger(c *gin.Context) {
 	responseNotice(c, NoticeSuccess, "更新成功", "")
 }
 
+// handleAPIAccount 更新账户信息
+func handleAPIAccount(c *gin.Context) {
+	e := c.PostForm("email")
+	pn := c.PostForm("phoneNumber")
+	ad := c.PostForm("address")
+	if (e != "" && !tools.ValidateEmail(e)) || (pn != "" &&
+		!tools.ValidatePhoneNo(pn)) {
+		responseNotice(c, NoticeNotice, "参数错误", "")
+		return
+	}
+
+	err := cache.Ei.UpdateAccount(context.Background(), cache.Ei.Account.Username,
+		map[string]interface{}{
+			"email":   e,
+			"phone_n": pn,
+			"address": ad,
+		})
+	if err != nil {
+		logrus.Error("handleAPIAccount.UpdateAccount: ", err)
+		responseNotice(c, NoticeNotice, err.Error(), "")
+		return
+	}
+	cache.Ei.Account.Email = e
+	cache.Ei.Account.PhoneN = pn
+	cache.Ei.Account.Address = ad
+	responseNotice(c, NoticeSuccess, "更新成功", "")
+}
+
 // handleAPIPassword 更新密码
 func handleAPIPassword(c *gin.Context) {
 	od := c.PostForm("old")
@@ -191,6 +174,24 @@ func handleAPIPassword(c *gin.Context) {
 	responseNotice(c, NoticeSuccess, "更新成功", "")
 }
 
+// handleDraftDelete 删除草稿, 物理删除
+func handleDraftDelete(c *gin.Context) {
+	for _, v := range c.PostFormArray("mid[]") {
+		id, err := strconv.Atoi(v)
+		if err != nil || id < 1 {
+			responseNotice(c, NoticeNotice, "参数错误", "")
+			return
+		}
+		err = cache.Ei.RemoveArticle(context.Background(), id)
+		if err != nil {
+			logrus.Error("handleDraftDelete.RemoveArticle: ", err)
+			responseNotice(c, NoticeNotice, "删除失败", "")
+			return
+		}
+	}
+	responseNotice(c, NoticeSuccess, "删除成功", "")
+}
+
 // handleAPIPostDelete 删除文章，移入回收箱
 func handleAPIPostDelete(c *gin.Context) {
 	var ids []int
@@ -200,17 +201,17 @@ func handleAPIPostDelete(c *gin.Context) {
 			responseNotice(c, NoticeNotice, "参数错误", "")
 			return
 		}
+		err = cache.Ei.DelArticle(id)
+		if err != nil {
+			logrus.Error("handleAPIPostDelete.DeleteArticles: ", err)
+
+			responseNotice(c, NoticeNotice, err.Error(), "")
+			return
+		}
 		ids = append(ids, id)
 	}
-	err := cache.Ei.DelArticles(ids)
-	if err != nil {
-		logrus.Error("handleAPIPostDelete.DeleteArticles: ", err)
-
-		responseNotice(c, NoticeNotice, err.Error(), "")
-		return
-	}
 	// elasticsearch
-	err = internal.ElasticDelIndex(ids)
+	err := internal.ElasticDelIndex(ids)
 	if err != nil {
 		logrus.Error("handleAPIPostDelete.ElasticDelIndex: ", err)
 	}
@@ -343,24 +344,10 @@ func handleAPISerieDelete(c *gin.Context) {
 			responseNotice(c, NoticeNotice, err.Error(), "")
 			return
 		}
-		for i, serie := range cache.Ei.Series {
-			if serie.ID == id {
-				if len(serie.Articles) > 0 {
-					logrus.Error("handleAPISerieDelete.failed: ")
-					responseNotice(c, NoticeNotice, "请删除该专题下的所有文章", "")
-					return
-				}
-				err = cache.Ei.RemoveSerie(context.Background(), id)
-				if err != nil {
-					logrus.Error("handleAPISerieDelete.RemoveSerie: ")
-					responseNotice(c, NoticeNotice, err.Error(), "")
-					return
-				}
-				cache.Ei.Series[i] = nil
-				cache.Ei.Series = append(cache.Ei.Series[:i], cache.Ei.Series[i+1:]...)
-				cache.PagesCh <- cache.PageSeries
-				break
-			}
+		err = cache.Ei.DelSerie(id)
+		if err != nil {
+			responseNotice(c, NoticeNotice, err.Error(), "")
+			return
 		}
 	}
 	responseNotice(c, NoticeSuccess, "删除成功", "")
@@ -404,11 +391,15 @@ func handleAPISerieCreate(c *gin.Context) {
 			responseNotice(c, NoticeNotice, err.Error(), "")
 			return
 		}
+		serie.Slug = slug
+		serie.Name = name
+		serie.Desc = desc
 	} else {
-		err = cache.Ei.InsertSerie(context.Background(), &model.Serie{
-			Slug: slug,
-			Name: name,
-			Desc: desc,
+		err = cache.Ei.AddSerie(&model.Serie{
+			Slug:      slug,
+			Name:      name,
+			Desc:      desc,
+			CreatedAt: time.Now(),
 		})
 		if err != nil {
 			logrus.Error("handleAPISerieCreate.InsertSerie: ", err)

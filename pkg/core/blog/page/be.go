@@ -14,10 +14,9 @@ import (
 	"github.com/eiblog/eiblog/pkg/cache/store"
 	"github.com/eiblog/eiblog/pkg/config"
 	"github.com/eiblog/eiblog/pkg/core/blog"
-	"github.com/eiblog/eiblog/pkg/model"
-	"github.com/sirupsen/logrus"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 // baseBEParams 基础参数
@@ -140,11 +139,10 @@ func handleAdminSerie(c *gin.Context) {
 	id, err := strconv.Atoi(c.Query("mid"))
 	params["Title"] = "新增专题 | " + cache.Ei.Blogger.BTitle
 	if err == nil && id > 0 {
-		var serie *model.Serie
 		for _, v := range cache.Ei.Series {
 			if v.ID == id {
 				params["Title"] = "编辑专题 | " + cache.Ei.Blogger.BTitle
-				params["Edit"] = serie
+				params["Edit"] = v
 				break
 			}
 		}
@@ -162,6 +160,21 @@ func handleAdminTags(c *gin.Context) {
 	params["Path"] = c.Request.URL.Path
 	params["List"] = cache.Ei.TagArticles
 	renderHTMLAdminLayout(c, "admin-tags", params)
+}
+
+// handleDraftDelete 编辑页删除草稿
+func handleDraftDelete(c *gin.Context) {
+	id, err := strconv.Atoi(c.Query("cid"))
+	if err != nil || id < 1 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "参数错误"})
+		return
+	}
+	err = cache.Ei.RemoveArticle(context.Background(), id)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "删除错误"})
+		return
+	}
+	c.Redirect(http.StatusFound, "/admin/write-post")
 }
 
 // handleAdminDraft 草稿箱页
@@ -202,8 +215,6 @@ func handleAdminTrash(c *gin.Context) {
 	params["List"], _, err = cache.Ei.LoadArticleList(context.Background(), search)
 	if err != nil {
 		logrus.Error("handleTrash.LoadArticleList: ", err)
-		c.HTML(http.StatusBadRequest, "backLayout.html", params)
-		return
 	}
 	renderHTMLAdminLayout(c, "admin-trash", params)
 }

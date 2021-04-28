@@ -54,6 +54,7 @@ func RegisterRoutesAuthz(group gin.IRoutes) {
 	group.GET("/profile", handleAdminProfile)
 	// write
 	group.GET("/write-post", handleAdminPost)
+	group.GET("/draft-delete", handleDraftDelete)
 	// manage
 	group.GET("/manage-posts", handleAdminPosts)
 	group.GET("/manage-series", handleAdminSeries)

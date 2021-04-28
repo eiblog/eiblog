@@ -4,6 +4,7 @@ package cache
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"sort"
 	"strings"
@@ -106,23 +107,60 @@ func (c *Cache) RepArticle(oldArticle, newArticle *model.Article) {
 	c.refreshCache(newArticle, false)
 }
 
-// DelArticles 删除文章
-func (c *Cache) DelArticles(ids []int) error {
+// DelArticle 删除文章
+func (c *Cache) DelArticle(id int) error {
 	c.lock.Lock()
 	defer c.lock.Unlock()
 
-	for _, id := range ids {
-		article, _ := c.FindArticleByID(id)
+	article, _ := c.FindArticleByID(id)
+	if article == nil {
+		return nil
+	}
+	// set delete
+	err := c.UpdateArticle(context.Background(), id, map[string]interface{}{
+		"deleted_at": time.Now(),
+	})
+	if err != nil {
+		return err
+	}
+	// drop from tags,series,archives
+	c.refreshCache(article, true)
+	return nil
+}
 
-		// set delete
-		err := c.UpdateArticle(context.Background(), id, map[string]interface{}{
-			"deleted_at": time.Now(),
-		})
-		if err != nil {
-			return err
+// AddSerie 添加专题
+func (c *Cache) AddSerie(serie *model.Serie) error {
+	c.lock.Lock()
+	defer c.lock.Unlock()
+
+	err := c.InsertSerie(context.Background(), serie)
+	if err != nil {
+		return err
+	}
+	c.Series = append(c.Series, serie)
+	PagesCh <- PageSeries
+	return nil
+}
+
+// DelSerie 删除专题
+func (c *Cache) DelSerie(id int) error {
+	c.lock.Lock()
+	defer c.lock.Unlock()
+
+	for i, serie := range c.Series {
+		if serie.ID == id {
+			if len(serie.Articles) > 0 {
+				return errors.New("请删除该专题下的所有文章")
+			}
+			err := c.RemoveSerie(context.Background(), id)
+			if err != nil {
+				return err
+			}
+			c.Series[i] = nil
+			c.Series = append(c.Series[:i], c.Series[i+1:]...)
+			PagesCh <- PageSeries
+			break
 		}
-		// drop from tags,series,archives
-		c.refreshCache(article, true)
 	}
 	return nil
 }
@@ -403,6 +441,12 @@ func (c *Cache) loadOrInit() error {
 		return err
 	}
 	c.Account = account
+	// series
+	series, err := c.LoadAllSerie(context.Background())
+	if err != nil {
+		return err
+	}
+	c.Series = series
 	// all articles
 	search := store.SearchArticles{
 		Page:   1,
@@ -423,10 +467,10 @@ func (c *Cache) loadOrInit() error {
 			continue
 		}
 		if i > 0 {
-			v.Prev = Ei.Articles[i-1]
+			v.Prev = articles[i-1]
 		}
-		if Ei.Articles[i+1].ID >= blogapp.General.StartID {
-			v.Next = Ei.Articles[i+1]
+		if articles[i+1].ID >= blogapp.General.StartID {
+			v.Next = articles[i+1]
 		}
 		c.readdArticle(v, false)
 	}
