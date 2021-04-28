@@ -111,13 +111,12 @@ func ElasticAddIndex(article *model.Article) error {
 		return err
 	}
 
-	tags := strings.Split(article.Tags, ",")
 	img := tools.PickFirstImage(article.Content)
 	mapping := map[string]interface{}{
 		"title":   article.Title,
 		"content": tools.IgnoreHtmlTag(article.Content),
 		"slug":    article.Slug,
-		"tag":     tags,
+		"tag":     article.Tags,
 		"img":     img,
 		"date":    article.CreatedAt,
 	}

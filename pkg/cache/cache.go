@@ -263,8 +263,7 @@ func (c *Cache) recalcLinkedList(article *model.Article, del bool) {
 // readdArticle 添加文章到tag、series、archive
 func (c *Cache) readdArticle(article *model.Article, needSort bool) {
 	// tag
-	tags := strings.Split(article.Tags, ",")
-	for _, tag := range tags {
+	for _, tag := range article.Tags {
 		c.TagArticles[tag] = append(c.TagArticles[tag], article)
 		if needSort {
 			sort.Sort(c.TagArticles[tag])
@@ -305,8 +304,7 @@ func (c *Cache) readdArticle(article *model.Article, needSort bool) {
 // redelArticle 从tag、series、archive删除文章
 func (c *Cache) redelArticle(article *model.Article) {
 	// tag
-	tags := strings.Split(article.Tags, ",")
-	for _, tag := range tags {
+	for _, tag := range article.Tags {
 		for i, v := range c.TagArticles[tag] {
 			if v == article {
 				c.TagArticles[tag] = append(c.TagArticles[tag][0:i], c.TagArticles[tag][i+1:]...)

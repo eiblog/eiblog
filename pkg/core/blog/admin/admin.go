@@ -258,6 +258,10 @@ func handleAPIPostCreate(c *gin.Context) {
 		err = errors.New("参数错误")
 		return
 	}
+	var tags []string
+	if tag != "" {
+		tags = strings.Split(tag, ",")
+	}
 	serieid, _ := strconv.Atoi(serie)
 	article := &model.Article{
 		Title:     title,
@@ -266,7 +270,7 @@ func handleAPIPostCreate(c *gin.Context) {
 		IsDraft:   do != "publish",
 		Author:    cache.Ei.Account.Username,
 		SerieID:   serieid,
-		Tags:      tag,
+		Tags:      tags,
 		CreatedAt: date,
 	}
 	cid, err = strconv.Atoi(c.PostForm("cid"))
