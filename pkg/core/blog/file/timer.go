@@ -44,7 +44,7 @@ func timerFeed() {
 	now := time.Now()
 	_, _, articles := cache.Ei.PageArticleFE(1, 20)
 	params := map[string]interface{}{
-		"Titile":    cache.Ei.Blogger.BTitle,
+		"Title":     cache.Ei.Blogger.BTitle,
 		"SubTitle":  cache.Ei.Blogger.SubTitle,
 		"Host":      config.Conf.BlogApp.Host,
 		"FeedrURL":  config.Conf.BlogApp.FeedRPC.FeedrURL,
