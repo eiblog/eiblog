@@ -8,7 +8,6 @@ import (
 	"github.com/eiblog/eiblog/pkg/config"
 	"github.com/eiblog/eiblog/tools"
 
-	"github.com/eiblog/utils/tmpl"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,7 +15,7 @@ import (
 var htmlTmpl *template.Template
 
 func init() {
-	htmlTmpl = template.New("eiblog").Funcs(tmpl.TplFuncMap)
+	htmlTmpl = template.New("eiblog").Funcs(tools.TplFuncMap)
 	root := filepath.Join(config.WorkDir, "website")
 	files := tools.ReadDirFiles(root, func(name string) bool {
 		if name == ".DS_Store" {

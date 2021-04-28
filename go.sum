@@ -24,8 +24,6 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/eiblog/blackfriday v0.0.0-20161010144836-c0ec111761ae h1:V6YC640Gs5jEUYfCimyuXsTW5gzNcIEESG4MGmOJCtA=
 github.com/eiblog/blackfriday v0.0.0-20161010144836-c0ec111761ae/go.mod h1:HzHqTCGEAkSSzBM3shBvQHsHRQYUvjNOIC4mHipZ6tI=
-github.com/eiblog/utils v0.0.0-20181119015747-92c93e218753 h1:Nygjtnh1nF5zejJF7pZnsoFh77wOPS+jlfhikjkJg60=
-github.com/eiblog/utils v0.0.0-20181119015747-92c93e218753/go.mod h1:mZHWnipRp41yw/rti2DgpbMiBE5i6ifqg7PKooEwRh4=
 github.com/envoyproxy/go-control-plane v0.9.0/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
 github.com/envoyproxy/go-control-plane v0.9.1-0.20191026205805-5f8ba28d4473/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
 github.com/envoyproxy/go-control-plane v0.9.9-0.20201210154907-fd9021fe5dad/go.mod h1:cXg6YxExXjJnVBQHBLXeUAgxn2UodCpnH306RInaBQk=

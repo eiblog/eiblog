@@ -9,8 +9,8 @@ import (
 
 	"github.com/eiblog/eiblog/pkg/cache"
 	"github.com/eiblog/eiblog/pkg/config"
+	"github.com/eiblog/eiblog/tools"
 
-	"github.com/eiblog/utils/tmpl"
 	"github.com/sirupsen/logrus"
 )
 
@@ -21,7 +21,7 @@ func init() {
 
 	var err error
 	xmlTmpl, err = template.New("").Funcs(template.FuncMap{
-		"dateformat": tmpl.DateFormat,
+		"dateformat": tools.DateFormat,
 	}).ParseGlob(root)
 	if err != nil {
 		panic(err)

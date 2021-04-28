@@ -5,7 +5,6 @@ go 1.15
 require (
 	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/eiblog/blackfriday v0.0.0-20161010144836-c0ec111761ae
-	github.com/eiblog/utils v0.0.0-20181119015747-92c93e218753
 	github.com/gin-contrib/sessions v0.0.3
 	github.com/gin-gonic/gin v1.6.3
 	github.com/gofrs/uuid v3.3.0+incompatible
