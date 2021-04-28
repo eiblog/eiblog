@@ -40,7 +40,18 @@ func newRequest(method, rawurl string, data interface{}) (*http.Request, error) 
 	// 获取主机IP
 	host, port, err := net.SplitHostPort(u.Host)
 	if err != nil {
-		return nil, err
+		addrErr := err.(*net.AddrError)
+		if addrErr.Err != "missing port in address" {
+			return nil, err
+		}
+		// set default value
+		host = originHost
+		switch u.Scheme {
+		case "http":
+			port = "80"
+		case "https":
+			port = "443"
+		}
 	}
 	ips, err := net.LookupHost(host)
 	if err != nil {

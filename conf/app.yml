@@ -48,7 +48,6 @@ blogapp:
     feedrurl: https://deepzz.superfeedr.com/
     pingrpc:
       - http://ping.baidu.com/ping/RPC2
-      - http://blogsearch.google.com/ping/RPC2
       - http://rpc.pingomatic.com/
   # 数据初始化操作，可到博客后台修改
   account:

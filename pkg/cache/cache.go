@@ -469,7 +469,8 @@ func (c *Cache) loadOrInit() error {
 		if i > 0 {
 			v.Prev = articles[i-1]
 		}
-		if articles[i+1].ID >= blogapp.General.StartID {
+		if i < len(articles)-1 &&
+			articles[i+1].ID >= blogapp.General.StartID {
 			v.Next = articles[i+1]
 		}
 		c.readdArticle(v, false)

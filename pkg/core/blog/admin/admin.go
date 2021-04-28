@@ -320,7 +320,7 @@ func handleAPIPostCreate(c *gin.Context) {
 		logrus.Error("handleAPIPostCreate.UpdateArticle: ", err)
 		return
 	}
-	if !artc.IsDraft {
+	if !article.IsDraft {
 		cache.Ei.RepArticle(artc, article)
 		// 异步执行，快
 		go func() {
