@@ -533,7 +533,7 @@ func (c *Cache) regeneratePages() {
 					buf.WriteString(fmt.Sprintf("\n### %s\n\n", t.Format("2006年1月")))
 				}
 				for i, article := range archive.Articles {
-					createdAt := article.CreatedAt.In(time.Location)
+					createdAt := article.CreatedAt.In(tools.TimeLocation)
 					if i == 0 && gt12Month {
 						str := fmt.Sprintf(`* *[%s](/post/%s.html) <span class="date">(%s)</span>`,
 							article.Title, article.Slug, createdAt.Format("Jan 02, 2006"))
