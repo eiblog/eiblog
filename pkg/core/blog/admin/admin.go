@@ -203,7 +203,7 @@ func handleAPIPostDelete(c *gin.Context) {
 		}
 		err = cache.Ei.DelArticle(id)
 		if err != nil {
-			logrus.Error("handleAPIPostDelete.DeleteArticles: ", err)
+			logrus.Error("handleAPIPostDelete.DelArticle: ", err)
 
 			responseNotice(c, NoticeNotice, err.Error(), "")
 			return
@@ -305,7 +305,7 @@ func handleAPIPostCreate(c *gin.Context) {
 		article.UpdatedAt = artc.UpdatedAt
 	}
 	if update == "true" || update == "1" {
-		artc.UpdatedAt = time.Now()
+		article.UpdatedAt = time.Now()
 	}
 	// 数据库更新
 	err = cache.Ei.UpdateArticle(context.Background(), article.ID, map[string]interface{}{

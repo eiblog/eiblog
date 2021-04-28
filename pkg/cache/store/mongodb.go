@@ -3,7 +3,6 @@ package store
 
 import (
 	"context"
-	"fmt"
 	"sort"
 	"time"
 
@@ -238,7 +237,7 @@ func (db *mongodb) CleanArticles(ctx context.Context) error {
 	collection := db.Database(mongoDBName).Collection(collectionArticle)
 
 	exp := time.Now().Add(time.Duration(config.Conf.BlogApp.General.Trash) * time.Hour)
-	filter := bson.M{"deletetime": bson.M{"$gt": time.Time{}, "$lt": exp}}
+	filter := bson.M{"deleted_at": bson.M{"$gt": time.Time{}, "$lt": exp}}
 	_, err := collection.DeleteMany(ctx, filter)
 	return err
 }
@@ -255,7 +254,6 @@ func (db *mongodb) UpdateArticle(ctx context.Context, id int,
 		params[k] = v
 	}
 	update := bson.M{"$set": params}
-	fmt.Println(update)
 	_, err := collection.UpdateOne(ctx, filter, update)
 	return err
 }

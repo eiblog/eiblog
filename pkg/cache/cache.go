@@ -235,7 +235,7 @@ func (c *Cache) PageArticleBE(se int, kw string, draft, del bool, p,
 		return nil, 0
 	}
 	max := count / n
-	if max%n > 0 {
+	if count%n > 0 {
 		max++
 	}
 	return articles, max
@@ -257,11 +257,12 @@ func (c *Cache) refreshCache(article *model.Article, del bool) {
 		_, idx := c.FindArticleByID(article.ID)
 
 		delete(c.ArticlesMap, article.Slug)
-		c.Articles = append(Ei.Articles[:idx], Ei.Articles[idx+1:]...)
+		c.Articles = append(c.Articles[:idx], c.Articles[idx+1:]...)
 		// 从链表移除
 		c.recalcLinkedList(article, true)
 		// 从tag、serie、archive移除
 		c.redelArticle(article)
+		return
 	}
 	// 添加文章
 	defer render.GenerateExcerptMarkdown(article)
@@ -365,8 +366,8 @@ func (c *Cache) redelArticle(article *model.Article) {
 		if serie.ID == article.SerieID {
 			for j, v := range serie.Articles {
 				if v == article {
-					Ei.Series[i].Articles = append(Ei.Series[i].Articles[0:j],
-						Ei.Series[i].Articles[j+1:]...)
+					c.Series[i].Articles = append(c.Series[i].Articles[0:j],
+						c.Series[i].Articles[j+1:]...)
 					PagesCh <- PageSeries
 					break
 				}
@@ -414,8 +415,7 @@ func (c *Cache) loadOrInit() error {
 			Author:    blogapp.Account.Username,
 			Title:     "关于",
 			Slug:      "about",
-			UpdatedAt: time.Now(),
-			CreatedAt: time.Now(),
+			CreatedAt: time.Time{},
 		}
 		err = c.InsertArticle(context.Background(), about)
 		if err != nil {
@@ -428,8 +428,7 @@ func (c *Cache) loadOrInit() error {
 			Author:    blogapp.Account.Username,
 			Title:     "友情链接",
 			Slug:      "blogroll",
-			UpdatedAt: time.Now(),
-			CreatedAt: time.Now(),
+			CreatedAt: time.Time{}.AddDate(0, 0, 7),
 		}
 		err = c.InsertArticle(context.Background(), blogroll)
 		if err != nil {
@@ -519,7 +518,7 @@ func (c *Cache) regeneratePages() {
 			buf.WriteString(c.Blogger.ArchivesSay + "\n")
 			var (
 				currentYear string
-				gt12Month   = len(Ei.Archives) > 12
+				gt12Month   = len(c.Archives) > 12
 			)
 			for _, archive := range c.Archives {
 				t := archive.Time.In(tools.TimeLocation)
