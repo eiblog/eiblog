@@ -48,6 +48,7 @@ type General struct {
 	Length     int    `yaml:"length"`     // 文章预览长度
 	Trash      int    `yaml:"trash"`      // 回收箱文章保留时间
 	Clean      int    `yaml:"clean"`      // 清理回收箱频率
+	Timezone   string `yaml:"timezone"`   // 时区
 }
 
 // Disqus comments

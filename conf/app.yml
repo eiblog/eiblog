@@ -24,6 +24,7 @@ blogapp:
     length: 400 # 自动截取预览, 字符数
     trash: -48 # 回收箱保留48小时
     clean: 1 # 定时清理回收箱，每 %d 小时
+    timezone: Asia/Shanghai # 时区
   disqus: # 评论相关
     shortname: xxxxxx
     publickey: wdSgxRm9rdGAlLKFcFdToBe3GT4SibmV7Y8EjJQ0r4GWXeKtxpopMAeIeoI2dTEg
@@ -56,4 +57,4 @@ blogapp:
 backupapp:
   name: cmd-backup
   enablehttp: true
-  httpport: 9000
+  httpport: 9001

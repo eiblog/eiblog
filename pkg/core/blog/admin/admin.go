@@ -227,13 +227,14 @@ func handleAPIPostCreate(c *gin.Context) {
 		cid int
 	)
 	defer func() {
+		now := time.Now().In(tools.TimeLocation)
 		switch do {
 		case "auto": // 自动保存
 			if err != nil {
-				c.JSON(http.StatusOK, gin.H{"fail": 1, "time": time.Now().Format("15:04:05 PM"), "cid": cid})
+				c.JSON(http.StatusOK, gin.H{"fail": 1, "time": now.Format("15:04:05 PM"), "cid": cid})
 				return
 			}
-			c.JSON(http.StatusOK, gin.H{"success": 0, "time": time.Now().Format("15:04:05 PM"), "cid": cid})
+			c.JSON(http.StatusOK, gin.H{"success": 0, "time": now.Format("15:04:05 PM"), "cid": cid})
 		case "save", "publish": // 草稿，发布
 			if err != nil {
 				responseNotice(c, NoticeNotice, err.Error(), "")
@@ -498,9 +499,9 @@ func handleAPIQiniuDelete(c *gin.Context) {
 
 // parseLocationDate 解析日期
 func parseLocationDate(date string) time.Time {
-	t, err := time.ParseInLocation("2006-01-02 15:04", date, time.Local)
+	t, err := time.ParseInLocation("2006-01-02 15:04", date, tools.TimeLocation)
 	if err == nil {
-		return t
+		return t.UTC()
 	}
 	return time.Now()
 }

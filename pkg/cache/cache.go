@@ -32,6 +32,14 @@ var (
 )
 
 func init() {
+	// init timezone
+	var err error
+	tools.TimeLocation, err = time.LoadLocation(
+		config.Conf.BlogApp.General.Timezone)
+	if err != nil {
+		panic(err)
+	}
+	// init store
 	store, err := store.NewStore(config.Conf.Database.Driver,
 		config.Conf.Database.Source)
 	if err != nil {
@@ -514,23 +522,25 @@ func (c *Cache) regeneratePages() {
 				gt12Month   = len(Ei.Archives) > 12
 			)
 			for _, archive := range c.Archives {
+				t := archive.Time.In(tools.TimeLocation)
 				if gt12Month {
-					year := archive.Time.Format("2006 年")
+					year := t.Format("2006 年")
 					if currentYear != year {
 						currentYear = year
-						buf.WriteString(fmt.Sprintf("\n### %s\n\n", archive.Time.Format("2006 年")))
+						buf.WriteString(fmt.Sprintf("\n### %s\n\n", t.Format("2006 年")))
 					}
 				} else {
-					buf.WriteString(fmt.Sprintf("\n### %s\n\n", archive.Time.Format("2006年1月")))
+					buf.WriteString(fmt.Sprintf("\n### %s\n\n", t.Format("2006年1月")))
 				}
 				for i, article := range archive.Articles {
+					createdAt := article.CreatedAt.In(time.Location)
 					if i == 0 && gt12Month {
 						str := fmt.Sprintf(`* *[%s](/post/%s.html) <span class="date">(%s)</span>`,
-							article.Title, article.Slug, article.CreatedAt.Format("Jan 02, 2006"))
+							article.Title, article.Slug, createdAt.Format("Jan 02, 2006"))
 						buf.WriteString(str)
 					} else {
 						str := fmt.Sprintf(`* [%s](/post/%s.html) <span class="date">(%s)</span>`,
-							article.Title, article.Slug, article.CreatedAt.Format("Jan 02, 2006"))
+							article.Title, article.Slug, createdAt.Format("Jan 02, 2006"))
 						buf.WriteString(str)
 					}
 					buf.WriteByte('\n')
