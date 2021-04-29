@@ -22,6 +22,10 @@ backup:
 dist:
 	@scripts/dist_tar.sh $(tag)
 
+# clean
+clean:
+	@rm -rf bin && rm *.tar.gz
+
 # protoc
 protoc:
 	@cd pkg/proto && make protoc
