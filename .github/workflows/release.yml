@@ -48,4 +48,3 @@ jobs:
       with:
         files: |
           *.tar.gz
-        release_name: Release ${{ steps.vars.outputs.tag }}
