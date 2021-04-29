@@ -46,8 +46,8 @@ func timerFeed() {
 	params := map[string]interface{}{
 		"Title":     cache.Ei.Blogger.BTitle,
 		"SubTitle":  cache.Ei.Blogger.SubTitle,
-		"Host":      config.Conf.BlogApp.Host,
-		"FeedrURL":  config.Conf.BlogApp.FeedRPC.FeedrURL,
+		"Host":      config.Conf.EiBlogApp.Host,
+		"FeedrURL":  config.Conf.EiBlogApp.FeedRPC.FeedrURL,
 		"BuildDate": now.Format(time.RFC1123Z),
 		"Articles":  articles,
 	}
@@ -75,7 +75,7 @@ func timerSitemap() {
 
 	params := map[string]interface{}{
 		"Articles": cache.Ei.Articles,
-		"Host":     config.Conf.BlogApp.Host,
+		"Host":     config.Conf.EiBlogApp.Host,
 	}
 	f, err := os.OpenFile("assets/sitemap.xml", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
@@ -101,7 +101,7 @@ func generateOpensearch() {
 	params := map[string]string{
 		"BTitle":   cache.Ei.Blogger.BTitle,
 		"SubTitle": cache.Ei.Blogger.SubTitle,
-		"Host":     config.Conf.BlogApp.Host,
+		"Host":     config.Conf.EiBlogApp.Host,
 	}
 	f, err := os.OpenFile("assets/opensearch.xml", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
@@ -124,7 +124,7 @@ func generateRobots() {
 		return
 	}
 	params := map[string]string{
-		"Host": config.Conf.BlogApp.Host,
+		"Host": config.Conf.EiBlogApp.Host,
 	}
 	f, err := os.OpenFile("assets/robots.txt", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {
@@ -147,7 +147,7 @@ func generateCrossdomain() {
 		return
 	}
 	params := map[string]string{
-		"Host": config.Conf.BlogApp.Host,
+		"Host": config.Conf.EiBlogApp.Host,
 	}
 	f, err := os.OpenFile("assets/crossdomain.xml", os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0666)
 	if err != nil {

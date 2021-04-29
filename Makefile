@@ -10,9 +10,9 @@ _app:
 
 # below you should write
 
-# run blog app
-blog:
-	@scripts/run_app.sh blog
+# run eiblog app
+eiblog:
+	@scripts/run_app.sh eiblog
 
 # run backup app
 backup:

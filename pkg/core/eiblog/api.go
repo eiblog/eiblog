@@ -1,5 +1,5 @@
-// Package blog provides ...
-package blog
+// Package eiblog provides ...
+package eiblog
 
 import (
 	"net/http"

@@ -107,8 +107,8 @@ type Blogger struct {
 	Copyright string `yaml:"copyright"`
 }
 
-// BlogApp config
-type BlogApp struct {
+// EiBlogApp config
+type EiBlogApp struct {
 	Mode
 
 	StaticVersion int      `yaml:"staticversion"`
@@ -125,12 +125,12 @@ type BlogApp struct {
 
 // Config app config
 type Config struct {
-	RunMode   string   `yaml:"runmode"`
-	AppName   string   `yaml:"appname"`
-	Database  Database `yaml:"database"`
-	ESHost    string   `yaml:"eshost"`
-	BlogApp   BlogApp  `yaml:"blogapp"`
-	BackupApp Mode     `yaml:"backupapp"`
+	RunMode   string    `yaml:"runmode"`
+	AppName   string    `yaml:"appname"`
+	Database  Database  `yaml:"database"`
+	ESHost    string    `yaml:"eshost"`
+	EiBlogApp EiBlogApp `yaml:"eiblogapp"`
+	BackupApp Mode      `yaml:"backupapp"`
 }
 
 // load config file

@@ -35,7 +35,7 @@ func init() {
 	// init timezone
 	var err error
 	tools.TimeLocation, err = time.LoadLocation(
-		config.Conf.BlogApp.General.Timezone)
+		config.Conf.EiBlogApp.General.Timezone)
 	if err != nil {
 		panic(err)
 	}
@@ -106,7 +106,7 @@ func (c *Cache) RepArticle(oldArticle, newArticle *model.Article) {
 
 	c.ArticlesMap[newArticle.Slug] = newArticle
 	render.GenerateExcerptMarkdown(newArticle)
-	if newArticle.ID < config.Conf.BlogApp.General.StartID {
+	if newArticle.ID < config.Conf.EiBlogApp.General.StartID {
 		return
 	}
 	if oldArticle != nil { // 移除旧文章
@@ -179,7 +179,7 @@ func (c *Cache) PageArticleFE(page int, pageSize int) (prev,
 
 	var l int
 	for l = len(c.Articles); l > 0; l-- {
-		if c.Articles[l-1].ID >= config.Conf.BlogApp.General.StartID {
+		if c.Articles[l-1].ID >= config.Conf.EiBlogApp.General.StartID {
 			break
 		}
 	}
@@ -293,11 +293,11 @@ func (c *Cache) recalcLinkedList(article *model.Article, del bool) {
 	// 添加操作
 	_, idx := c.FindArticleByID(article.ID)
 	if idx == 0 && c.Articles[idx+1].ID >=
-		config.Conf.BlogApp.General.StartID {
+		config.Conf.EiBlogApp.General.StartID {
 		article.Next = c.Articles[idx+1]
 		c.Articles[idx+1].Prev = article
 	} else if idx > 0 && c.Articles[idx-1].ID >=
-		config.Conf.BlogApp.General.StartID {
+		config.Conf.EiBlogApp.General.StartID {
 		article.Prev = c.Articles[idx-1]
 		if c.Articles[idx-1].Next != nil {
 			article.Next = c.Articles[idx-1].Next
@@ -395,7 +395,7 @@ func (c *Cache) redelArticle(article *model.Article) {
 
 // loadOrInit 读取数据或初始化
 func (c *Cache) loadOrInit() error {
-	blogapp := config.Conf.BlogApp
+	blogapp := config.Conf.EiBlogApp
 	// blogger
 	blogger := &model.Blogger{
 		BlogName:  strings.Title(blogapp.Account.Username),
@@ -552,7 +552,7 @@ func (c *Cache) regeneratePages() {
 
 // timerClean 定时清理文章
 func (c *Cache) timerClean() {
-	dur := time.Duration(config.Conf.BlogApp.General.Clean)
+	dur := time.Duration(config.Conf.EiBlogApp.General.Clean)
 	ticker := time.NewTicker(dur * time.Hour)
 
 	for range ticker.C {
@@ -565,7 +565,7 @@ func (c *Cache) timerClean() {
 
 // timerDisqus disqus定时操作
 func (c *Cache) timerDisqus() {
-	dur := time.Duration(config.Conf.BlogApp.Disqus.Interval)
+	dur := time.Duration(config.Conf.EiBlogApp.Disqus.Interval)
 	ticker := time.NewTicker(dur * time.Hour)
 
 	for range ticker.C {

@@ -3,9 +3,9 @@ database:
   driver: mongodb
   source: mongodb://localhost:27017
 eshost: http://localhost:9200
-blogapp:
+eiblogapp:
   mode:
-    name: cmd-blog
+    name: cmd-eiblog
     enablehttp: true
     httpport: 9000
     host: example.com

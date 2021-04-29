@@ -24,9 +24,9 @@ const (
 )
 
 func checkDisqusConfig() error {
-	if config.Conf.BlogApp.Disqus.ShortName != "" &&
-		config.Conf.BlogApp.Disqus.PublicKey != "" &&
-		config.Conf.BlogApp.Disqus.AccessToken != "" {
+	if config.Conf.EiBlogApp.Disqus.ShortName != "" &&
+		config.Conf.EiBlogApp.Disqus.PublicKey != "" &&
+		config.Conf.EiBlogApp.Disqus.AccessToken != "" {
 		return nil
 	}
 	return errors.New("disqus: config incompleted")
@@ -49,8 +49,8 @@ func PostsCount(articles map[string]*model.Article) error {
 	}
 
 	vals := url.Values{}
-	vals.Set("api_key", config.Conf.BlogApp.Disqus.PublicKey)
-	vals.Set("forum", config.Conf.BlogApp.Disqus.ShortName)
+	vals.Set("api_key", config.Conf.EiBlogApp.Disqus.PublicKey)
+	vals.Set("forum", config.Conf.EiBlogApp.Disqus.ShortName)
 	// batch get
 	var count, index int
 	for _, article := range articles {
@@ -128,8 +128,8 @@ func PostsList(slug, cursor string) (*postsListResp, error) {
 	}
 
 	vals := url.Values{}
-	vals.Set("api_key", config.Conf.BlogApp.Disqus.PublicKey)
-	vals.Set("forum", config.Conf.BlogApp.Disqus.ShortName)
+	vals.Set("api_key", config.Conf.EiBlogApp.Disqus.PublicKey)
+	vals.Set("forum", config.Conf.EiBlogApp.Disqus.ShortName)
 	vals.Set("thread:ident", "post-"+slug)
 	vals.Set("cursor", cursor)
 	vals.Set("limit", "50")
@@ -224,8 +224,8 @@ func PostApprove(post string) error {
 	}
 
 	vals := url.Values{}
-	vals.Set("api_key", config.Conf.BlogApp.Disqus.PublicKey)
-	vals.Set("access_token", config.Conf.BlogApp.Disqus.AccessToken)
+	vals.Set("api_key", config.Conf.EiBlogApp.Disqus.PublicKey)
+	vals.Set("access_token", config.Conf.EiBlogApp.Disqus.AccessToken)
 	vals.Set("post", post)
 
 	header := http.Header{"Referer": {"https://disqus.com"}}
@@ -263,13 +263,13 @@ func ThreadCreate(article *model.Article, btitle string) error {
 	}
 
 	vals := url.Values{}
-	vals.Set("api_key", config.Conf.BlogApp.Disqus.PublicKey)
-	vals.Set("access_token", config.Conf.BlogApp.Disqus.AccessToken)
-	vals.Set("forum", config.Conf.BlogApp.Disqus.ShortName)
+	vals.Set("api_key", config.Conf.EiBlogApp.Disqus.PublicKey)
+	vals.Set("access_token", config.Conf.EiBlogApp.Disqus.AccessToken)
+	vals.Set("forum", config.Conf.EiBlogApp.Disqus.ShortName)
 	vals.Set("title", article.Title+" | "+btitle)
 	vals.Set("identifier", "post-"+article.Slug)
 
-	urlPath := fmt.Sprintf("https://%s/post/%s.html", config.Conf.BlogApp.Host, article.Slug)
+	urlPath := fmt.Sprintf("https://%s/post/%s.html", config.Conf.EiBlogApp.Host, article.Slug)
 	vals.Set("url", urlPath)
 
 	resp, err := httpPost(apiThreadCreate, vals)

@@ -12,7 +12,7 @@ import (
 
 	"github.com/eiblog/eiblog/pkg/cache"
 	"github.com/eiblog/eiblog/pkg/config"
-	"github.com/eiblog/eiblog/pkg/core/blog"
+	"github.com/eiblog/eiblog/pkg/core/eiblog"
 	"github.com/eiblog/eiblog/pkg/internal"
 	"github.com/eiblog/eiblog/pkg/model"
 	"github.com/eiblog/eiblog/tools"
@@ -67,7 +67,7 @@ func handleAcctLogin(c *gin.Context) {
 		return
 	}
 	// 登录成功
-	blog.SetLogin(c, user)
+	eiblog.SetLogin(c, user)
 
 	cache.Ei.Account.LoginIP = c.ClientIP()
 	cache.Ei.Account.LoginAt = time.Now()
@@ -197,7 +197,7 @@ func handleAPIPostDelete(c *gin.Context) {
 	var ids []int
 	for _, v := range c.PostFormArray("cid[]") {
 		id, err := strconv.Atoi(v)
-		if err != nil || id < config.Conf.BlogApp.General.StartID {
+		if err != nil || id < config.Conf.EiBlogApp.General.StartID {
 			responseNotice(c, NoticeNotice, "参数错误", "")
 			return
 		}

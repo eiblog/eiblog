@@ -15,7 +15,7 @@ for file in pkg/core/*; do
     _target="$app-$_tag.$os-$_arch.tar.gz"
     CGO_ENABLED=0 GOOS=$os GOARCH=$_arch \
       go build -o bin/backend "./cmd/$app"
-    if [ "$app" == "blog" ]; then
+    if [ "$app" = "eiblog" ]; then
       tar czf $_target conf website assets bin/backend
     else
       tar czf $_target conf bin/backend

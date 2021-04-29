@@ -6,11 +6,11 @@ import (
 	"path/filepath"
 
 	"github.com/eiblog/eiblog/pkg/config"
-	"github.com/eiblog/eiblog/pkg/core/blog"
-	"github.com/eiblog/eiblog/pkg/core/blog/admin"
-	"github.com/eiblog/eiblog/pkg/core/blog/file"
-	"github.com/eiblog/eiblog/pkg/core/blog/page"
-	"github.com/eiblog/eiblog/pkg/core/blog/swag"
+	"github.com/eiblog/eiblog/pkg/core/eiblog"
+	"github.com/eiblog/eiblog/pkg/core/eiblog/admin"
+	"github.com/eiblog/eiblog/pkg/core/eiblog/file"
+	"github.com/eiblog/eiblog/pkg/core/eiblog/page"
+	"github.com/eiblog/eiblog/pkg/core/eiblog/swag"
 	"github.com/eiblog/eiblog/pkg/mid"
 
 	"github.com/gin-gonic/gin"
@@ -26,7 +26,7 @@ func main() {
 }
 
 func runHTTPServer(endRun chan bool) {
-	if !config.Conf.BlogApp.EnableHTTP {
+	if !config.Conf.EiBlogApp.EnableHTTP {
 		return
 	}
 
@@ -57,14 +57,14 @@ func runHTTPServer(endRun chan bool) {
 	admin.RegisterRoutes(e)
 
 	// admin router
-	group := e.Group("/admin", blog.AuthFilter)
+	group := e.Group("/admin", eiblog.AuthFilter)
 	{
 		page.RegisterRoutesAuthz(group)
 		admin.RegisterRoutesAuthz(group)
 	}
 
 	// start
-	address := fmt.Sprintf(":%d", config.Conf.BlogApp.HTTPPort)
+	address := fmt.Sprintf(":%d", config.Conf.EiBlogApp.HTTPPort)
 	go e.Run(address)
 	fmt.Println("HTTP server running on: " + address)
 }

@@ -26,19 +26,19 @@ func baseFEParams(c *gin.Context) gin.H {
 
 	cookie, err := c.Request.Cookie("v")
 	if err != nil || cookie.Value !=
-		fmt.Sprint(config.Conf.BlogApp.StaticVersion) {
-		version = config.Conf.BlogApp.StaticVersion
+		fmt.Sprint(config.Conf.EiBlogApp.StaticVersion) {
+		version = config.Conf.EiBlogApp.StaticVersion
 	}
 	return gin.H{
 		"BlogName": cache.Ei.Blogger.BlogName,
 		"SubTitle": cache.Ei.Blogger.SubTitle,
 		"BTitle":   cache.Ei.Blogger.BTitle,
 		"BeiAn":    cache.Ei.Blogger.BeiAn,
-		"Domain":   config.Conf.BlogApp.Host,
+		"Domain":   config.Conf.EiBlogApp.Host,
 		"CopyYear": time.Now().Year(),
-		"Twitter":  config.Conf.BlogApp.Twitter,
-		"Qiniu":    config.Conf.BlogApp.Qiniu,
-		"Disqus":   config.Conf.BlogApp.Disqus,
+		"Twitter":  config.Conf.EiBlogApp.Twitter,
+		"Qiniu":    config.Conf.EiBlogApp.Qiniu,
+		"Disqus":   config.Conf.EiBlogApp.Disqus,
 		"Version":  version,
 	}
 }
@@ -65,7 +65,7 @@ func handleHomePage(c *gin.Context) {
 		pn = 1
 	}
 	params["Prev"], params["Next"], params["List"] = cache.Ei.PageArticleFE(pn,
-		config.Conf.BlogApp.General.PageNum)
+		config.Conf.EiBlogApp.General.PageNum)
 
 	renderHTMLHomeLayout(c, "home", params)
 }
@@ -151,7 +151,7 @@ func handleSearchPage(c *gin.Context) {
 		params["Word"] = q
 
 		vals := c.Request.URL.Query()
-		result, err := internal.ElasticSearch(q, config.Conf.BlogApp.General.PageNum, start-1)
+		result, err := internal.ElasticSearch(q, config.Conf.EiBlogApp.General.PageNum, start-1)
 		if err != nil {
 			logrus.Error("HandleSearchPage.ElasticSearch: ", err)
 		} else {
@@ -163,17 +163,17 @@ func handleSearchPage(c *gin.Context) {
 				}
 			}
 			params["SearchResult"] = result
-			if num := start - config.Conf.BlogApp.General.PageNum; num > 0 {
+			if num := start - config.Conf.EiBlogApp.General.PageNum; num > 0 {
 				vals.Set("start", fmt.Sprint(num))
 				params["Prev"] = vals.Encode()
 			}
-			if num := start + config.Conf.BlogApp.General.PageNum; result.Hits.Total >= num {
+			if num := start + config.Conf.EiBlogApp.General.PageNum; result.Hits.Total >= num {
 				vals.Set("start", fmt.Sprint(num))
 				params["Next"] = vals.Encode()
 			}
 		}
 	} else {
-		params["HotWords"] = config.Conf.BlogApp.HotWords
+		params["HotWords"] = config.Conf.EiBlogApp.HotWords
 	}
 	renderHTMLHomeLayout(c, "search", params)
 }
@@ -324,16 +324,16 @@ func handleBeaconPage(c *gin.Context) {
 	ua := c.Request.UserAgent()
 
 	vals := c.Request.URL.Query()
-	vals.Set("v", config.Conf.BlogApp.Google.V)
-	vals.Set("tid", config.Conf.BlogApp.Google.Tid)
-	vals.Set("t", config.Conf.BlogApp.Google.T)
+	vals.Set("v", config.Conf.EiBlogApp.Google.V)
+	vals.Set("tid", config.Conf.EiBlogApp.Google.Tid)
+	vals.Set("t", config.Conf.EiBlogApp.Google.T)
 	cookie, _ := c.Cookie("u")
 	vals.Set("cid", cookie)
 
 	vals.Set("dl", c.Request.Referer())
 	vals.Set("uip", c.ClientIP())
 	go func() {
-		req, err := http.NewRequest("POST", config.Conf.BlogApp.Google.URL,
+		req, err := http.NewRequest("POST", config.Conf.EiBlogApp.Google.URL,
 			strings.NewReader(vals.Encode()))
 		if err != nil {
 			logrus.Error("HandleBeaconPage.NewRequest: ", err)

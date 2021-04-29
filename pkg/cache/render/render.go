@@ -36,7 +36,7 @@ const (
 
 var (
 	// 渲染markdown操作和截取摘要操作
-	regIdentifier = regexp.MustCompile(config.Conf.BlogApp.General.Identifier)
+	regIdentifier = regexp.MustCompile(config.Conf.EiBlogApp.General.Identifier)
 	// header
 	regHeader = regexp.MustCompile("</nav></div>")
 )
@@ -60,7 +60,7 @@ func RenderPage(md []byte) []byte {
 
 // GenerateExcerptMarkdown 生成预览和描述
 func GenerateExcerptMarkdown(article *model.Article) {
-	blogapp := config.Conf.BlogApp
+	blogapp := config.Conf.EiBlogApp
 
 	if strings.HasPrefix(article.Content, blogapp.General.DescPrefix) {
 		index := strings.Index(article.Content, "\r\n")

@@ -16,7 +16,7 @@ import (
 
 // feedrPingFunc http://<your-hub-name>.superfeedr.com/
 var feedrPingFunc = func(btitle, slug string) error {
-	feedrHost := config.Conf.BlogApp.FeedRPC.FeedrURL
+	feedrHost := config.Conf.EiBlogApp.FeedRPC.FeedrURL
 	if feedrHost == "" {
 		return nil
 	}
@@ -61,15 +61,15 @@ type rpcValue struct {
 
 // rpcPingFunc ping rpc
 var rpcPingFunc = func(btitle, slug string) error {
-	if len(config.Conf.BlogApp.FeedRPC.PingRPC) == 0 {
+	if len(config.Conf.EiBlogApp.FeedRPC.PingRPC) == 0 {
 		return nil
 	}
 	param := rpcPingParam{MethodName: "weblogUpdates.extendedPing"}
 	param.Params.Param = [4]rpcValue{
 		0: rpcValue{Value: btitle},
-		1: rpcValue{Value: "https://" + config.Conf.BlogApp.Host},
-		2: rpcValue{Value: fmt.Sprintf("https://%s/post/%s.html", config.Conf.BlogApp.Host, slug)},
-		3: rpcValue{Value: "https://" + config.Conf.BlogApp.Host + "/rss.html"},
+		1: rpcValue{Value: "https://" + config.Conf.EiBlogApp.Host},
+		2: rpcValue{Value: fmt.Sprintf("https://%s/post/%s.html", config.Conf.EiBlogApp.Host, slug)},
+		3: rpcValue{Value: "https://" + config.Conf.EiBlogApp.Host + "/rss.html"},
 	}
 	buf := bytes.Buffer{}
 	buf.WriteString(xml.Header)
@@ -80,7 +80,7 @@ var rpcPingFunc = func(btitle, slug string) error {
 	data := buf.Bytes()
 	header := http.Header{}
 	header.Set("Content-Type", "text/xml")
-	for _, addr := range config.Conf.BlogApp.FeedRPC.PingRPC {
+	for _, addr := range config.Conf.EiBlogApp.FeedRPC.PingRPC {
 		resp, err := httpPostHeader(addr, data, header)
 		if err != nil {
 			logrus.Error("rpcPingFunc.httpPostHeader: ", err)

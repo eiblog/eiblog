@@ -15,17 +15,17 @@ import (
 
 // QiniuUpload 上传文件
 func QiniuUpload(name string, size int64, data io.Reader) (string, error) {
-	if config.Conf.BlogApp.Qiniu.AccessKey == "" ||
-		config.Conf.BlogApp.Qiniu.SecretKey == "" {
+	if config.Conf.EiBlogApp.Qiniu.AccessKey == "" ||
+		config.Conf.EiBlogApp.Qiniu.SecretKey == "" {
 		return "", errors.New("qiniu config error")
 	}
 	key := completeQiniuKey(name)
 
-	mac := qbox.NewMac(config.Conf.BlogApp.Qiniu.AccessKey,
-		config.Conf.BlogApp.Qiniu.SecretKey)
+	mac := qbox.NewMac(config.Conf.EiBlogApp.Qiniu.AccessKey,
+		config.Conf.EiBlogApp.Qiniu.SecretKey)
 	// 设置上传策略
 	putPolicy := &storage.PutPolicy{
-		Scope:      config.Conf.BlogApp.Qiniu.Bucket,
+		Scope:      config.Conf.EiBlogApp.Qiniu.Bucket,
 		Expires:    3600,
 		InsertOnly: 1,
 	}
@@ -46,7 +46,7 @@ func QiniuUpload(name string, size int64, data io.Reader) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	url := "https://" + config.Conf.BlogApp.Qiniu.Domain + "/" + key
+	url := "https://" + config.Conf.EiBlogApp.Qiniu.Domain + "/" + key
 	return url, nil
 }
 
@@ -54,8 +54,8 @@ func QiniuUpload(name string, size int64, data io.Reader) (string, error) {
 func QiniuDelete(name string) error {
 	key := completeQiniuKey(name)
 
-	mac := qbox.NewMac(config.Conf.BlogApp.Qiniu.AccessKey,
-		config.Conf.BlogApp.Qiniu.SecretKey)
+	mac := qbox.NewMac(config.Conf.EiBlogApp.Qiniu.AccessKey,
+		config.Conf.EiBlogApp.Qiniu.SecretKey)
 	// 上传配置
 	cfg := &storage.Config{
 		Zone:     &storage.ZoneHuadong,
@@ -64,7 +64,7 @@ func QiniuDelete(name string) error {
 	// manager
 	bucketManager := storage.NewBucketManager(mac, cfg)
 	// Delete
-	return bucketManager.Delete(config.Conf.BlogApp.Qiniu.Bucket, key)
+	return bucketManager.Delete(config.Conf.EiBlogApp.Qiniu.Bucket, key)
 }
 
 // completeQiniuKey 修复路径

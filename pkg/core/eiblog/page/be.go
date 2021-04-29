@@ -13,7 +13,7 @@ import (
 	"github.com/eiblog/eiblog/pkg/cache"
 	"github.com/eiblog/eiblog/pkg/cache/store"
 	"github.com/eiblog/eiblog/pkg/config"
-	"github.com/eiblog/eiblog/pkg/core/blog"
+	"github.com/eiblog/eiblog/pkg/core/eiblog"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
@@ -23,7 +23,7 @@ import (
 func baseBEParams(c *gin.Context) gin.H {
 	return gin.H{
 		"Author": cache.Ei.Account.Username,
-		"Qiniu":  config.Conf.BlogApp.Qiniu,
+		"Qiniu":  config.Conf.EiBlogApp.Qiniu,
 	}
 }
 
@@ -31,8 +31,8 @@ func baseBEParams(c *gin.Context) gin.H {
 func handleLoginPage(c *gin.Context) {
 	logout := c.Query("logout")
 	if logout == "true" {
-		blog.SetLogout(c)
-	} else if blog.IsLogined(c) {
+		eiblog.SetLogout(c)
+	} else if eiblog.IsLogined(c) {
 		c.Redirect(http.StatusFound, "/admin/profile")
 		return
 	}
@@ -70,7 +70,7 @@ func handleAdminPost(c *gin.Context) {
 		params["Title"] = "撰写文章 | " + cache.Ei.Blogger.BTitle
 	}
 	params["Path"] = c.Request.URL.Path
-	params["Domain"] = config.Conf.BlogApp.Host
+	params["Domain"] = config.Conf.EiBlogApp.Host
 	params["Series"] = cache.Ei.Series
 	var tags []T
 	for tag := range cache.Ei.TagArticles {
@@ -104,7 +104,7 @@ func handleAdminPosts(c *gin.Context) {
 	params["KW"] = kw
 	var max int
 	params["List"], max = cache.Ei.PageArticleBE(se, kw, false, false,
-		pg, config.Conf.BlogApp.General.PageSize)
+		pg, config.Conf.EiBlogApp.General.PageSize)
 	if pg < max {
 		vals.Set("page", fmt.Sprint(pg+1))
 		params["Next"] = vals.Encode()

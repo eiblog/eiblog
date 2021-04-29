@@ -117,7 +117,7 @@ func (db *mongodb) LoadInsertAccount(ctx context.Context,
 
 	collection := db.Database(mongoDBName).Collection(collectionAccount)
 
-	filter := bson.M{"username": config.Conf.BlogApp.Account.Username}
+	filter := bson.M{"username": config.Conf.EiBlogApp.Account.Username}
 	result := collection.FindOne(ctx, filter)
 	err = result.Err()
 	if err != nil {
@@ -211,7 +211,7 @@ func (db *mongodb) InsertArticle(ctx context.Context, article *model.Article) er
 	// 可手动分配ID或者分配ID, 占位至起始id
 	for article.ID == 0 {
 		id := db.nextValue(ctx, counterNameArticle)
-		if id < config.Conf.BlogApp.General.StartID {
+		if id < config.Conf.EiBlogApp.General.StartID {
 			continue
 		} else {
 			article.ID = id
@@ -236,7 +236,7 @@ func (db *mongodb) RemoveArticle(ctx context.Context, id int) error {
 func (db *mongodb) CleanArticles(ctx context.Context) error {
 	collection := db.Database(mongoDBName).Collection(collectionArticle)
 
-	exp := time.Now().Add(time.Duration(config.Conf.BlogApp.General.Trash) * time.Hour)
+	exp := time.Now().Add(time.Duration(config.Conf.EiBlogApp.General.Trash) * time.Hour)
 	filter := bson.M{"deleted_at": bson.M{"$gt": time.Time{}, "$lt": exp}}
 	_, err := collection.DeleteMany(ctx, filter)
 	return err
