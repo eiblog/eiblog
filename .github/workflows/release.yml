@@ -32,7 +32,6 @@ jobs:
     - name: Docker login
       uses: docker/login-action@v1
       with:
-        registry: registry.cn-hangzhou.aliyuncs.com
         password: ${{ secrets.DOCKER_PASSWORD }}
         username: ${{ secrets.DOCKER_USERNAME }}
     - name: Build image
