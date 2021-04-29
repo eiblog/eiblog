@@ -22,6 +22,7 @@ for file in pkg/core/*; do
   CGO_ENABLED=0 go build -o bin/backend "./cmd/$app"
   # docker image
   docker buildx build --platform "$_platform" \
+    -f "build/package/$app.Dockerfile" \
     -t "$_registry/$app:latest" \
     -t "$_registry/$app:$_tag" \
     --push .
