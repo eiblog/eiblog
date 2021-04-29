@@ -5,6 +5,8 @@
 !build
 !bin
 !conf
+!assets
+!website
 !CHANGELOG.md
 !LICENSE
 !README.md
