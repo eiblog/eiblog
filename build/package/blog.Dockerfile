@@ -7,6 +7,8 @@ COPY LICENSE /app/LICENSE
 
 COPY bin/backend /app/backend
 COPY conf /app/conf
+COPY website /app/website
+COPY assets /app/assets
 
 EXPOSE 9000
 

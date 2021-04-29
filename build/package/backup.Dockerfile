@@ -8,7 +8,7 @@ COPY LICENSE /app/LICENSE
 COPY bin/backend /app/backend
 COPY conf /app/conf
 
-EXPOSE 9000
+EXPOSE 9001
 
 WORKDIR /app
 CMD ["backend"]

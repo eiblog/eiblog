@@ -25,6 +25,8 @@ jobs:
     - name: Docker tag
       id: vars
       run: echo ::set-output name=tag::$(echo ${GITHUB_REF:10})
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v1
     - name: Docker Buildx
       uses: docker/setup-buildx-action@v1
     - name: Docker login
@@ -33,54 +35,17 @@ jobs:
         registry: registry.cn-hangzhou.aliyuncs.com
         password: ${{ secrets.DOCKER_PASSWORD }}
         username: ${{ secrets.DOCKER_USERNAME }}
-    - name: Build binary
-      run: GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build
-    - name: Build and push
-      uses: docker/build-push-action@v2
-      with:
-        context: .
-        file: ./Dockerfile
-        push: true
-        tags: |
-          registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog:latest
-          registry.cn-hangzhou.aliyuncs.com/deepzz/eiblog:${{ steps.vars.outputs.tag }}
+    - name: Build image
+      run: scripts/run_build.sh deepzz0 ${{ steps.vars.outputs.tag }}
 
     - name: Package tar
-      run: ./dist.sh
-    - name: Create release
-      id: create_release
-      uses: actions/create-release@v1
+      run: scripts/dist_tar.sh ${{ steps.vars.outputs.tag }}
+    - name: Release push
+      uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
-        tag_name: ${{ steps.vars.outputs.tag }}
+        files: |
+          *.tar.gz
         release_name: Release ${{ steps.vars.outputs.tag }}
-        draft: false
-        prerelease: false
-    - name: Upload asset darwin
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }} 
-        asset_path: eiblog-${{ steps.vars.outputs.tag }}.darwin-amd64.tar.gz
-        asset_name: eiblog-${{ steps.vars.outputs.tag }}.darwin-amd64.tar.gz
-        asset_content_type: application/gzip
-    - name: Upload asset linux
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }} 
-        asset_path: eiblog-${{ steps.vars.outputs.tag }}.linux-amd64.tar.gz
-        asset_name: eiblog-${{ steps.vars.outputs.tag }}.linux-amd64.tar.gz
-        asset_content_type: application/gzip
-    - name: Upload asset windows
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }} 
-        asset_path: eiblog-${{ steps.vars.outputs.tag }}.windows-amd64.tar.gz
-        asset_name: eiblog-${{ steps.vars.outputs.tag }}.windows-amd64.tar.gz
-        asset_content_type: application/gzip

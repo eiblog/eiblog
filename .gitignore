@@ -5,6 +5,7 @@
 *.so
 *.dylib
 *.DS_Store
+*.tar.gz
 
 # Test binary, built with `go test -c`
 *.test

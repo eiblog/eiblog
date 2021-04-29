@@ -1,7 +1,6 @@
 .PHONY: demo build swag
 
-REGISTRY=localhost
-IMAGE_TAG=`git describe --tags`
+tag=`git describe --abbrev=0 --tags`
 
 swag:
 	@scripts/swag_init.sh
@@ -19,9 +18,9 @@ blog:
 backup:
 	@scripts/run_app.sh backup
 
-# build docker
-build:
-	@scripts/run_build.sh $(REGISTRY) $(IMAGE_TAG)
+# dist tar
+dist:
+	@scripts/dist_tar.sh $(tag)
 
 # protoc
 protoc:
