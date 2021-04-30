@@ -29,6 +29,11 @@ var (
 	PagesCh     = make(chan string, 2)
 	PageSeries  = "series-md"
 	PageArchive = "archive-md"
+
+	// ArticleStartID article start id
+	ArticleStartID = 11
+	// TrashArticleExp trash article timeout
+	TrashArticleExp = time.Duration(-48) * time.Hour
 )
 
 func init() {
@@ -40,6 +45,7 @@ func init() {
 		panic(err)
 	}
 	// init store
+	logrus.Info("store drivers: ", store.Drivers())
 	store, err := store.NewStore(config.Conf.Database.Driver,
 		config.Conf.Database.Source)
 	if err != nil {
@@ -86,8 +92,7 @@ func (c *Cache) AddArticle(article *model.Article) error {
 	defer c.lock.Unlock()
 
 	// store
-	err := c.InsertArticle(context.Background(), article,
-		config.Conf.EiBlogApp.General.StartID)
+	err := c.InsertArticle(context.Background(), article, ArticleStartID)
 	if err != nil {
 		return err
 	}
@@ -107,7 +112,7 @@ func (c *Cache) RepArticle(oldArticle, newArticle *model.Article) {
 
 	c.ArticlesMap[newArticle.Slug] = newArticle
 	render.GenerateExcerptMarkdown(newArticle)
-	if newArticle.ID < config.Conf.EiBlogApp.General.StartID {
+	if newArticle.ID < ArticleStartID {
 		return
 	}
 	if oldArticle != nil { // 移除旧文章
@@ -180,7 +185,7 @@ func (c *Cache) PageArticleFE(page int, pageSize int) (prev,
 
 	var l int
 	for l = len(c.Articles); l > 0; l-- {
-		if c.Articles[l-1].ID >= config.Conf.EiBlogApp.General.StartID {
+		if c.Articles[l-1].ID >= ArticleStartID {
 			break
 		}
 	}
@@ -293,12 +298,10 @@ func (c *Cache) recalcLinkedList(article *model.Article, del bool) {
 	}
 	// 添加操作
 	_, idx := c.FindArticleByID(article.ID)
-	if idx == 0 && c.Articles[idx+1].ID >=
-		config.Conf.EiBlogApp.General.StartID {
+	if idx == 0 && c.Articles[idx+1].ID >= ArticleStartID {
 		article.Next = c.Articles[idx+1]
 		c.Articles[idx+1].Prev = article
-	} else if idx > 0 && c.Articles[idx-1].ID >=
-		config.Conf.EiBlogApp.General.StartID {
+	} else if idx > 0 && c.Articles[idx-1].ID >= ArticleStartID {
 		article.Prev = c.Articles[idx-1]
 		if c.Articles[idx-1].Next != nil {
 			article.Next = c.Articles[idx-1].Next
@@ -418,8 +421,7 @@ func (c *Cache) loadOrInit() error {
 			Slug:      "about",
 			CreatedAt: time.Time{},
 		}
-		err = c.InsertArticle(context.Background(), about,
-			config.Conf.EiBlogApp.General.StartID)
+		err = c.InsertArticle(context.Background(), about, ArticleStartID)
 		if err != nil {
 			return err
 		}
@@ -432,8 +434,7 @@ func (c *Cache) loadOrInit() error {
 			Slug:      "blogroll",
 			CreatedAt: time.Time{}.AddDate(0, 0, 7),
 		}
-		err = c.InsertArticle(context.Background(), blogroll,
-			config.Conf.EiBlogApp.General.StartID)
+		err = c.InsertArticle(context.Background(), blogroll, ArticleStartID)
 		if err != nil {
 			return err
 		}
@@ -473,14 +474,14 @@ func (c *Cache) loadOrInit() error {
 
 		c.ArticlesMap[v.Slug] = v
 		// 分析文章
-		if v.ID < blogapp.General.StartID {
+		if v.ID < ArticleStartID {
 			continue
 		}
 		if i > 0 {
 			v.Prev = articles[i-1]
 		}
 		if i < len(articles)-1 &&
-			articles[i+1].ID >= blogapp.General.StartID {
+			articles[i+1].ID >= ArticleStartID {
 			v.Next = articles[i+1]
 		}
 		c.readdArticle(v, false)
@@ -557,8 +558,9 @@ func (c *Cache) regeneratePages() {
 func (c *Cache) timerClean() {
 	ticker := time.NewTicker(time.Hour)
 
-	for range ticker.C {
-		err := c.CleanArticles(context.Background())
+	for now := range ticker.C {
+		exp := now.Add(TrashArticleExp)
+		err := c.CleanArticles(context.Background(), exp)
 		if err != nil {
 			logrus.Error("cache.timerClean.CleanArticles: ", err)
 		}

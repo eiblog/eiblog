@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"sort"
 	"sync"
+	"time"
 
 	"github.com/eiblog/eiblog/pkg/model"
 )
@@ -43,7 +44,7 @@ type Store interface {
 	UpdateAccount(ctx context.Context, name string, fields map[string]interface{}) error
 
 	// InsertSerie 创建专题
-	InsertSerie(ctx context.Context, series *model.Serie) error
+	InsertSerie(ctx context.Context, serie *model.Serie) error
 	// RemoveSerie 删除专题
 	RemoveSerie(ctx context.Context, id int) error
 	// UpdateSerie 更新专题
@@ -56,7 +57,7 @@ type Store interface {
 	// RemoveArticle 硬删除文章
 	RemoveArticle(ctx context.Context, id int) error
 	// CleanArticles 清理回收站文章
-	CleanArticles(ctx context.Context) error
+	CleanArticles(ctx context.Context, exp time.Time) error
 	// UpdateArticle 更新文章
 	UpdateArticle(ctx context.Context, id int, fields map[string]interface{}) error
 	// LoadArticle 查找文章

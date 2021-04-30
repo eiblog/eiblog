@@ -185,8 +185,9 @@ func (db *mongodb) UpdateSerie(ctx context.Context, id int,
 func (db *mongodb) LoadAllSerie(ctx context.Context) (model.SortedSeries, error) {
 	collection := db.Database(mongoDBName).Collection(collectionSerie)
 
+	opts := options.Find().SetSort(bson.M{"id": -1})
 	filter := bson.M{}
-	cur, err := collection.Find(ctx, filter)
+	cur, err := collection.Find(ctx, filter, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -201,7 +202,6 @@ func (db *mongodb) LoadAllSerie(ctx context.Context) (model.SortedSeries, error)
 		}
 		series = append(series, &obj)
 	}
-	sort.Sort(series)
 	return series, nil
 }
 
@@ -232,11 +232,10 @@ func (db *mongodb) RemoveArticle(ctx context.Context, id int) error {
 }
 
 // CleanArticles 清理回收站文章
-func (db *mongodb) CleanArticles(ctx context.Context) error {
+func (db *mongodb) CleanArticles(ctx context.Context, exp time.Time) error {
 	collection := db.Database(mongoDBName).Collection(collectionArticle)
 
 	// 超过两天自动删除
-	exp := time.Now().Add(-48 * time.Hour)
 	filter := bson.M{"deleted_at": bson.M{"$gt": time.Time{}, "$lt": exp}}
 	_, err := collection.DeleteMany(ctx, filter)
 	return err
