@@ -1,7 +1,7 @@
 appname: eiblog
 database:
-  driver: mongodb
-  source: mongodb://localhost:27017
+  driver: postgres
+  source: host=localhost port=5432 user=postgres dbname=eiblog sslmode=disable password=MTI3LjAuMC4x
 eshost: http://localhost:9200
 eiblogapp:
   mode:

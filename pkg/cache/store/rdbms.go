@@ -15,6 +15,22 @@ import (
 	"gorm.io/gorm"
 )
 
+// example:
+//   driver: mysql
+//   source: user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local
+//
+//   driver: postgres
+//   source: host=localhost user=gorm password=gorm dbname=gorm port=9920 sslmode=disable
+//
+//   driver: sqlite
+//   source: /path/gorm.db
+//
+//   driver: sqlserver
+//   source: sqlserver://gorm:LoremIpsum86@localhost:9930?database=gorm
+//
+//   driver: clickhouse
+//   source: tcp://localhost:9000?database=gorm&username=gorm&password=gorm&read_timeout=10&write_timeout=20
+
 type rdbms struct {
 	*gorm.DB
 }
@@ -64,7 +80,8 @@ func (db *rdbms) LoadInsertBlogger(ctx context.Context, blogger *model.Blogger) 
 
 // UpdateBlogger 更新博客
 func (db *rdbms) UpdateBlogger(ctx context.Context, fields map[string]interface{}) error {
-	return db.Model(model.Blogger{}).Updates(fields).Error
+	return db.Model(model.Blogger{}).Session(&gorm.Session{AllowGlobalUpdate: true}).
+		Updates(fields).Error
 }
 
 // LoadInsertAccount 读取或创建账户
@@ -102,7 +119,20 @@ func (db *rdbms) LoadAllSerie(ctx context.Context) (model.SortedSeries, error) {
 
 // InsertArticle 创建文章
 func (db *rdbms) InsertArticle(ctx context.Context, article *model.Article, startID int) error {
-	// TODO id stting
+	if article.ID == 0 {
+		// auto generate id
+		var id int
+		err := db.Model(model.Article{}).Select("MAX(id)").Row().Scan(&id)
+		if err != nil {
+			return err
+		}
+		if id < startID {
+			id = startID
+		} else {
+			id += 1
+		}
+		article.ID = id
+	}
 	return db.Create(article).Error
 }
 
@@ -154,7 +184,7 @@ func (db *rdbms) LoadArticleList(ctx context.Context, search SearchArticles) (mo
 		return nil, 0, err
 	}
 	var articles model.SortedArticles
-	err = db.Limit(search.Limit).
+	err = gormDB.Limit(search.Limit).
 		Offset((search.Page - 1) * search.Limit).
 		Order("created_at DESC").Find(&articles).Error
 	return articles, int(count), err

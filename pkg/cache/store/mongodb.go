@@ -14,8 +14,9 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
-// driver: mongodb
-// source: mongodb://localhost:27017
+// example:
+//   driver: mongodb
+//   source: mongodb://localhost:27017
 
 const (
 	mongoDBName       = "eiblog"

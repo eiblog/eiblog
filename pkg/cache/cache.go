@@ -419,7 +419,7 @@ func (c *Cache) loadOrInit() error {
 			Author:    blogapp.Account.Username,
 			Title:     "关于",
 			Slug:      "about",
-			CreatedAt: time.Time{},
+			CreatedAt: time.Time{}.AddDate(0, 0, 1),
 		}
 		err = c.InsertArticle(context.Background(), about, ArticleStartID)
 		if err != nil {

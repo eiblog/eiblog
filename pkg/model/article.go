@@ -11,17 +11,17 @@ import (
 
 // Article 文章
 type Article struct {
-	ID      int            `gorm:"column:id;primaryKey" bson:"id"`               // 自增ID
+	ID      int            `gorm:"column:id;primaryKey" bson:"id"`               // ID, store自行控制
 	Author  string         `gorm:"column:author;not null" bson:"author"`         // 作者名
 	Slug    string         `gorm:"column:slug;not null;uniqueIndex" bson:"slug"` // 文章缩略名
 	Title   string         `gorm:"column:title;not null" bson:"title"`           // 标题
 	Count   int            `gorm:"column:count;not null" bson:"count"`           // 评论数量
 	Content string         `gorm:"column:content;not null" bson:"content"`       // markdown内容
 	SerieID int            `gorm:"column:serie_id;not null" bson:"serie_id"`     // 专题ID
-	Tags    pq.StringArray `gorm:"column:tags;type:text[];not null" bson:"tags"` // tags
+	Tags    pq.StringArray `gorm:"column:tags;type:text[]" bson:"tags"`          // tags
 	IsDraft bool           `gorm:"column:is_draft;not null" bson:"is_draft"`     // 是否是草稿
 
-	DeletedAt time.Time `gorm:"column:deleted_at;default:null" bson:"deleted_at"`  // 删除时间
+	DeletedAt time.Time `gorm:"column:deleted_at;not null" bson:"deleted_at"`      // 删除时间
 	UpdatedAt time.Time `gorm:"column:updated_at;default:now()" bson:"updated_at"` // 更新时间
 	CreatedAt time.Time `gorm:"column:created_at;default:now()" bson:"created_at"` // 创建时间
 
