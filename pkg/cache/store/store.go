@@ -52,7 +52,7 @@ type Store interface {
 	LoadAllSerie(ctx context.Context) (model.SortedSeries, error)
 
 	// InsertArticle 创建文章
-	InsertArticle(ctx context.Context, article *model.Article) error
+	InsertArticle(ctx context.Context, article *model.Article, startID int) error
 	// RemoveArticle 硬删除文章
 	RemoveArticle(ctx context.Context, id int) error
 	// CleanArticles 清理回收站文章
@@ -68,7 +68,7 @@ type Store interface {
 // Driver 存储驱动
 type Driver interface {
 	// Init 数据库初始化, 建表, 加索引操作等
-	Init(source string) (Store, error)
+	Init(name, source string) (Store, error)
 }
 
 // Register 注册驱动
@@ -106,5 +106,5 @@ func NewStore(name string, source string) (Store, error) {
 		return nil, fmt.Errorf("store: unknown driver %q (forgotten import?)", name)
 	}
 
-	return driver.Init(source)
+	return driver.Init(name, source)
 }

@@ -86,7 +86,8 @@ func (c *Cache) AddArticle(article *model.Article) error {
 	defer c.lock.Unlock()
 
 	// store
-	err := c.InsertArticle(context.Background(), article)
+	err := c.InsertArticle(context.Background(), article,
+		config.Conf.EiBlogApp.General.StartID)
 	if err != nil {
 		return err
 	}
@@ -417,7 +418,8 @@ func (c *Cache) loadOrInit() error {
 			Slug:      "about",
 			CreatedAt: time.Time{},
 		}
-		err = c.InsertArticle(context.Background(), about)
+		err = c.InsertArticle(context.Background(), about,
+			config.Conf.EiBlogApp.General.StartID)
 		if err != nil {
 			return err
 		}
@@ -430,7 +432,8 @@ func (c *Cache) loadOrInit() error {
 			Slug:      "blogroll",
 			CreatedAt: time.Time{}.AddDate(0, 0, 7),
 		}
-		err = c.InsertArticle(context.Background(), blogroll)
+		err = c.InsertArticle(context.Background(), blogroll,
+			config.Conf.EiBlogApp.General.StartID)
 		if err != nil {
 			return err
 		}
@@ -552,8 +555,7 @@ func (c *Cache) regeneratePages() {
 
 // timerClean 定时清理文章
 func (c *Cache) timerClean() {
-	dur := time.Duration(config.Conf.EiBlogApp.General.Clean)
-	ticker := time.NewTicker(dur * time.Hour)
+	ticker := time.NewTicker(time.Hour)
 
 	for range ticker.C {
 		err := c.CleanArticles(context.Background())
@@ -565,8 +567,7 @@ func (c *Cache) timerClean() {
 
 // timerDisqus disqus定时操作
 func (c *Cache) timerDisqus() {
-	dur := time.Duration(config.Conf.EiBlogApp.Disqus.Interval)
-	ticker := time.NewTicker(dur * time.Hour)
+	ticker := time.NewTicker(5 * time.Hour)
 
 	for range ticker.C {
 		err := internal.PostsCount(c.ArticlesMap)

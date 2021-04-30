@@ -6,7 +6,6 @@ import (
 	"sort"
 	"time"
 
-	"github.com/eiblog/eiblog/pkg/config"
 	"github.com/eiblog/eiblog/pkg/model"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -35,7 +34,7 @@ type mongodb struct {
 }
 
 // Init init mongodb client
-func (db *mongodb) Init(source string) (Store, error) {
+func (db *mongodb) Init(name, source string) (Store, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
@@ -117,7 +116,7 @@ func (db *mongodb) LoadInsertAccount(ctx context.Context,
 
 	collection := db.Database(mongoDBName).Collection(collectionAccount)
 
-	filter := bson.M{"username": config.Conf.EiBlogApp.Account.Username}
+	filter := bson.M{"username": acct.Username}
 	result := collection.FindOne(ctx, filter)
 	err = result.Err()
 	if err != nil {
@@ -207,11 +206,11 @@ func (db *mongodb) LoadAllSerie(ctx context.Context) (model.SortedSeries, error)
 }
 
 // InsertArticle 创建文章
-func (db *mongodb) InsertArticle(ctx context.Context, article *model.Article) error {
+func (db *mongodb) InsertArticle(ctx context.Context, article *model.Article, startID int) error {
 	// 可手动分配ID或者分配ID, 占位至起始id
 	for article.ID == 0 {
 		id := db.nextValue(ctx, counterNameArticle)
-		if id < config.Conf.EiBlogApp.General.StartID {
+		if id < startID {
 			continue
 		} else {
 			article.ID = id
@@ -236,7 +235,8 @@ func (db *mongodb) RemoveArticle(ctx context.Context, id int) error {
 func (db *mongodb) CleanArticles(ctx context.Context) error {
 	collection := db.Database(mongoDBName).Collection(collectionArticle)
 
-	exp := time.Now().Add(time.Duration(config.Conf.EiBlogApp.General.Trash) * time.Hour)
+	// 超过两天自动删除
+	exp := time.Now().Add(-48 * time.Hour)
 	filter := bson.M{"deleted_at": bson.M{"$gt": time.Time{}, "$lt": exp}}
 	_, err := collection.DeleteMany(ctx, filter)
 	return err

@@ -46,8 +46,6 @@ type General struct {
 	DescPrefix string `yaml:"descprefix"` // 文章描述前缀
 	Identifier string `yaml:"identifier"` // 文章截取标识
 	Length     int    `yaml:"length"`     // 文章预览长度
-	Trash      int    `yaml:"trash"`      // 回收箱文章保留时间
-	Clean      int    `yaml:"clean"`      // 清理回收箱频率
 	Timezone   string `yaml:"timezone"`   // 时区
 }
 
@@ -56,7 +54,6 @@ type Disqus struct {
 	ShortName   string `yaml:"shortname"`
 	PublicKey   string `yaml:"publickey"`
 	AccessToken string `yaml:"accesstoken"`
-	Interval    int    `yaml:"interval"` // 获取评论数量间隔
 }
 
 // Twitter card
