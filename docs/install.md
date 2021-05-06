@@ -31,13 +31,13 @@ database:
 
 ### 搜索引擎
 
-博客强依赖 ElasticSearch 搜索引擎，如果仅调试可以跳过不部署。但对外提供服务强烈建议部署上 ES，这样可以提高体验感。博主提供了一个已经配置好的 docker 镜像：`deepzz0/es`：
+博客强依赖 ElasticSearch 搜索引擎，如果仅调试可以跳过不部署。但对外提供服务强烈建议部署上 ES，这样可以提高体验感。博主提供了一个已经配置好的 docker 镜像：`deepzz0/elasticsearch`：
 
 ```
 # 运行
 $ docker run --name es \
     -p 9200:9200 \
-    deepzz0/es:latest
+    deepzz0/elasticsearch:2.4.3
 ```
 
 修改 `conf/app.yml` 下的 `eshost` 配置：
@@ -123,7 +123,7 @@ services:
     volumes:
     - ${PWD}/conf:/app/conf
     extra_hosts:
-    - "disqus.com:23.235.33.134"
+    - "disqus.com:151.101.192.134"
     links:
     - elasticsearch
     - mongodb

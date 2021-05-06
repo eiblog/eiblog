@@ -6,16 +6,14 @@ services:
     - ${PWD}/mgodb:/data/db
     restart: always
   elasticsearch:
-    image: deepzz0/es:2.4.1
-    environment:
-    - ES_JAVA_OPTS="-Xms512m -Xmx512m"
+    image: deepzz0/elasticsearch:2.4.3
     restart: always
   eiblog:
     iamge: deepzz0/eiblog:latest
     volumes:
     - ${PWD}/conf:/app/conf
     extra_hosts:
-    - "disqus.com:23.235.33.134"
+    - "disqus.com:151.101.192.134"
     links:
     - elasticsearch
     - mongodb
