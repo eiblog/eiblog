@@ -114,9 +114,7 @@ services:
     - ${PWD}/mgodb:/data/db
     restart: always
   elasticsearch:
-    image: deepzz0/es:2.4.1
-    environment:
-    - ES_JAVA_OPTS="-Xms512m -Xmx512m"
+    image: deepzz0/elasticsearch:2.4.3
     restart: always
   eiblog:
     iamge: deepzz0/eiblog:latest
