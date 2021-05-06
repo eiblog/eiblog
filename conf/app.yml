@@ -27,7 +27,7 @@ eiblogapp:
     shortname: xxxxxx
     publickey: wdSgxRm9rdGAlLKFcFdToBe3GT4SibmV7Y8EjJQ0r4GWXeKtxpopMAeIeoI2dTEg
     accesstoken: 50023908f39f4607957e909b495326af
-  google:
+  google: # 谷歌分析
     url: https://www.google-analytics.com/collect
     tid: UA-xxxxxx-1
     v: "1"
@@ -42,7 +42,7 @@ eiblogapp:
     site: deepzz02
     image: st.deepzz.com/static/img/avatar.jpg
     address: twitter.com/deepzz02
-  feedrpc:
+  feedrpc: # rss ping
     feedrurl: https://deepzz.superfeedr.com/
     pingrpc:
       - http://ping.baidu.com/ping/RPC2

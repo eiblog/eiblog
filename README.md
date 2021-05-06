@@ -6,6 +6,37 @@
 
 但它有着部署简单（上线复杂！）的特点，不推荐没有计算机知识的朋友搭建，欢迎咨询。该博客的个中优点（简洁、轻快，安全），等你体验。
 
+### 快速体验
+
+1、下载程序压缩包：到 [这里](https://github.com/eiblog/eiblog/releases) 下载 eiblog 相应系统压缩包，然后解压缩。
+
+2、启动数据库服务：博客支持多种数据库后端，如MongoDB、MySQL、Postgres、SQLite等。
+
+```
+# 修改 conf/app.yml 数据库连接配置
+# driver可选：mongodb、mysql、postgres、sqlite、sqlserver、clickhouse、redis等
+# source为相应的连接地址
+database:
+  driver: postgres
+  source: host=localhost port=5432 user=postgres dbname=eiblog sslmode=disable password=MTI3LjAuMC4x
+```
+
+3、启动 ES 搜索服务：博客使用 ElasticSearch 2.4.1 做为搜索引擎。
+
+```
+# 修改 conf/app.yml ElasticSearch连接配置
+# 如果不启用搜索功能可以置空
+eshost: http://localhost:9200
+```
+
+4、启动博客程序。
+
+```
+./backend
+```
+
+然后访问 `localhost:9000` 就可以了。
+
 ### 功能特性
 
 本着博客本质用来分享知识的特点，`EiBlog` 不会有较强的定制功能（包括主题，CDN支持等），仅保持常用简单页面与功能：
@@ -38,45 +69,17 @@
 
 可以容易的看到 [httpsecurityreport](https://httpsecurityreport.com/?report=deepzz.com) 评分`96`，[ssllabs](https://www.ssllabs.com/ssltest/analyze.html?d=deepzz.com&latest) 评分`A+`，[myssl](https://myssl.com/deepzz.com) 评分`A+`，堪称完美。这些安全的相关配置会在后面的部署过程中接触到。
 
-相关图片展示：
-
 ![show-home](https://st.deepzz.com/blog/img/show-home.png)
 ![show-home2](https://st.deepzz.com/blog/img/show-home2.png)
 
 ![show-admin](https://st.deepzz.com/blog/img/show-admin.png)
 
-![eiblog-mem](https://st.deepzz.com/blog/img/eiblog-mem.png)
+### 更多文档
 
-> 注：图片1，图片2是博客界面，图片3是后台界面，图片4是内存占用。
-
-### 快速体验
-
-1、下载程序压缩包：到 [这里](https://github.com/eiblog/eiblog/releases) 下载，解压缩。
-
-2、启动数据库服务，博客支持多种数据库后端：MongoDB、MySQL、Postgres、SQLite等：
-
-```
-# 修改 conf/app.yml 数据库连接配置
-# driver可选：mongodb、mysql、postgres、sqlite、sqlserver、clickhouse、redis等
-# source为相应的连接地址
-database:
-  driver: postgres
-  source: host=localhost port=5432 user=postgres dbname=eiblog sslmode=disable password=MTI3LjAuMC4x
-```
-
-3、启动 ES 搜索服务，博客使用 ElasticSearch 做为搜索引擎：
-
-```
-# 修改 conf/app.yml ElasticSearch连接配置
-# 如果不启用搜索功能可以置空
-eshost: http://localhost:9200
-```
-
-4、启动博客程序：
-
-```
-./backend
-```
+* [安装部署](https://eiblog.github.io/eiblog/install)
+* [写作须知](https://eiblog.github.io/eiblog/writing)
+* [好玩功能](https://eiblog.github.io/eiblog/amusing)
+* [如何备份](https://eiblog.github.io/eiblog/backup)
 
 ### 贡献成员
 

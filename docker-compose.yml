@@ -1,0 +1,31 @@
+version: '3'
+services:
+  mongodb:
+    image: mongo:3.2
+    volumes:
+    - ${PWD}/mgodb:/data/db
+    restart: always
+  elasticsearch:
+    image: deepzz0/es:2.4.1
+    environment:
+    - ES_JAVA_OPTS="-Xms512m -Xmx512m"
+    restart: always
+  eiblog:
+    iamge: deepzz0/eiblog:latest
+    volumes:
+    - ${PWD}/conf:/app/conf
+    extra_hosts:
+    - "disqus.com:23.235.33.134"
+    links:
+    - elasticsearch
+    - mongodb
+    ports:
+    - 9000:9000
+    restart: always
+  backup:
+    image: deepzz0/backup:latest
+    volumes:
+    - ${PWD}/conf:/app/conf
+    links:
+    - mongodb
+    restart: always
