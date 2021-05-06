@@ -32,7 +32,7 @@
 * 文章评论数量（不重要）通过后端跑定时任务获取，所以有时评论数量是不对的，这样减少了 API 调用。
 * 整站内容全部内存缓存，`mardown` 文档全部转换为 html 进行缓存，减少了转换过程。
 * `.js`、`.css` 等静态文件浏览器本地存储，小图片 base64 内置到 css 中，二次访问不会产生网络带来的延迟，加速访问。通过版本控制更新。
-* 最佳时间 nginx 配置，可以查看 `eiblog.conf`，开启压缩缩小传输量，服务器传输证书链、开启 `Session Resumption`、`Session Ticket`、`OCSP Stapling `等加速证书握手，再次提高速度。
+* 最佳实践 nginx 配置，可以查看 `eiblog.conf`，开启压缩缩小传输量，服务器传输证书链、开启 `Session Resumption`、`Session Ticket`、`OCSP Stapling `等加速证书握手，再次提高速度。
 
 ### 博客页面
 
