@@ -311,6 +311,8 @@ func (db *mongodb) LoadArticleList(ctx context.Context, search SearchArticles) (
 	if err != nil {
 		return nil, 0, err
 	}
+	defer cur.Close(ctx)
+
 	var articles model.SortedArticles
 	for cur.Next(ctx) {
 		obj := model.Article{}
