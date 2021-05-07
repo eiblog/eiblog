@@ -11,10 +11,10 @@ eiblogapp:
     host: example.com
   staticversion: 1 # 静态文件版本
   hotwords: # 热搜词
-    - docker
-    - mongodb
-    - curl
-    - dns
+  - docker
+  - mongodb
+  - curl
+  - dns
   general: # 常规配置
     pagenum: 10 # 首页展示文章数量
     pagesize: 20 # 管理界面
@@ -32,6 +32,7 @@ eiblogapp:
     tid: UA-xxxxxx-1
     v: "1"
     t: pageview
+    adsense: <script data-ad-client="ca-pub-5384494508691406" async src=""></script>
   qiniu: # 七牛OSS
     bucket: eiblog
     domain: st.deepzz.com
@@ -45,8 +46,8 @@ eiblogapp:
   feedrpc: # rss ping
     feedrurl: https://deepzz.superfeedr.com/
     pingrpc:
-      - http://ping.baidu.com/ping/RPC2
-      - http://rpc.pingomatic.com/
+    - http://ping.baidu.com/ping/RPC2
+    - http://rpc.pingomatic.com/
   # 数据初始化操作，可到博客后台修改
   account:
     username: deepzz # *后台登录用户名

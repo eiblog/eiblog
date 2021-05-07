@@ -66,10 +66,11 @@ type Twitter struct {
 
 // Google analytics
 type Google struct {
-	URL string `yaml:"url"`
-	Tid string `yaml:"tid"`
-	V   string `yaml:"v"`
-	T   string `yaml:"t"`
+	URL     string `yaml:"url"`
+	Tid     string `yaml:"tid"`
+	V       string `yaml:"v"`
+	T       string `yaml:"t"`
+	AdSense string `yaml:"adsense"`
 }
 
 // Qiniu oss

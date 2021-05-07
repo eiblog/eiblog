@@ -39,6 +39,7 @@ func baseFEParams(c *gin.Context) gin.H {
 		"Twitter":  config.Conf.EiBlogApp.Twitter,
 		"Qiniu":    config.Conf.EiBlogApp.Qiniu,
 		"Disqus":   config.Conf.EiBlogApp.Disqus,
+		"AdSense":  config.Conf.EiBlogApp.Google.AdSense,
 		"Version":  version,
 	}
 }
