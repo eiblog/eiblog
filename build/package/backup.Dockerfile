@@ -12,4 +12,4 @@ COPY conf /app/conf
 EXPOSE 9001
 
 WORKDIR /app
-CMD ["backend"]
+CMD ["./backend"]

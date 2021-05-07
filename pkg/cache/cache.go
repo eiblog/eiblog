@@ -322,20 +322,23 @@ func (c *Cache) readdArticle(article *model.Article, needSort bool) {
 	}
 	// series
 	for i, serie := range c.Series {
-		if serie.ID == article.SerieID {
-			c.Series[i].Articles = append(c.Series[i].Articles, article)
-			if needSort {
-				sort.Sort(c.Series[i].Articles)
-				PagesCh <- PageSeries // 重建专题
-			}
+		if serie.ID != article.SerieID {
+			continue
+		}
+		c.Series[i].Articles = append(c.Series[i].Articles, article)
+		if needSort {
+			sort.Sort(c.Series[i].Articles)
+			PagesCh <- PageSeries // 重建专题
 		}
 	}
 	// archive
 	y, m, _ := article.CreatedAt.Date()
 	for i, archive := range c.Archives {
-		if ay, am, _ := archive.Time.Date(); y == ay && m == am {
-			c.Archives[i].Articles = append(c.Archives[i].Articles, article)
+		ay, am, _ := archive.Time.Date()
+		if y != ay || m != am {
+			continue
 		}
+		c.Archives[i].Articles = append(c.Archives[i].Articles, article)
 		if needSort {
 			sort.Sort(c.Archives[i].Articles)
 			PagesCh <- PageArchive // 重建归档
@@ -509,11 +512,11 @@ func (c *Cache) regeneratePages() {
 				buf.WriteString("\n\n")
 				for _, article := range series.Articles {
 					//eg. * [标题一](/post/hello-world.html) <span class="date">(Man 02, 2006)</span>
-					str := fmt.Sprintf(`* [%s](/post/%s.html) <span class="date">(%s)</span>`,
+					str := fmt.Sprintf("* [%s](/post/%s.html) <span class=\"date\">(%s)</span>\n",
 						article.Title, article.Slug, article.CreatedAt.Format("Jan 02, 2006"))
 					buf.WriteString(str)
 				}
-				buf.WriteString("\n\n")
+				buf.WriteString("\n")
 			}
 			c.PageSeries = string(render.RenderPage(buf.Bytes()))
 		case PageArchive:
@@ -538,11 +541,11 @@ func (c *Cache) regeneratePages() {
 				for i, article := range archive.Articles {
 					createdAt := article.CreatedAt.In(tools.TimeLocation)
 					if i == 0 && gt12Month {
-						str := fmt.Sprintf(`* *[%s](/post/%s.html) <span class="date">(%s)</span>`,
+						str := fmt.Sprintf("* *[%s](/post/%s.html) <span class=\"date\">(%s)</span>\n",
 							article.Title, article.Slug, createdAt.Format("Jan 02, 2006"))
 						buf.WriteString(str)
 					} else {
-						str := fmt.Sprintf(`* [%s](/post/%s.html) <span class="date">(%s)</span>`,
+						str := fmt.Sprintf("* [%s](/post/%s.html) <span class=\"date\">(%s)</span>\n",
 							article.Title, article.Slug, createdAt.Format("Jan 02, 2006"))
 						buf.WriteString(str)
 					}
