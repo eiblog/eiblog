@@ -87,16 +87,6 @@ eshost: http://localhost:9200
 
 走到这里，我相信只走到 `80%` 的路程。放弃还来得及。这里会对 `eiblog/conf` 下的所有文件做说明，希望你做好准备。
 
-```
-├── app.yml # 整站配置
-└── tpl     # 相关模版
-    ├── crossdomainTpl.xml
-    ├── feedTpl.xml
-    ├── opensearchTpl.xml
-    ├── robotsTpl.xml
-    └── sitemapTpl.xml
-```
-
 具体的配置内容已经在 `app.yml` 中进行说明了。
 
 如果用 nginx 作为代理服务器，博主提供了一份示例配置 `eiblog/eiblog.conf`，该配置涉及到 `ssl` 相关配置建议存放于 `/etc/nginx/ssl` 下。其中关于 `ssl_dhparam`、站点认证均提供了相关配置。
