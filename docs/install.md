@@ -37,7 +37,7 @@ database:
 # 运行
 $ docker run --name es \
     -p 9200:9200 \
-    deepzz0/elasticsearch:2.4.3
+    deepzz0/elasticsearch:2.4.1
 ```
 
 修改 `conf/app.yml` 下的 `eshost` 配置：
@@ -114,7 +114,9 @@ services:
     - ${PWD}/mgodb:/data/db
     restart: always
   elasticsearch:
-    image: deepzz0/elasticsearch:2.4.3
+    image: deepzz0/elasticsearch:2.4.1
+    volumes:
+    - ${PWD}/esdata:/usr/share/elasticsearch/data
     restart: always
   eiblog:
     iamge: deepzz0/eiblog:latest

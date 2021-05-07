@@ -21,7 +21,7 @@ database:
   source: host=localhost port=5432 user=postgres dbname=eiblog sslmode=disable password=MTI3LjAuMC4x
 ```
 
-3、启动 ES 搜索服务：博客使用 ElasticSearch 2.4.3 做为搜索引擎。
+3、启动 ES 搜索服务：博客使用 ElasticSearch 2.4.1 做为搜索引擎。
 
 ```
 # 修改 conf/app.yml ElasticSearch连接配置
