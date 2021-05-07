@@ -541,7 +541,7 @@ func (c *Cache) regeneratePages() {
 				for i, article := range archive.Articles {
 					createdAt := article.CreatedAt.In(tools.TimeLocation)
 					if i == 0 && gt12Month {
-						str := fmt.Sprintf("* *[%s](/post/%s.html) <span class=\"date\">(%s)</span>\n",
+						str := fmt.Sprintf("* *[%s](/post/%s.html) <span class=\"date\">(%s)</span>*\n",
 							article.Title, article.Slug, createdAt.Format("Jan 02, 2006"))
 						buf.WriteString(str)
 					} else {
@@ -549,7 +549,6 @@ func (c *Cache) regeneratePages() {
 							article.Title, article.Slug, createdAt.Format("Jan 02, 2006"))
 						buf.WriteString(str)
 					}
-					buf.WriteByte('\n')
 				}
 			}
 			c.PageArchives = string(render.RenderPage(buf.Bytes()))
