@@ -14,4 +14,4 @@ COPY assets /app/assets
 EXPOSE 9000
 
 WORKDIR /app
-CMD ["backend"]
+CMD ["./backend"]
