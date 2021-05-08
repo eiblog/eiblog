@@ -19,7 +19,8 @@ var workDir = func() string {
 		name := filepath.Join(wd, "conf")
 		_, err := os.Stat(name)
 		if err != nil {
-			wd, _ = path.Split(wd)
+			dir, _ := path.Split(wd)
+			wd = path.Clean(dir)
 			continue
 		}
 		return wd
