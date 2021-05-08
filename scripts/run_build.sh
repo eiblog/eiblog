@@ -19,7 +19,7 @@ docker buildx create --use --name builder
 # build demo app
 for file in pkg/core/*; do
   app="$(basename $file)";
-  CGO_ENABLED=0 go build -o bin/backend "./cmd/$app"
+  CGO_ENABLED=0 go build -tags prod -o bin/backend "./cmd/$app"
   # docker image
   docker buildx build --platform "$_platform" \
     -f "build/package/$app.Dockerfile" \

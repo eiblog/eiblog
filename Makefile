@@ -24,7 +24,7 @@ dist:
 
 # clean
 clean:
-	@rm -rf bin && rm *.tar.gz
+	@rm -rf bin && rm -f *.tar.gz && rm -f backend
 
 # protoc
 protoc:

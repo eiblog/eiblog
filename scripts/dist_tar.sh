@@ -11,7 +11,7 @@ for file in pkg/core/*; do
   for os in linux darwin windows; do
     _target="$app-$_tag.$os-$_arch.tar.gz"
     CGO_ENABLED=0 GOOS=$os GOARCH=$_arch \
-      go build -o backend "./cmd/$app"
+      go build -tags prod -o backend "./cmd/$app"
     if [ "$app" = "eiblog" ]; then
       tar czf $_target conf website assets backend
     else
