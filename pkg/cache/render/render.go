@@ -7,6 +7,7 @@ import (
 
 	"github.com/eiblog/eiblog/pkg/config"
 	"github.com/eiblog/eiblog/pkg/model"
+	"github.com/eiblog/eiblog/tools"
 
 	"github.com/eiblog/blackfriday"
 )
@@ -41,17 +42,6 @@ var (
 	regHeader = regexp.MustCompile("</nav></div>")
 )
 
-// IgnoreHtmlTag 去掉 html tag
-func IgnoreHtmlTag(src string) string {
-	// 去除所有尖括号内的HTML代码
-	re, _ := regexp.Compile(`<[\S\s]+?>`)
-	src = re.ReplaceAllString(src, "")
-
-	// 去除换行符
-	re, _ = regexp.Compile(`\s+`)
-	return re.ReplaceAllString(src, "")
-}
-
 // RenderPage 渲染markdown
 func RenderPage(md []byte) []byte {
 	renderer := blackfriday.HtmlRenderer(commonHtmlFlags, "", "")
@@ -66,7 +56,7 @@ func GenerateExcerptMarkdown(article *model.Article) {
 		index := strings.Index(article.Content, "\r\n")
 		prefix := article.Content[len(blogapp.General.DescPrefix):index]
 
-		article.Desc = IgnoreHtmlTag(prefix)
+		article.Desc = tools.IgnoreHtmlTag(prefix)
 		article.Content = article.Content[index:]
 	}
 
@@ -83,12 +73,13 @@ func GenerateExcerptMarkdown(article *model.Article) {
 	// excerpt
 	index = regIdentifier.FindStringIndex(article.Content)
 	if index != nil {
-		article.Excerpt = IgnoreHtmlTag(article.Content[:index[0]])
+		article.Excerpt = tools.IgnoreHtmlTag(article.Content[:index[0]])
+		return
 	}
 	uc := []rune(article.Content)
 	length := blogapp.General.Length
 	if len(uc) < length {
 		length = len(uc)
 	}
-	article.Excerpt = IgnoreHtmlTag(string(uc[0:length]))
+	article.Excerpt = tools.IgnoreHtmlTag(string(uc[0:length]))
 }
