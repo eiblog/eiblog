@@ -15,7 +15,11 @@
 ```
 # 修改 conf/app.yml 数据库连接配置
 # driver可选：mongodb、mysql、postgres、sqlite、sqlserver、clickhouse、redis等
-# source为相应的连接地址
+# driver        # source
+#  mongodb      mongodb://localhost:27017
+#  postgres     host=localhost port=5432 user=user dbname=eiblog sslmode=disable password=password
+#  mysql        user:password@tcp(127.0.0.1:3306)/eiblog?charset=utf8mb4&parseTime=True&loc=Local
+#  sqlite       /path/eiblog.db
 database:
   driver: postgres
   source: host=localhost port=5432 user=postgres dbname=eiblog sslmode=disable password=MTI3LjAuMC4x
