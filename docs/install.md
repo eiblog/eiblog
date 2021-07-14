@@ -43,7 +43,7 @@ $ docker run --name es \
 修改 `conf/app.yml` 下的 `eshost` 配置：
 
 ```
-# 如果不部署，请置空
+# 如果不提供搜索，请置空
 eshost: http://localhost:9200
 ```
 
