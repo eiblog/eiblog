@@ -467,7 +467,15 @@ func handleAPIQiniuUpload(c *gin.Context) {
 		return
 	}
 	filename := strings.ToLower(header.Filename)
-	url, err := internal.QiniuUpload(filename, s.Size(), file)
+
+	params := internal.UploadParams{
+		Name: filename,
+		Size: s.Size(),
+		Data: file,
+
+		Conf: config.Conf.EiBlogApp.Qiniu,
+	}
+	url, err := internal.QiniuUpload(params)
 	if err != nil {
 		logrus.Error("handleAPIQiniuUpload.QiniuUpload: ", err)
 		c.String(http.StatusBadRequest, err.Error())
@@ -491,7 +499,13 @@ func handleAPIQiniuDelete(c *gin.Context) {
 		logrus.Error("handleAPIQiniuDelete.PostForm: 参数错误")
 		return
 	}
-	err := internal.QiniuDelete(name)
+
+	params := internal.DeleteParams{
+		Name: name,
+
+		Conf: config.Conf.EiBlogApp.Qiniu,
+	}
+	err := internal.QiniuDelete(params)
 	if err != nil {
 		logrus.Error("handleAPIQiniuDelete.QiniuDelete: ", err)
 	}

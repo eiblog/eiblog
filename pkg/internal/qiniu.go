@@ -13,19 +13,28 @@ import (
 	"github.com/qiniu/go-sdk/v7/storage"
 )
 
+// UploadParams upload params
+type UploadParams struct {
+	Name string
+	Size int64
+	Data io.Reader
+
+	Conf config.Qiniu
+}
+
 // QiniuUpload 上传文件
-func QiniuUpload(name string, size int64, data io.Reader) (string, error) {
-	if config.Conf.EiBlogApp.Qiniu.AccessKey == "" ||
-		config.Conf.EiBlogApp.Qiniu.SecretKey == "" {
+func QiniuUpload(params UploadParams) (string, error) {
+	if params.Conf.AccessKey == "" ||
+		params.Conf.SecretKey == "" {
 		return "", errors.New("qiniu config error")
 	}
-	key := completeQiniuKey(name)
+	key := completeQiniuKey(params.Name)
 
-	mac := qbox.NewMac(config.Conf.EiBlogApp.Qiniu.AccessKey,
-		config.Conf.EiBlogApp.Qiniu.SecretKey)
+	mac := qbox.NewMac(params.Conf.AccessKey,
+		params.Conf.SecretKey)
 	// 设置上传策略
 	putPolicy := &storage.PutPolicy{
-		Scope:      config.Conf.EiBlogApp.Qiniu.Bucket,
+		Scope:      params.Conf.Bucket,
 		Expires:    3600,
 		InsertOnly: 1,
 	}
@@ -42,20 +51,28 @@ func QiniuUpload(name string, size int64, data io.Reader) (string, error) {
 	putExtra := &storage.PutExtra{}
 
 	err := uploader.Put(context.Background(), ret, uploadToken,
-		key, data, size, putExtra)
+		key, params.Data, params.Size, putExtra)
 	if err != nil {
 		return "", err
 	}
-	url := "https://" + config.Conf.EiBlogApp.Qiniu.Domain + "/" + key
+	url := "https://" + params.Conf.Domain + "/" + key
 	return url, nil
 }
 
-// QiniuDelete 删除文件
-func QiniuDelete(name string) error {
-	key := completeQiniuKey(name)
+// DeleteParams delete params
+type DeleteParams struct {
+	Name string
+	Days int
 
-	mac := qbox.NewMac(config.Conf.EiBlogApp.Qiniu.AccessKey,
-		config.Conf.EiBlogApp.Qiniu.SecretKey)
+	Conf config.Qiniu
+}
+
+// QiniuDelete 删除文件
+func QiniuDelete(params DeleteParams) error {
+	key := completeQiniuKey(params.Name)
+
+	mac := qbox.NewMac(params.Conf.AccessKey,
+		params.Conf.SecretKey)
 	// 上传配置
 	cfg := &storage.Config{
 		Zone:     &storage.ZoneHuadong,
@@ -64,7 +81,10 @@ func QiniuDelete(name string) error {
 	// manager
 	bucketManager := storage.NewBucketManager(mac, cfg)
 	// Delete
-	return bucketManager.Delete(config.Conf.EiBlogApp.Qiniu.Bucket, key)
+	if params.Days > 0 {
+		return bucketManager.DeleteAfterDays(params.Conf.Bucket, key, params.Days)
+	}
+	return bucketManager.Delete(params.Conf.Bucket, key)
 }
 
 // completeQiniuKey 修复路径

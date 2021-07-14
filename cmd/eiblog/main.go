@@ -19,13 +19,13 @@ import (
 func main() {
 	fmt.Println("Hi, it's App " + config.Conf.EiBlogApp.Name)
 
-	endRun := make(chan bool, 1)
+	endRun := make(chan error, 1)
 
 	runHTTPServer(endRun)
-	<-endRun
+	fmt.Println(<-endRun)
 }
 
-func runHTTPServer(endRun chan bool) {
+func runHTTPServer(endRun chan error) {
 	if !config.Conf.EiBlogApp.EnableHTTP {
 		return
 	}
@@ -65,6 +65,8 @@ func runHTTPServer(endRun chan bool) {
 
 	// start
 	address := fmt.Sprintf(":%d", config.Conf.EiBlogApp.HTTPPort)
-	go e.Run(address)
+	go func() {
+		endRun <- e.Run(address)
+	}()
 	fmt.Println("HTTP server running on: " + address)
 }

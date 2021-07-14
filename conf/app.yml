@@ -2,7 +2,7 @@ appname: eiblog
 database:
   driver: postgres
   source: host=localhost port=5432 user=postgres dbname=eiblog sslmode=disable password=MTI3LjAuMC4x
-eshost: http://localhost:9200
+eshost:
 eiblogapp:
   mode:
     name: cmd-eiblog
@@ -53,6 +53,15 @@ eiblogapp:
     username: deepzz # *后台登录用户名
     password: deepzz # *登录明文密码
 backupapp:
-  name: cmd-backup
-  enablehttp: true
-  httpport: 9001
+  mode:
+    name: cmd-backup
+    enablehttp: true
+    httpport: 9001
+  backupto: qiniu # 备份到七牛云
+  interval: 7d # 多久备份一次
+  validity: 60d # 保存时长
+  qiniu: # 七牛OSS
+    bucket: backup
+    domain: st.deepzz.com
+    accesskey: MB6AXl_Sj_mmFsL-Lt59Dml2Vmy2o8XMmiCbbSeC
+    secretkey: BIrMy0fsZ0_SHNceNXk3eDuo7WmVYzj2-zrmd5Tf

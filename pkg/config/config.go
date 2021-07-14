@@ -121,6 +121,16 @@ type EiBlogApp struct {
 	Blogger       Blogger  `yaml:"blogger"`
 }
 
+// BackupApp config
+type BackupApp struct {
+	Mode
+
+	BackupTo string `yaml:"backupto"`
+	Interval string `yaml:"interval"` // circle backup, default: 7d
+	Validity string `yaml:"validity"` // storage days, default: 60d
+	Qiniu    Qiniu  `yaml:"qiniu"`    // qiniu config
+}
+
 // Config app config
 type Config struct {
 	RunMode   string    `yaml:"runmode"`
@@ -128,7 +138,7 @@ type Config struct {
 	Database  Database  `yaml:"database"`
 	ESHost    string    `yaml:"eshost"`
 	EiBlogApp EiBlogApp `yaml:"eiblogapp"`
-	BackupApp Mode      `yaml:"backupapp"`
+	BackupApp BackupApp `yaml:"backupapp"`
 }
 
 // load config file
