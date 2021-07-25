@@ -21,9 +21,9 @@ type Article struct {
 	Tags    pq.StringArray `gorm:"column:tags;type:text[]" bson:"tags"`          // tags
 	IsDraft bool           `gorm:"column:is_draft;not null" bson:"is_draft"`     // 是否是草稿
 
-	DeletedAt time.Time `gorm:"column:deleted_at;not null" bson:"deleted_at"`      // 删除时间
-	UpdatedAt time.Time `gorm:"column:updated_at;default:now()" bson:"updated_at"` // 更新时间
-	CreatedAt time.Time `gorm:"column:created_at;default:now()" bson:"created_at"` // 创建时间
+	DeletedAt time.Time `gorm:"column:deleted_at;not null" bson:"deleted_at"`                  // 删除时间
+	UpdatedAt time.Time `gorm:"column:updated_at;default:current_timestamp" bson:"updated_at"` // 更新时间
+	CreatedAt time.Time `gorm:"column:created_at;default:current_timestamp" bson:"created_at"` // 创建时间
 
 	Header  string   `gorm:"-" bson:"-"` // header
 	Excerpt string   `gorm:"-" bson:"-"` // 预览信息
