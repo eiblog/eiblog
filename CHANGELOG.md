@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.1](https://github.com/eiblog/eiblog/compare/v2.1.0...v2.1.1) (2021-07-27)
+
+
+### Bug Fixes
+
+* sqlite error ([e2046d0](https://github.com/eiblog/eiblog/commit/e2046d0d39d9914473fe7b8fae3b18246ed133ce))
+
 ### [2.0.6](https://github.com/eiblog/eiblog/compare/v2.0.5...v2.0.6) (2021-05-08)
 
 
