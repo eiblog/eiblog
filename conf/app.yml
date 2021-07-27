@@ -1,7 +1,7 @@
 appname: eiblog
 database:
-  driver: sqlite
-  source: ./eiblog.db
+  driver: postgres
+  source: host=localhost port=5432 user=postgres dbname=eiblog sslmode=disable password=MTI3LjAuMC4x
 eshost:
 eiblogapp:
   mode:
