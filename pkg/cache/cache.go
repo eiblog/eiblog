@@ -443,7 +443,7 @@ func (c *Cache) loadOrInit() error {
 		}
 	}
 	// account
-	pwd := tools.EncryptPasswd(blogapp.Account.Password,
+	pwd := tools.EncryptPasswd(blogapp.Account.Username,
 		blogapp.Account.Password)
 
 	account := &model.Account{
