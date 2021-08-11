@@ -18,7 +18,7 @@ type Storage struct{}
 
 // BackupData implements timer.Storage
 func (s Storage) BackupData(now time.Time) error {
-	switch config.Conf.Database.Source {
+	switch config.Conf.Database.Driver {
 	case "mongodb":
 		return backupFromMongoDB(now)
 	default:
