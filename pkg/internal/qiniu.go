@@ -42,7 +42,6 @@ func QiniuUpload(params UploadParams) (string, error) {
 	uploadToken := putPolicy.UploadToken(mac)
 	// 上传配置
 	cfg := &storage.Config{
-		Zone:     &storage.ZoneHuadong,
 		UseHTTPS: true,
 	}
 	// uploader
