@@ -283,6 +283,9 @@ func handleAPIPostCreate(c *gin.Context) {
 			logrus.Error("handleAPIPostCreate.AddArticle: ", err)
 			return
 		}
+
+		cid = article.ID
+
 		if !article.IsDraft {
 			// 异步执行，快
 			go func() {
