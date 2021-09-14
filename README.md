@@ -29,7 +29,7 @@ $ docker run --name mongodb \
 
 $ docker run --name elasticsearch \
     -p 9200:9200 \
-    -p ${PWD}/esdata:/usr/share/elasticsearch/data \
+    -v ${PWD}/esdata:/usr/share/elasticsearch/data \
     deepzz0/elasticsearch:2.4.1
 ```
 
