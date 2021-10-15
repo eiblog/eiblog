@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.3](https://github.com/eiblog/eiblog/compare/v2.1.2...v2.1.3) (2021-10-15)
+
+
+### Bug Fixes
+
+* **auto_save:** fix auto save return empty id ([cfaa25e](https://github.com/eiblog/eiblog/commit/cfaa25e1239aba580e0718d40f1a2bf31158b217))
+* backup app judge db driver ([78f5bfc](https://github.com/eiblog/eiblog/commit/78f5bfc1ce017bf77a7442f40963a706e608df51))
+* **pwd:** fix init pwd ([7d04b8f](https://github.com/eiblog/eiblog/commit/7d04b8f5c0846bcd0c7e07d0fc3704a535f6360a))
+
 ### [2.1.2](https://github.com/eiblog/eiblog/compare/v2.1.1...v2.1.2) (2021-07-27)
 
 ### [2.1.1](https://github.com/eiblog/eiblog/compare/v2.1.0...v2.1.1) (2021-07-27)
