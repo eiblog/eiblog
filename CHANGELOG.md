@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.4](https://github.com/eiblog/eiblog/compare/v2.1.3...v2.1.4) (2021-10-26)
+
+
+### Bug Fixes
+
+* **release:** github action runner ([82fba0d](https://github.com/eiblog/eiblog/commit/82fba0ddb47c1f66cb659f775c120c08dd2b4447))
+
 ### [2.1.3](https://github.com/eiblog/eiblog/compare/v2.1.2...v2.1.3) (2021-10-15)
 
 
