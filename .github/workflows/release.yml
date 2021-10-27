@@ -40,13 +40,14 @@ jobs:
       run: scripts/run_build.sh deepzz0 ${{ steps.vars.outputs.tag }}
 
     - name: Package tar
+      env:
+        GOPROXY: https://goproxy.io,direct
       run: scripts/dist_tar.sh ${{ steps.vars.outputs.tag }}
     - name: Release push
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        GOPROXY: https://goproxy.io,direct
       with:
         files: |
           *.tar.gz
