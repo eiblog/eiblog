@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.5](https://github.com/eiblog/eiblog/compare/v2.1.4...v2.1.5) (2021-10-27)
+
+
+### Bug Fixes
+
+* **release:** golang env ([4f6f85a](https://github.com/eiblog/eiblog/commit/4f6f85a85ae56849c49e91d76bbbce1790f16e29))
+
 ### [2.1.4](https://github.com/eiblog/eiblog/compare/v2.1.3...v2.1.4) (2021-10-26)
 
 
