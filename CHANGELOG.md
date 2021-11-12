@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.6](https://github.com/eiblog/eiblog/compare/v2.1.5...v2.1.6) (2021-11-12)
+
+
+### Bug Fixes
+
+* **backup:** backup to qiniu, app.yml->validity change to int ([00cf0b5](https://github.com/eiblog/eiblog/commit/00cf0b5c9f787f3f45f1747b7cb1742c417c6dd6))
+
 ### [2.1.5](https://github.com/eiblog/eiblog/compare/v2.1.4...v2.1.5) (2021-10-27)
 
 
