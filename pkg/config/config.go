@@ -127,7 +127,7 @@ type BackupApp struct {
 
 	BackupTo string `yaml:"backupto"`
 	Interval string `yaml:"interval"` // circle backup, default: 7d
-	Validity string `yaml:"validity"` // storage days, default: 60d
+	Validity int    `yaml:"validity"` // storage days, default: 60
 	Qiniu    Qiniu  `yaml:"qiniu"`    // qiniu config
 }
 

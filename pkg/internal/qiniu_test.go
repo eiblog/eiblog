@@ -31,6 +31,7 @@ func TestQiniuUpload(t *testing.T) {
 				AccessKey: os.Getenv("QINIU_ACCESSKEY"),
 				SecretKey: os.Getenv("QINIU_SECRETKEY"),
 				Bucket:    os.Getenv("QINIU_BUCKET"),
+				Domain:    "bu.st.deepzz.com",
 			},
 		}}, false},
 	}

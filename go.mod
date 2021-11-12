@@ -10,7 +10,7 @@ require (
 	github.com/gofrs/uuid v3.3.0+incompatible
 	github.com/golang/protobuf v1.4.2
 	github.com/lib/pq v1.10.1
-	github.com/qiniu/go-sdk/v7 v7.9.5
+	github.com/qiniu/go-sdk/v7 v7.11.0
 	github.com/sirupsen/logrus v1.4.2
 	github.com/swaggo/gin-swagger v1.3.0
 	github.com/swaggo/swag v1.6.9

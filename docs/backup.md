@@ -14,7 +14,7 @@ backupapp:
     httpport: 9001
   backupto: qiniu # 备份到七牛云
   interval: 7d # 多久备份一次
-  validity: 60d # 保存时长
+  validity: 60 # 保存时长days
   qiniu: # 七牛OSS
     bucket: backup
     domain: st.deepzz.com

@@ -41,15 +41,20 @@ func QiniuUpload(params UploadParams) (string, error) {
 	// 上传token
 	uploadToken := putPolicy.UploadToken(mac)
 	// 上传配置
+	region, err := storage.GetRegion(params.Conf.AccessKey, params.Conf.Bucket)
+	if err != nil {
+		return "", err
+	}
 	cfg := &storage.Config{
 		UseHTTPS: true,
+		Region:   region,
 	}
 	// uploader
 	uploader := storage.NewFormUploader(cfg)
 	ret := new(storage.PutRet)
 	putExtra := &storage.PutExtra{}
 
-	err := uploader.Put(context.Background(), ret, uploadToken,
+	err = uploader.Put(context.Background(), ret, uploadToken,
 		key, params.Data, params.Size, putExtra)
 	if err != nil {
 		return "", err
@@ -73,9 +78,13 @@ func QiniuDelete(params DeleteParams) error {
 	mac := qbox.NewMac(params.Conf.AccessKey,
 		params.Conf.SecretKey)
 	// 上传配置
+	region, err := storage.GetRegion(params.Conf.AccessKey, params.Conf.Bucket)
+	if err != nil {
+		return err
+	}
 	cfg := &storage.Config{
-		Zone:     &storage.ZoneHuadong,
 		UseHTTPS: true,
+		Region:   region,
 	}
 	// manager
 	bucketManager := storage.NewBucketManager(mac, cfg)

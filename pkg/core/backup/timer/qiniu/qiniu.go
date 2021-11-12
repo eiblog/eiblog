@@ -5,6 +5,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/url"
 	"os"
 	"os/exec"
 	"time"
@@ -31,16 +32,19 @@ func backupFromMongoDB(now time.Time) error {
 	defer cancel()
 
 	// dump
-	arg := fmt.Sprintf("mongodump -h %s -d eiblog -o /tmp",
-		config.Conf.Database.Source)
+	u, err := url.Parse(config.Conf.Database.Source)
+	if err != nil {
+		return err
+	}
+	arg := fmt.Sprintf("mongodump -h %s -d eiblog -o /tmp", u.Host)
 	cmd := exec.CommandContext(ctx, "sh", "-c", arg)
-	err := cmd.Run()
+	err = cmd.Run()
 	if err != nil {
 		return err
 	}
 	// tar
 	name := fmt.Sprintf("eiblog-%s.tar.gz", now.Format("2006-01-02"))
-	arg = fmt.Sprintf("tar czf %s /tmp/eiblog", name)
+	arg = fmt.Sprintf("tar czf /tmp/%s /tmp/eiblog", name)
 	cmd = exec.CommandContext(ctx, "sh", "-c", arg)
 	err = cmd.Run()
 	if err != nil {
@@ -48,7 +52,7 @@ func backupFromMongoDB(now time.Time) error {
 	}
 
 	// upload file
-	f, err := os.Open("/tmp/eiblog/" + name)
+	f, err := os.Open("/tmp/" + name)
 	if err != nil {
 		return err
 	}
@@ -70,6 +74,7 @@ func backupFromMongoDB(now time.Time) error {
 	// after days delete
 	deleteParams := internal.DeleteParams{
 		Name: name,
+		Days: config.Conf.BackupApp.Validity,
 
 		Conf: config.Conf.BackupApp.Qiniu,
 	}
