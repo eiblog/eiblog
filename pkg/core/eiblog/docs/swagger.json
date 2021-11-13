@@ -4,10 +4,8 @@
         "description": "This is a sample server celler server.",
         "title": "APP Demo API",
         "contact": {},
-        "license": {},
         "version": "1.0"
     },
-    "host": "{{.Host}}",
     "basePath": "/api",
     "paths": {}
 }
