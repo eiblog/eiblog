@@ -13,13 +13,13 @@ twitter:
 
 每当你发部一个推文，你如果带上你的网址，它会自动给你展示成卡片的形式
 
-![twitter-pub](https://st.deepzz.com/blog/img/twitter-pub.png)
+![twitter-pub](./img/twitter-pub.png)
 
-![twitter-pub2](https://st.deepzz.com/blog/img/twitter-pub2.png)
+![twitter-pub2](./img/twitter-pub2.png)
 
 可以看到`，`之前是没有内容的，该内容是我们文章的描述。
 
 ### Google OpenSearch
 在 Chrome 浏览器上，你可以在输入网站后按 TAB 键进入搜索模式，如：
 
-![opensearch](/Users/edz/go/src/github.com/eiblog/eiblog/opensearch.gif)
+![opensearch](./img/opensearch.gif)

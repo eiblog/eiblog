@@ -24,14 +24,14 @@
 
 结果是：
 
-![article-title](https://st.deepzz.com/blog/img/article-title.png)
+![article-title](./img/article-title.png)
 
 ### 文章描述
 文章描述，主要是给`html->head->meta`中的 name 为 description 用的。现采用了一个临时的办法：在文章的第一行通过前缀识别（只看第一行）。
 
 该前缀可到`conf/app.yml`设置，默认为`Desc:`，如：
 
-![article-description](https://st.deepzz.com/blog/img/article-description.png)
+![article-description](./img/article-description.png)
 
 ### 图片懒加载
 博客系统提供图片懒加载功能（浏览到某个位置，图片才会加载），以此来提高页面加载速度。我们可根据需要是否使用。当然由此带来的坏处就是rss不能够正确加载图片。后续看是否解决这个问题或朋友提PR。
@@ -44,7 +44,7 @@
 ```
 ![sublime-dialog](https://st.deepzz.com/blog/img/dialog-box-without-all-contols.png)
 ```
-![sublime-dialog](https://st.deepzz.com/blog/img/dialog-box-without-all-contols.png)
+![sublime-dialog](./img/dialog-box-without-all-contols.png)
 
 懒加载，需要为该图片指定大小（长高）：
 ```
@@ -61,7 +61,7 @@ x 为小写字母（x,y,z）中的 x。使页面未加载时也占了相应的�
 ### 摘要截取
 摘要截取主要是提供给首页显示，如：
 
-![deepzz-home-page](https://st.deepzz.com/blog/img/deepzz-home-page.jpg)
+![deepzz-home-page](./img/deepzz-home-page.jpeg)
 
 红框中圈出来的就是截取出来的内容。在 `conf/app.yml` 的配置项有两个：
 

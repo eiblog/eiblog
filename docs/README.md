@@ -2,42 +2,58 @@
 
 > 博客项目结构参考模版：https://github.com/deepzz0/appdemo
 
-EiBlog 镜像仓库地址：https://hub.docker.com/u/deepzz0
-
 用过其它博客系统，不喜欢，不够轻，不够快！这是我开发的第二款博客系统，也实在不想再在这件事情上过多纠结了。`EiBlog` 是一个比较稳定的博客系统，现已迭代至 `2.0` 版本，稳定性和维护你是不用担心的。
 
 但它有着部署简单（上线复杂！）的特点，不推荐没有计算机知识的朋友搭建，欢迎咨询。该博客的个中优点（简洁、轻快，安全），等你体验。
 
 ### 快速体验
 
-1、下载程序压缩包：到 [这里](https://github.com/eiblog/eiblog/releases) 下载 eiblog 相应系统压缩包，然后解压缩。
+这里以 mongodb 为例，更多支持的后端存储服务如下：
 
-2、启动数据库服务：博客支持多种数据库后端，如MongoDB、MySQL、Postgres、SQLite等。
+| 类型（driver） | 地址（source）示例                                           |
+| -------------- | ------------------------------------------------------------ |
+| mongodb        | mongodb://localhost:27017                                    |
+| mysql          | user:password@tcp(localhost:3306)/eiblog?charset=utf8mb4&parseTime=True&loc=Local |
+| postgres       | host=localhost port=5432 user=user password=password dbname=eiblog sslmode=disable |
+| sqlite         | /path/eiblog.db                                              |
+| sqlserver      | sqlserver://user:password@localhost:9930?database=eiblog     |
+| clickhouse     | tcp://localhost:9000?database=eiblog&username=user&password=password&read_timeout=10&write_timeout=20 |
+
+1、启动依赖服务，mongodb、elasticsearch：
+
+```
+$ docker run --name mongodb \
+    -p 27017:27017 \
+    -v ${PWD}/mgodb:/data/db \
+    mongo:3.2
+
+$ docker run --name elasticsearch \
+    -p 9200:9200 \
+    -v ${PWD}/esdata:/usr/share/elasticsearch/data \
+    deepzz0/elasticsearch:2.4.1
+```
+
+2、下载压缩包，到 [这里](https://github.com/eiblog/eiblog/releases) 下载 eiblog（非backup） 相应系统压缩包，然后解压缩。
+
+3、修改配置，将数据库与ES地址修改为相应地址：
 
 ```
 # 修改 conf/app.yml 数据库连接配置
-# driver可选：mongodb、mysql、postgres、sqlite、sqlserver、clickhouse、redis等
-# source为相应的连接地址
 database:
-  driver: postgres
-  source: host=localhost port=5432 user=postgres dbname=eiblog sslmode=disable password=MTI3LjAuMC4x
-```
+  driver: mongodb
+  source: mongodb://localhost:27017
 
-3、启动 ES 搜索服务：博客使用 ElasticSearch 2.4.1 做为搜索引擎。
-
-```
-# 修改 conf/app.yml ElasticSearch连接配置
-# 如果不启用搜索功能可以置空
+# 修改 conf/app.yml ES连接配置，如果不启用搜索功能可以置空
 eshost: http://localhost:9200
 ```
 
-4、启动博客程序。
+4、启动服务：
 
 ```
 ./backend
 ```
 
-然后访问 `localhost:9000` 就可以了。
+然后访问 `localhost:9000` 就可以了，后台地址 `localhost:9000/admin/login`，默认账户密码 `deepzz/deepzz`。
 
 ### 功能特性
 
@@ -49,16 +65,16 @@ eshost: http://localhost:9200
 
 功能说明：
 
-- [x] 博客归档，利用时间线帮助我们将归纳博文，内容少于一年按月归档，大于则按年归档。
-- [x] 博客专题，有时候博文是同一系列，专题能够帮助我们很好归纳博文，对阅读者是非常友好的。
-- [x] 标签系统，每篇博文都可以打上不同标签，使得在归档和专题不满足的情况下自定义归档，这块辅助搜索简直完美。
-- [x] 搜索系统，依托ElasticSearch实现的站内搜索，速度与效率并存，再加上google opensearch，搜索只流畅。
-- [x] 管理后台，内嵌全功能 `Typecho` 后台系统，全功能 `Markdown` 编辑器让你感觉什么是简洁清爽。
-- [x] 谷歌统计，由于google api的速度问题，从而实现了后端API异步统计，使得博客页面加载飞速。
-- [x] Disqus评论，国内评论系统不友好，因此选择disqus，又由于众所周知原因国内不能用，实现另类disqus评论方式。
-- [x] 多存储后端，支持mongodb、mysql、postgres、sqlite等存储后端。
-- [x] 七牛CDN，支持在 `Markdown` 编辑器直接上传附件，让你只考虑编辑内容，解放思想。
-- [x] 自动备份，支持多存储后端的备份功能，备份数据保存到七牛CDN上。
+* 博客归档，利用时间线帮助我们将归纳博文，内容少于一年按月归档，大于则按年归档。
+* 博客专题，有时候博文是同一系列，专题能够帮助我们很好归纳博文，对阅读者是非常友好的。
+* 标签系统，每篇博文都可以打上不同标签，使得在归档和专题不满足的情况下自定义归档，这块辅助搜索简直完美。
+* 搜索系统，依托ElasticSearch实现的站内搜索，速度与效率并存，再加上google opensearch，搜索只流畅。
+* 管理后台，内嵌全功能 `Typecho` 后台系统，全功能 `Markdown` 编辑器让你感觉什么是简洁清爽。
+* 谷歌统计，由于google api的速度问题，从而实现了后端API异步统计，使得博客页面加载飞速。
+* Disqus评论，国内评论系统不友好，因此选择disqus，又由于众所周知原因国内不能用，实现另类disqus评论方式。
+* 多存储后端，支持mongodb、mysql、postgres、sqlite等存储后端。
+* 七牛CDN，支持在 `Markdown` 编辑器直接上传附件，让你只考虑编辑内容，解放思想。
+* 自动备份，支持多存储后端的备份功能，备份数据保存到七牛CDN上。
 
 当然，为了让整个系统加载速度更快，还做了更多优化措施：
 
@@ -71,10 +87,9 @@ eshost: http://localhost:9200
 
 可以容易的看到 [httpsecurityreport](https://httpsecurityreport.com/?report=deepzz.com) 评分`96`，[ssllabs](https://www.ssllabs.com/ssltest/analyze.html?d=deepzz.com&latest) 评分`A+`，[myssl](https://myssl.com/deepzz.com) 评分`A+`，堪称完美。这些安全的相关配置会在后面的部署过程中接触到。
 
-![show-home](https://st.deepzz.com/blog/img/show-home.png)
-![show-home2](https://st.deepzz.com/blog/img/show-home2.png)
-
-![show-admin](https://st.deepzz.com/blog/img/show-admin.png)
+![show-home](./img/show-home.png)
+![show-home2](./img/show-home2.png)
+![show-admin](./img/show-admin.png)
 
 ### 更多文档
 

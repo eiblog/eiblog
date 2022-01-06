@@ -87,10 +87,9 @@ eshost: http://localhost:9200
 
 可以容易的看到 [httpsecurityreport](https://httpsecurityreport.com/?report=deepzz.com) 评分`96`，[ssllabs](https://www.ssllabs.com/ssltest/analyze.html?d=deepzz.com&latest) 评分`A+`，[myssl](https://myssl.com/deepzz.com) 评分`A+`，堪称完美。这些安全的相关配置会在后面的部署过程中接触到。
 
-![show-home](https://st.deepzz.com/blog/img/show-home.png)
-![show-home2](https://st.deepzz.com/blog/img/show-home2.png)
-
-![show-admin](https://st.deepzz.com/blog/img/show-admin.png)
+![show-home](./docs/img/show-home.png)
+![show-home2](./docs/img/show-home2.png)
+![show-admin](./docs/img/show-admin.png)
 
 ### 更多文档
 
