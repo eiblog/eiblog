@@ -240,7 +240,7 @@ func handleDisqusPage(c *gin.Context) {
 	}
 	article := cache.Ei.ArticlesMap[array[0]]
 	params := gin.H{
-		"Titile": "发表评论 | " + cache.Ei.Blogger.BTitle,
+		"Title":  "发表评论 | " + cache.Ei.Blogger.BTitle,
 		"ATitle": article.Title,
 		"Thread": array[1],
 		"Slug":   article.Slug,
