@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.9](https://github.com/eiblog/eiblog/compare/v2.1.8...v2.1.9) (2022-02-14)
+
+
+### Bug Fixes
+
+* **eiblog:** comments title error ([5170844](https://github.com/eiblog/eiblog/commit/517084462336ce01c3f79099c1e54297979f5877))
+
 ### [2.1.8](https://github.com/eiblog/eiblog/compare/v2.1.7...v2.1.8) (2021-11-18)
 
 ### [2.1.7](https://github.com/eiblog/eiblog/compare/v2.1.6...v2.1.7) (2021-11-13)
