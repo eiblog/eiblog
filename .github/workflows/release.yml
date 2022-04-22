@@ -7,7 +7,7 @@ on:
 
 jobs:
   package:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
     - name: Golang env
       uses: actions/setup-go@v2
