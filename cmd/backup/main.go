@@ -30,7 +30,7 @@ func runTimer(endRun chan error) {
 }
 
 func runHTTPServer(endRun chan error) {
-	if !config.Conf.EiBlogApp.EnableHTTP {
+	if !config.Conf.BackupApp.EnableHTTP {
 		return
 	}
 
@@ -46,7 +46,7 @@ func runHTTPServer(endRun chan error) {
 	ping.RegisterRoutes(e)
 
 	// start
-	address := fmt.Sprintf(":%d", config.Conf.EiBlogApp.HTTPPort)
+	address := fmt.Sprintf(":%d", config.Conf.BackupApp.HTTPPort)
 	go func() {
 		endRun <- e.Run(address)
 	}()
