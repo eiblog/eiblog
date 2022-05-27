@@ -3,7 +3,6 @@ module github.com/eiblog/eiblog
 go 1.15
 
 require (
-	github.com/alecthomas/template v0.0.0-20190718012654-fb15b899a751
 	github.com/eiblog/blackfriday v0.0.0-20161010144836-c0ec111761ae
 	github.com/gin-contrib/sessions v0.0.3
 	github.com/gin-gonic/gin v1.7.4
@@ -17,7 +16,7 @@ require (
 	go.mongodb.org/mongo-driver v1.5.1
 	google.golang.org/grpc v1.35.0
 	google.golang.org/protobuf v1.25.0
-	gopkg.in/yaml.v2 v2.4.0
+	gopkg.in/yaml.v3 v3.0.0-20210107192922-496545a6307b
 	gorm.io/driver/clickhouse v0.1.0
 	gorm.io/driver/mysql v1.0.6
 	gorm.io/driver/postgres v1.0.8
