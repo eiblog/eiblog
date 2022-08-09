@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.12](https://github.com/eiblog/eiblog/compare/v2.1.11...v2.1.12) (2022-08-09)
+
+
+### Bug Fixes
+
+* [#35](https://github.com/eiblog/eiblog/issues/35) no pubDate added for feed generation ([289b814](https://github.com/eiblog/eiblog/commit/289b8145bcdabd0060c9a0d5f40f5df69d3882d3))
+
 ### [2.1.11](https://github.com/eiblog/eiblog/compare/v2.1.10...v2.1.11) (2022-07-19)
 
 
