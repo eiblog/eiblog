@@ -15,7 +15,7 @@
             <comments>https://{{$.Host}}/post/{{.Slug}}.html#comments</comments>
             <guid>https://{{$.Host}}/post/{{.Slug}}.html</guid>
             <description>
-                <![CDATA[<blockquote>{{.Content}}<p>本文链接：<a href="https://{{$.Host}}/post/{{.Slug}}.html">https://{{$.Host}}/post/{{.Slug}}.html</a>，<a href="https://{{$.Host}}/post/{{.Slug}}.html#comments">参与评论 »</a></p>]]>
+                <![CDATA[{{.Content}}<p>本文链接：<a href="https://{{$.Host}}/post/{{.Slug}}.html">https://{{$.Host}}/post/{{.Slug}}.html</a>，<a href="https://{{$.Host}}/post/{{.Slug}}.html#comments">参与评论 »</a></p>]]>
             </description>
             <pubDate>{{dateformat .CreatedAt "Mon, 02 Jan 2006 15:04:05 -0700"}}</pubDate>
         </item>
