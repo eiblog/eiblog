@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.14](https://github.com/eiblog/eiblog/compare/v2.1.13...v2.1.14) (2022-09-28)
+
+
+### Bug Fixes
+
+* cgo and sqlite build in alpine image closed [#28](https://github.com/eiblog/eiblog/issues/28) ([b93c320](https://github.com/eiblog/eiblog/commit/b93c320987a936db6e5ca50c547022de9ab9a0f1))
+
 ### [2.1.13](https://github.com/eiblog/eiblog/compare/v2.1.12...v2.1.13) (2022-09-27)
 
 ### [2.1.12](https://github.com/eiblog/eiblog/compare/v2.1.11...v2.1.12) (2022-08-09)
