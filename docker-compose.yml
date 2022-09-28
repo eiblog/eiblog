@@ -21,7 +21,6 @@ services:
     - elasticsearch
     - mongodb
     environment:
-    - GODEBUG=netdns=cgo
     - RUN_MODE=prod
     ports:
     - 127.0.0.1:9000:9000
