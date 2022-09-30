@@ -6,9 +6,47 @@
 
 但它有着部署简单（上线复杂！）的特点，不推荐没有计算机知识的朋友搭建，欢迎咨询。该博客的个中优点（简洁、轻快，安全），等你体验。
 
+Docker镜像地址：
+
+* 博客服务：[deepzz0/eiblog](https://hub.docker.com/r/deepzz0/eiblog)
+* 博客搜索：[deepzz0/elasticsearch](https://hub.docker.com/r/deepzz0/elasticsearch)
+* 数据备份：[deepzz0/backup](https://hub.docker.com/r/deepzz0/backup)
+
 ### 快速体验
 
-这里以 mongodb 为例，更多支持的后端存储服务如下：
+**二进制**
+
+1、下载压缩包，到 [这里](https://github.com/eiblog/eiblog/releases) 下载 eiblog（非backup） 相应系统压缩包，然后解压缩。
+
+2、启动服务：
+
+```
+./backend
+```
+
+**Docker**
+
+```
+$ docker run --name eiblog \
+    -p 9000:9000 \
+    deepzz0/eiblog:latest
+```
+
+**Docker compose**
+
+参考项目根目录下的 [docker-compose.yml](https://github.com/eiblog/eiblog/blob/v2/docker-compose.yml)，修改相关配置：
+
+```
+$ docker-compose up -d
+或
+$ docker compose up -d
+```
+
+然后访问 `localhost:9000` 就可以了，后台地址 `localhost:9000/admin/login`，默认账户密码 `deepzz/deepzz`。
+
+> 默认情况下未开启博客搜索 `elasticsearch`，需要的话需要启动 es 服务并修改配置 `app.yml`。
+
+**数据库支持**
 
 | 类型（driver） | 地址（source）示例                                           |
 | -------------- | ------------------------------------------------------------ |
@@ -18,42 +56,6 @@
 | sqlite         | /path/eiblog.db                                              |
 | sqlserver      | sqlserver://user:password@localhost:9930?database=eiblog     |
 | clickhouse     | tcp://localhost:9000?database=eiblog&username=user&password=password&read_timeout=10&write_timeout=20 |
-
-1、启动依赖服务，mongodb、elasticsearch：
-
-```
-$ docker run --name mongodb \
-    -p 27017:27017 \
-    -v ${PWD}/mgodb:/data/db \
-    mongo:3.2
-
-$ docker run --name elasticsearch \
-    -p 9200:9200 \
-    -v ${PWD}/esdata:/usr/share/elasticsearch/data \
-    deepzz0/elasticsearch:2.4.1
-```
-
-2、下载压缩包，到 [这里](https://github.com/eiblog/eiblog/releases) 下载 eiblog（非backup） 相应系统压缩包，然后解压缩。
-
-3、修改配置，将数据库与ES地址修改为相应地址：
-
-```
-# 修改 conf/app.yml 数据库连接配置
-database:
-  driver: mongodb
-  source: mongodb://localhost:27017
-
-# 修改 conf/app.yml ES连接配置，如果不启用搜索功能可以置空
-eshost: http://localhost:9200
-```
-
-4、启动服务：
-
-```
-./backend
-```
-
-然后访问 `localhost:9000` 就可以了，后台地址 `localhost:9000/admin/login`，默认账户密码 `deepzz/deepzz`。
 
 ### 功能特性
 
@@ -85,7 +87,7 @@ eshost: http://localhost:9200
 
 ### 博客页面
 
-可以容易的看到 [httpsecurityreport](https://httpsecurityreport.com/?report=deepzz.com) 评分`96`，[ssllabs](https://www.ssllabs.com/ssltest/analyze.html?d=deepzz.com&latest) 评分`A+`，[myssl](https://myssl.com/deepzz.com) 评分`A+`，堪称完美。这些安全的相关配置会在后面的部署过程中接触到。
+可以容易的看到 [ssllabs](https://www.ssllabs.com/ssltest/analyze.html?d=deepzz.com&latest) 评分`A+`，[myssl](https://myssl.com/deepzz.com) 评分`A+`，堪称完美。这些安全的相关配置会在后面的部署过程中接触到。
 
 ![show-home](./docs/img/show-home.png)
 ![show-home2](./docs/img/show-home2.png)
