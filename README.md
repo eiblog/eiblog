@@ -18,11 +18,7 @@ Docker镜像地址：
 
 1、下载压缩包，到 [这里](https://github.com/eiblog/eiblog/releases) 下载 eiblog（非backup） 相应系统压缩包，然后解压缩。
 
-2、启动服务：
-
-```
-./backend
-```
+2、启动服务：`./backend`
 
 **Docker**
 
@@ -32,14 +28,14 @@ $ docker run --name eiblog \
     deepzz0/eiblog:latest
 ```
 
-**Docker compose**
+**Compose**
 
 参考项目根目录下的 [docker-compose.yml](https://github.com/eiblog/eiblog/blob/v2/docker-compose.yml)，修改相关配置：
 
 ```
-$ docker-compose up -d
-或
 $ docker compose up -d
+或
+$ docker-compose up -d
 ```
 
 然后访问 `localhost:9000` 就可以了，后台地址 `localhost:9000/admin/login`，默认账户密码 `deepzz/deepzz`。
