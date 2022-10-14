@@ -44,7 +44,7 @@ func backupFromMongoDB(now time.Time) error {
 	}
 	// tar
 	name := fmt.Sprintf("eiblog-%s.tar.gz", now.Format("2006-01-02"))
-	arg = fmt.Sprintf("tar czf /tmp/%s /tmp/eiblog", name)
+	arg = fmt.Sprintf("tar czf /tmp/%s -C /tmp eiblog", name)
 	cmd = exec.CommandContext(ctx, "sh", "-c", arg)
 	err = cmd.Run()
 	if err != nil {
