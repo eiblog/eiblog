@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.16](https://github.com/eiblog/eiblog/compare/v2.1.15...v2.1.16) (2022-11-20)
+
+
+### Bug Fixes
+
+* **backup:** error path in compressed file ([aa91997](https://github.com/eiblog/eiblog/commit/aa91997c0caca27e9979692879f8877765dabd9d))
+* rss image path incorrect: data-src -> src ([4bfff2e](https://github.com/eiblog/eiblog/commit/4bfff2e5e9b0efb4112a5f2f6bc55eebcef1c6eb))
+
 ### [2.1.15](https://github.com/eiblog/eiblog/compare/v2.1.14...v2.1.15) (2022-09-28)
 
 ### [2.1.14](https://github.com/eiblog/eiblog/compare/v2.1.13...v2.1.14) (2022-09-28)
