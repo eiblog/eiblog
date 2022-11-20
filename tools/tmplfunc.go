@@ -25,6 +25,7 @@ func init() {
 	TplFuncMap["join"] = Join
 	TplFuncMap["isnotzero"] = IsNotZero
 	TplFuncMap["getavatar"] = GetAvatar
+	TplFuncMap["imgtonormal"] = ImgToNormal
 }
 
 // Str2html string to html
@@ -72,4 +73,9 @@ func GetAvatar(domain string) string {
 	}
 
 	return avatar
+}
+
+// ImgToNormal replace lazy image attr data-src to src
+func ImgToNormal(content string) string {
+	return strings.ReplaceAll(content, "data-src=", "src=")
 }
