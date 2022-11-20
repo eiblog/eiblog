@@ -21,7 +21,8 @@ func init() {
 
 	var err error
 	xmlTmpl, err = template.New("").Funcs(template.FuncMap{
-		"dateformat": tools.DateFormat,
+		"dateformat":  tools.DateFormat,
+		"imgtonormal": tools.ImgToNormal,
 	}).ParseGlob(root)
 	if err != nil {
 		panic(err)
