@@ -274,7 +274,7 @@ func handleDisqusCreate(c *gin.Context) {
 	defer c.JSON(http.StatusOK, resp)
 
 	msg := c.PostForm("message")
-	email := c.PostForm("author_name")
+	email := c.PostForm("author_email")
 	name := c.PostForm("author_name")
 	thread := c.PostForm("thread")
 	identifier := c.PostForm("identifier")
@@ -283,7 +283,7 @@ func handleDisqusCreate(c *gin.Context) {
 		resp.ErrMsg = "参数错误"
 		return
 	}
-	logrus.Info("email: %s comments: %s", email, thread)
+	logrus.Infof("email: %s comments: %s", email, thread)
 
 	comment := internal.PostComment{
 		Message:     msg,
