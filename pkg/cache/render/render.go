@@ -14,7 +14,7 @@ import (
 
 // blackfriday 配置
 const (
-	commonHtmlFlags = 0 |
+	commonHTMLFlags = 0 |
 		blackfriday.HTML_TOC |
 		blackfriday.HTML_USE_XHTML |
 		blackfriday.HTML_USE_SMARTYPANTS |
@@ -42,9 +42,9 @@ var (
 	regHeader = regexp.MustCompile("</nav></div>")
 )
 
-// RenderPage 渲染markdown
-func RenderPage(md []byte) []byte {
-	renderer := blackfriday.HtmlRenderer(commonHtmlFlags, "", "")
+// PageRender 渲染markdown
+func PageRender(md []byte) []byte {
+	renderer := blackfriday.HtmlRenderer(commonHTMLFlags, "", "")
 	return blackfriday.Markdown(md, renderer, commonExtensions)
 }
 
@@ -56,12 +56,12 @@ func GenerateExcerptMarkdown(article *model.Article) {
 		index := strings.Index(article.Content, "\r\n")
 		prefix := article.Content[len(blogapp.General.DescPrefix):index]
 
-		article.Desc = tools.IgnoreHtmlTag(prefix)
+		article.Desc = tools.IgnoreHTMLTag(prefix)
 		article.Content = article.Content[index:]
 	}
 
 	// 查找目录
-	content := RenderPage([]byte(article.Content))
+	content := PageRender([]byte(article.Content))
 	index := regHeader.FindIndex(content)
 	if index != nil {
 		article.Header = string(content[0:index[1]])
@@ -73,7 +73,7 @@ func GenerateExcerptMarkdown(article *model.Article) {
 	// excerpt
 	index = regIdentifier.FindStringIndex(article.Content)
 	if index != nil {
-		article.Excerpt = tools.IgnoreHtmlTag(article.Content[:index[0]])
+		article.Excerpt = tools.IgnoreHTMLTag(article.Content[:index[0]])
 		return
 	}
 	uc := []rune(article.Content)
@@ -81,5 +81,5 @@ func GenerateExcerptMarkdown(article *model.Article) {
 	if len(uc) < length {
 		length = len(uc)
 	}
-	article.Excerpt = tools.IgnoreHtmlTag(string(uc[0:length]))
+	article.Excerpt = tools.IgnoreHTMLTag(string(uc[0:length]))
 }

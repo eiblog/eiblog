@@ -5,6 +5,7 @@ import (
 	"crypto/sha256"
 	"fmt"
 	"io"
+	"io/fs"
 	"io/ioutil"
 	"path"
 	"regexp"
@@ -22,13 +23,13 @@ func EncryptPasswd(name, pass string) string {
 }
 
 // ReadDirFiles 读取目录
-func ReadDirFiles(dir string, filter func(name string) bool) (files []string) {
+func ReadDirFiles(dir string, filter func(fi fs.FileInfo) bool) (files []string) {
 	fileInfos, err := ioutil.ReadDir(dir)
 	if err != nil {
 		return
 	}
 	for _, fi := range fileInfos {
-		if filter(fi.Name()) {
+		if filter(fi) {
 			continue
 		}
 		if fi.IsDir() {
@@ -42,19 +43,19 @@ func ReadDirFiles(dir string, filter func(name string) bool) (files []string) {
 
 // 2016-10-22T07:03:01
 const (
-	JUST_NOW    = "几秒前"
-	MINUTES_AGO = "%d分钟前"
-	HOURS_AGO   = "%d小时前"
-	DAYS_AGO    = "%d天前"
-	MONTH_AGO   = "%d月前"
-	YEARS_AGO   = "%d年前"
+	JustNow    = "几秒前"
+	MinutesAgo = "%d分钟前"
+	HoursAgo   = "%d小时前"
+	DaysAgo    = "%d天前"
+	MonthAgo   = "%d月前"
+	YearsAgo   = "%d年前"
 )
 
 // ConvertStr 时间转换为间隔
 func ConvertStr(str string) string {
 	t, err := time.ParseInLocation("2006-01-02T15:04:05", str, time.UTC)
 	if err != nil {
-		return JUST_NOW
+		return JustNow
 	}
 	now := time.Now().UTC()
 	y1, m1, d1 := t.Date()
@@ -62,17 +63,17 @@ func ConvertStr(str string) string {
 	h1, mi1, s1 := t.Clock()
 	h2, mi2, s2 := now.Clock()
 	if y := y2 - y1; y > 1 || (y == 1 && m2-m1 >= 0) {
-		return fmt.Sprintf(YEARS_AGO, y)
+		return fmt.Sprintf(YearsAgo, y)
 	} else if m := y*12 + int(m2-m1); m > 1 || (m == 1 && d2-d1 >= 0) {
-		return fmt.Sprintf(MONTH_AGO, m)
+		return fmt.Sprintf(MonthAgo, m)
 	} else if d := m*dayIn(y1, m1) + d2 - d1; d > 1 || (d == 1 && h2-h1 >= 0) {
-		return fmt.Sprintf(DAYS_AGO, d)
+		return fmt.Sprintf(DaysAgo, d)
 	} else if h := d*24 + h2 - h1; h > 1 || (h == 1 && mi2-mi1 >= 0) {
-		return fmt.Sprintf(HOURS_AGO, h)
+		return fmt.Sprintf(HoursAgo, h)
 	} else if mi := h*60 + mi2 - mi1; mi > 1 || (mi == 1 && s2-s1 >= 0) {
-		return fmt.Sprintf(MINUTES_AGO, mi)
+		return fmt.Sprintf(MinutesAgo, mi)
 	}
-	return JUST_NOW
+	return JustNow
 }
 
 // dayIn 获取天数
@@ -120,8 +121,8 @@ var (
 	regexpEnter    = regexp.MustCompile(`\s+`)
 )
 
-// IgnoreHtmlTag 去掉 html tag
-func IgnoreHtmlTag(src string) string {
+// IgnoreHTMLTag 去掉 html tag
+func IgnoreHTMLTag(src string) string {
 	// 去除所有尖括号内的HTML代码
 	src = regexpBrackets.ReplaceAllString(src, "")
 	// 去除换行符

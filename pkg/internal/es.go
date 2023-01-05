@@ -49,7 +49,7 @@ func checkESConfig() error {
 }
 
 // ElasticSearch 搜索文章
-func ElasticSearch(query string, size, from int) (*searchIndexResult, error) {
+func ElasticSearch(query string, size, from int) (*SearchIndexResult, error) {
 	if err := checkESConfig(); err != nil {
 		return nil, err
 	}
@@ -114,7 +114,7 @@ func ElasticAddIndex(article *model.Article) error {
 	img := tools.PickFirstImage(article.Content)
 	mapping := map[string]interface{}{
 		"title":   article.Title,
-		"content": tools.IgnoreHtmlTag(article.Content),
+		"content": tools.IgnoreHTMLTag(article.Content),
 		"slug":    article.Slug,
 		"tag":     article.Tags,
 		"img":     img,
@@ -241,8 +241,8 @@ func deleteIndexDocument(index, typ string, ids []string) error {
 	return nil
 }
 
-// searchIndexResult 查询结果
-type searchIndexResult struct {
+// SearchIndexResult 查询结果
+type SearchIndexResult struct {
 	Took float32 `json:"took"`
 	Hits struct {
 		Total int `json:"total"`
@@ -264,7 +264,7 @@ type searchIndexResult struct {
 }
 
 // indexQueryDSL 语句查询文档
-func indexQueryDSL(index, typ string, size, from int, dsl []byte) (*searchIndexResult, error) {
+func indexQueryDSL(index, typ string, size, from int, dsl []byte) (*SearchIndexResult, error) {
 	rawurl := fmt.Sprintf("%s/%s/%s/_search?size=%d&from=%d", config.Conf.ESHost,
 		index, typ, size, from)
 	resp, err := httpPost(rawurl, dsl)
@@ -276,7 +276,7 @@ func indexQueryDSL(index, typ string, size, from int, dsl []byte) (*searchIndexR
 	if err != nil {
 		return nil, err
 	}
-	result := &searchIndexResult{}
+	result := &SearchIndexResult{}
 	err = json.Unmarshal(data, result)
 	if err != nil {
 		return nil, err

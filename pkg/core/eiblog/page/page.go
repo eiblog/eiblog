@@ -2,6 +2,7 @@
 package page
 
 import (
+	"io/fs"
 	"path/filepath"
 	"text/template"
 
@@ -17,8 +18,13 @@ var htmlTmpl *template.Template
 func init() {
 	htmlTmpl = template.New("eiblog").Funcs(tools.TplFuncMap)
 	root := filepath.Join(config.WorkDir, "website")
-	files := tools.ReadDirFiles(root, func(name string) bool {
+	files := tools.ReadDirFiles(root, func(fi fs.FileInfo) bool {
+		name := fi.Name()
 		if name == ".DS_Store" {
+			return true
+		}
+		// should not read template dir
+		if fi.IsDir() && name == "template" {
 			return true
 		}
 		return false

@@ -25,9 +25,11 @@ var (
 	// Ei eiblog cache
 	Ei *Cache
 
-	// regenerate pages chan
-	PagesCh     = make(chan string, 2)
-	PageSeries  = "series-md"
+	// PagesCh regenerate pages chan
+	PagesCh = make(chan string, 2)
+	// PageSeries the page series regenerate flag
+	PageSeries = "series-md"
+	// PageArchive the page archive regenerate flag
 	PageArchive = "archive-md"
 
 	// ArticleStartID article start id
@@ -518,7 +520,7 @@ func (c *Cache) regeneratePages() {
 				}
 				buf.WriteString("\n")
 			}
-			c.PageSeries = string(render.RenderPage(buf.Bytes()))
+			c.PageSeries = string(render.PageRender(buf.Bytes()))
 		case PageArchive:
 			sort.Sort(c.Archives)
 			buf := bytes.Buffer{}
@@ -551,7 +553,7 @@ func (c *Cache) regeneratePages() {
 					}
 				}
 			}
-			c.PageArchives = string(render.RenderPage(buf.Bytes()))
+			c.PageArchives = string(render.PageRender(buf.Bytes()))
 		}
 	}
 }
