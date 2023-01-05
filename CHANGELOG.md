@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.18](https://github.com/eiblog/eiblog/compare/v2.1.17...v2.1.18) (2023-01-05)
+
+
+### Bug Fixes
+
+* **backup:** can not execute ([f6ba716](https://github.com/eiblog/eiblog/commit/f6ba716f554cfb638752875c4842e4ffb1b7e9a6))
+* disqus api using http post ([b2e6c16](https://github.com/eiblog/eiblog/commit/b2e6c168c5f63b29cf5c2884e04dd99caa677bc0))
+
 ### [2.1.17](https://github.com/eiblog/eiblog/compare/v2.1.16...v2.1.17) (2023-01-05)
 
 
