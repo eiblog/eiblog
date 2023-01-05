@@ -301,7 +301,7 @@ func handleAPIPostCreate(c *gin.Context) {
 	}
 	// 旧文章
 	article.ID = cid
-	artc, _ := cache.Ei.FindArticleByID(article.ID)
+	artc, _ := cache.Ei.FindArticleByID(article.ID) // cache
 	if artc != nil {
 		article.IsDraft = false
 		article.Count = artc.Count

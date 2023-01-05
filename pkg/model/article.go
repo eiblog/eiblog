@@ -20,6 +20,7 @@ type Article struct {
 	SerieID int            `gorm:"column:serie_id;not null" bson:"serie_id"`     // 专题ID
 	Tags    pq.StringArray `gorm:"column:tags;type:text[]" bson:"tags"`          // tags
 	IsDraft bool           `gorm:"column:is_draft;not null" bson:"is_draft"`     // 是否是草稿
+	Thread  string         `gorm:"column:thread" bson:"thread"`                  // disqus thread
 
 	DeletedAt time.Time `gorm:"column:deleted_at;not null" bson:"deleted_at"`                  // 删除时间
 	UpdatedAt time.Time `gorm:"column:updated_at;default:current_timestamp" bson:"updated_at"` // 更新时间
@@ -28,7 +29,6 @@ type Article struct {
 	Header  string   `gorm:"-" bson:"-"` // header
 	Excerpt string   `gorm:"-" bson:"-"` // 预览信息
 	Desc    string   `gorm:"-" bson:"-"` // 描述
-	Thread  string   `gorm:"-" bson:"-"` // disqus thread
 	Prev    *Article `gorm:"-" bson:"-"` // 上篇文章
 	Next    *Article `gorm:"-" bson:"-"` // 下篇文章
 }

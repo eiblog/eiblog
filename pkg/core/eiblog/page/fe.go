@@ -3,6 +3,7 @@ package page
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	htemplate "html/template"
 	"io/ioutil"
@@ -198,7 +199,8 @@ func handleDisqusList(c *gin.Context) {
 
 	slug := c.Param("slug")
 	cursor := c.Query("cursor")
-	if artc := cache.Ei.ArticlesMap[slug]; artc != nil {
+	artc := cache.Ei.ArticlesMap[slug]
+	if artc != nil {
 		dcs.Data.Thread = artc.Thread
 	}
 	postsList, err := internal.PostsList(slug, cursor)
@@ -228,6 +230,18 @@ func handleDisqusList(c *gin.Context) {
 			Message:      v.Message,
 			IsDeleted:    v.IsDeleted,
 		}
+	}
+	// query thread & update
+	if artc != nil && artc.Thread == "" {
+		if dcs.Data.Thread != "" {
+			artc.Thread = dcs.Data.Thread
+		} else if internal.ThreadDetails(artc) == nil {
+			dcs.Data.Thread = artc.Thread
+		}
+		cache.Ei.UpdateArticle(context.Background(), artc.ID,
+			map[string]interface{}{
+				"thread": artc.Thread,
+			})
 	}
 }
 

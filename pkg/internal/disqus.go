@@ -16,11 +16,12 @@ import (
 
 // disqus api
 const (
-	apiPostsCount   = "https://disqus.com/api/3.0/threads/set.json"
-	apiPostsList    = "https://disqus.com/api/3.0/threads/listPosts.json"
-	apiPostCreate   = "https://disqus.com/api/3.0/posts/create.json"
-	apiPostApprove  = "https://disqus.com/api/3.0/posts/approve.json"
-	apiThreadCreate = "https://disqus.com/api/3.0/threads/create.json"
+	apiPostsCount    = "https://disqus.com/api/3.0/threads/set.json"
+	apiPostsList     = "https://disqus.com/api/3.0/threads/listPosts.json"
+	apiPostCreate    = "https://disqus.com/api/3.0/posts/create.json"
+	apiPostApprove   = "https://disqus.com/api/3.0/posts/approve.json"
+	apiThreadCreate  = "https://disqus.com/api/3.0/threads/create.json"
+	apiThreadDetails = "https://disqus.com/api/3.0/threads/details.json"
 )
 
 func checkDisqusConfig() error {
@@ -288,6 +289,49 @@ func ThreadCreate(article *model.Article, btitle string) error {
 	}
 
 	result := &threadCreateResp{}
+	err = json.Unmarshal(b, result)
+	if err != nil {
+		return err
+	}
+	article.Thread = result.Response.ID
+	return nil
+}
+
+// threadDetailsResp thread info
+type threadDetailsResp struct {
+	Code     int
+	Response struct {
+		ID string
+	}
+}
+
+// ThreadDetails thread详细
+func ThreadDetails(article *model.Article) error {
+	if err := checkDisqusConfig(); err != nil {
+		return err
+	}
+
+	vals := url.Values{}
+	vals.Set("api_key", config.Conf.EiBlogApp.Disqus.PublicKey)
+	vals.Set("access_token", config.Conf.EiBlogApp.Disqus.AccessToken)
+	vals.Set("forum", config.Conf.EiBlogApp.Disqus.ShortName)
+	vals.Set("thread:ident", "post-"+article.Slug)
+
+	resp, err := httpPost(apiThreadDetails, vals)
+	if err != nil {
+		return err
+	}
+
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return err
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		return errors.New(string(b))
+	}
+
+	result := &threadDetailsResp{}
 	err = json.Unmarshal(b, result)
 	if err != nil {
 		return err
