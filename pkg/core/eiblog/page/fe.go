@@ -222,7 +222,7 @@ func handleDisqusList(c *gin.Context) {
 			ID:           v.ID,
 			Name:         v.Author.Name,
 			Parent:       v.Parent,
-			Url:          v.Author.ProfileUrl,
+			URL:          v.Author.ProfileURL,
 			Avatar:       v.Author.Avatar.Cache,
 			CreatedAtStr: tools.ConvertStr(v.CreatedAt),
 			Message:      v.Message,
@@ -261,7 +261,7 @@ type commentsDetail struct {
 	ID           string `json:"id"`
 	Parent       int    `json:"parent"`
 	Name         string `json:"name"`
-	Url          string `json:"url"`
+	URL          string `json:"url"`
 	Avatar       string `json:"avatar"`
 	CreatedAtStr string `json:"createdAtStr"`
 	Message      string `json:"message"`
@@ -292,7 +292,7 @@ func handleDisqusCreate(c *gin.Context) {
 		AuthorEmail: email,
 		AuthorName:  name,
 		Identifier:  identifier,
-		IpAddress:   c.ClientIP(),
+		IPAddress:   c.ClientIP(),
 	}
 	postDetail, err := internal.PostCreate(&comment)
 	if err != nil {
@@ -312,7 +312,7 @@ func handleDisqusCreate(c *gin.Context) {
 		ID:           postDetail.Response.ID,
 		Name:         name,
 		Parent:       postDetail.Response.Parent,
-		Url:          postDetail.Response.Author.ProfileUrl,
+		URL:          postDetail.Response.Author.ProfileURL,
 		Avatar:       postDetail.Response.Author.Avatar.Cache,
 		CreatedAtStr: tools.ConvertStr(postDetail.Response.CreatedAt),
 		Message:      postDetail.Response.Message,

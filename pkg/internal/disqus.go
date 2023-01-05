@@ -95,8 +95,8 @@ func PostsCount(articles map[string]*model.Article) error {
 	return nil
 }
 
-// postsListResp 获取评论列表
-type postsListResp struct {
+// PostsListResp 获取评论列表
+type PostsListResp struct {
 	Cursor struct {
 		HasNext bool
 		Next    string
@@ -113,7 +113,7 @@ type postDetail struct {
 	IsDeleted bool
 	Author    struct {
 		Name       string
-		ProfileUrl string
+		ProfileURL string
 		Avatar     struct {
 			Cache string
 		}
@@ -122,7 +122,7 @@ type postDetail struct {
 }
 
 // PostsList 评论列表
-func PostsList(slug, cursor string) (*postsListResp, error) {
+func PostsList(slug, cursor string) (*PostsListResp, error) {
 	if err := checkDisqusConfig(); err != nil {
 		return nil, err
 	}
@@ -148,7 +148,7 @@ func PostsList(slug, cursor string) (*postsListResp, error) {
 		return nil, errors.New(string(b))
 	}
 
-	result := &postsListResp{}
+	result := &PostsListResp{}
 	err = json.Unmarshal(b, result)
 	if err != nil {
 		return nil, err
@@ -163,18 +163,19 @@ type PostComment struct {
 	Thread      string
 	AuthorEmail string
 	AuthorName  string
-	IpAddress   string
+	IPAddress   string
 	Identifier  string
 	UserAgent   string
 }
 
-type postCreateResp struct {
+// PostCreateResp create comments resp
+type PostCreateResp struct {
 	Code     int
 	Response postDetail
 }
 
 // PostCreate 评论文章
-func PostCreate(pc *PostComment) (*postCreateResp, error) {
+func PostCreate(pc *PostComment) (*PostCreateResp, error) {
 	if err := checkDisqusConfig(); err != nil {
 		return nil, err
 	}
@@ -201,7 +202,7 @@ func PostCreate(pc *PostComment) (*postCreateResp, error) {
 	if resp.StatusCode != http.StatusOK {
 		return nil, errors.New(string(b))
 	}
-	result := &postCreateResp{}
+	result := &PostCreateResp{}
 	err = json.Unmarshal(b, result)
 	if err != nil {
 		return nil, err

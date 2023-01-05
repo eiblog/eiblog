@@ -50,6 +50,7 @@ func handleAdminProfile(c *gin.Context) {
 	renderHTMLAdminLayout(c, "admin-profile", params)
 }
 
+// T tag struct
 type T struct {
 	ID   string `json:"id"`
 	Tags string `json:"tags"`

@@ -19,3 +19,4 @@ backend
 # vendor/
 bin
 assets/*.*
+db.sqlite
