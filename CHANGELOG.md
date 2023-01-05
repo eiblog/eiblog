@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.17](https://github.com/eiblog/eiblog/compare/v2.1.16...v2.1.17) (2023-01-05)
+
+
+### Bug Fixes
+
+* 1. template read panic ([f6d8656](https://github.com/eiblog/eiblog/commit/f6d8656c83591584581383643d109611d7ed2caa))
+* **disqus:** failed to commit disqus comments ([a9e8e39](https://github.com/eiblog/eiblog/commit/a9e8e39d342488ec46175997f3df9ab109f2fecf))
+* fist comment of disqus error ([17792e5](https://github.com/eiblog/eiblog/commit/17792e5a7edb7e84623d9307555e7983ba306565))
+
 ### [2.1.16](https://github.com/eiblog/eiblog/compare/v2.1.15...v2.1.16) (2022-11-20)
 
 
