@@ -317,7 +317,7 @@ func ThreadDetails(article *model.Article) error {
 	vals.Set("forum", config.Conf.EiBlogApp.Disqus.ShortName)
 	vals.Set("thread:ident", "post-"+article.Slug)
 
-	resp, err := httpPost(apiThreadDetails, vals)
+	resp, err := httpGet(apiThreadDetails + "?" + vals.Encode())
 	if err != nil {
 		return err
 	}
