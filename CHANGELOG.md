@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.18](https://github.com/eiblog/eiblog/compare/v2.1.17...v2.1.18) (2023-01-05)
+
+
+### Bug Fixes
+
+* 1. template read panic ([f6d8656](https://github.com/eiblog/eiblog/commit/f6d8656c83591584581383643d109611d7ed2caa))
+
 ### [2.1.17](https://github.com/eiblog/eiblog/compare/v2.1.16...v2.1.17) (2023-01-04)
 
 
