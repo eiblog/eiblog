@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/"
+  xmlns:moz="http://www.mozilla.org/2006/browser/search/">
     <ShortName>{{.BTitle}}</ShortName>
     <Description>{{.SubTitle}}</Description>
-    <Url type="text/html" template="https://{{.Host}}/search.html?q={searchTerms}" />
+    <InputEncoding>UTF-8</InputEncoding>
+    <Url type="text/html" method="get" template="https://{{.Host}}/search.html?q={searchTerms}" />
+    <moz:SearchForm>https://{{.Host}}/search.html</moz:SearchForm>
 </OpenSearchDescription>
