@@ -2,6 +2,7 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 
 	"github.com/eiblog/eiblog/pkg/config"
@@ -12,20 +13,27 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+var restore bool
+
+func init() {
+	flag.BoolVar(&restore, "restore", false, "restore data into mongodb")
+}
+
 func main() {
 	fmt.Println("Hi, it's App " + config.Conf.BackupApp.Name)
+	flag.Parse()
 
 	endRun := make(chan error, 1)
 
-	runTimer(endRun)
+	runCommand(restore, endRun)
 
 	runHTTPServer(endRun)
 	fmt.Println(<-endRun)
 }
 
-func runTimer(endRun chan error) {
+func runCommand(restore bool, endRun chan error) {
 	go func() {
-		endRun <- timer.Start()
+		endRun <- timer.Start(restore)
 	}()
 }
 

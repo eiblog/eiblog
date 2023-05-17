@@ -13,7 +13,7 @@ import (
 )
 
 // Start to backup with ticker
-func Start() error {
+func Start(restore bool) (err error) {
 	var storage Storage
 	// backup instance
 	switch config.Conf.BackupApp.BackupTo {
@@ -24,13 +24,17 @@ func Start() error {
 		return errors.New("timer: unknown backup to driver: " +
 			config.Conf.BackupApp.BackupTo)
 	}
-
+	if restore {
+		err = storage.RestoreData()
+		if err != nil {
+			return err
+		}
+	}
 	// parse duration
 	interval, err := ParseDuration(config.Conf.BackupApp.Interval)
 	if err != nil {
 		return err
 	}
-
 	t := time.NewTicker(interval)
 	for now := range t.C {
 		err = storage.BackupData(now)
@@ -65,4 +69,5 @@ func ParseDuration(d string) (time.Duration, error) {
 // Storage backup backend
 type Storage interface {
 	BackupData(now time.Time) error
+	RestoreData() error
 }

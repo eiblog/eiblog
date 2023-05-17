@@ -27,6 +27,16 @@ func (s Storage) BackupData(now time.Time) error {
 	}
 }
 
+// RestoreData implements timer.Storage
+func (s Storage) RestoreData() error {
+	switch config.Conf.Database.Driver {
+	case "mongodb":
+		return restoreToMongoDB()
+	default:
+		return errors.New("unsupported database source backup to qiniu")
+	}
+}
+
 func backupFromMongoDB(now time.Time) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute*20)
 	defer cancel()
@@ -61,9 +71,10 @@ func backupFromMongoDB(now time.Time) error {
 		return err
 	}
 	uploadParams := internal.UploadParams{
-		Name: name,
-		Size: s.Size(),
-		Data: f,
+		Name:           name,
+		Size:           s.Size(),
+		Data:           f,
+		NoCompletePath: true,
 
 		Conf: config.Conf.BackupApp.Qiniu,
 	}
@@ -73,10 +84,43 @@ func backupFromMongoDB(now time.Time) error {
 	}
 	// after days delete
 	deleteParams := internal.DeleteParams{
-		Name: name,
-		Days: config.Conf.BackupApp.Validity,
+		Name:           name,
+		Days:           config.Conf.BackupApp.Validity,
+		NoCompletePath: true,
 
 		Conf: config.Conf.BackupApp.Qiniu,
 	}
 	return internal.QiniuDelete(deleteParams)
+}
+
+func restoreToMongoDB() error {
+	params := internal.ContentParams{
+		Prefix: "eiblog",
+
+		Conf: config.Conf.BackupApp.Qiniu,
+	}
+	raw, err := internal.QiniuContent(params)
+	if err != nil {
+		return err
+	}
+	f, err := os.OpenFile("/tmp/eiblog.tar.gz", os.O_WRONLY|os.O_CREATE, 0644)
+	if err != nil {
+		return err
+	}
+	_, _ = f.Write(raw)
+	defer f.Close()
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute*20)
+	defer cancel()
+	// unarchive
+	arg := fmt.Sprintf("tar xzf /tmp/eiblog.tar.gz -C /tmp")
+	cmd := exec.CommandContext(ctx, "sh", "-c", arg)
+	err = cmd.Run()
+	if err != nil {
+		return err
+	}
+	// restore
+	arg = fmt.Sprintf("mongorestore -h %s -d eiblog /tmp/eiblog", config.Conf.Database.Source)
+	cmd = exec.CommandContext(ctx, "sh", "-c", arg)
+	return cmd.Run()
 }

@@ -46,3 +46,18 @@ func TestQiniuUpload(t *testing.T) {
 		})
 	}
 }
+
+func TestQiniuContent(t *testing.T) {
+	params := ContentParams{
+		Conf: config.Qiniu{
+			AccessKey: os.Getenv("QINIU_ACCESSKEY"),
+			SecretKey: os.Getenv("QINIU_SECRETKEY"),
+			Bucket:    os.Getenv("QINIU_BUCKET"),
+			Domain:    "bu.st.deepzz.com",
+		},
+	}
+	_, err := QiniuContent(params)
+	if err != nil {
+		t.Errorf("QiniuList error = %v", err)
+	}
+}
