@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.2.0](https://github.com/eiblog/eiblog/compare/v2.1.18...v2.2.0) (2023-05-17)
+
+
+### Features
+
+* **backup:** add restore flag ([779a23c](https://github.com/eiblog/eiblog/commit/779a23cb75ab5059826370d08b754569a4af4aea))
+
 ### [2.1.18](https://github.com/eiblog/eiblog/compare/v2.1.17...v2.1.18) (2023-01-05)
 
 
