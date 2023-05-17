@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.2.1](https://github.com/eiblog/eiblog/compare/v2.2.0...v2.2.1) (2023-05-17)
+
+
+### Bug Fixes
+
+* try to fix backup symbol not found ([bb06be3](https://github.com/eiblog/eiblog/commit/bb06be36fe016e753ca56aa2321ce7e39bffe3e0))
+
 ## [2.2.0](https://github.com/eiblog/eiblog/compare/v2.1.18...v2.2.0) (2023-05-17)
 
 
