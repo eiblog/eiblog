@@ -2,7 +2,7 @@ FROM golang:1.20 AS builder
 
 WORKDIR /eiblog
 COPY . .
-RUN ./scripts/build.sh eiblog
+RUN ./scripts/run_build.sh eiblog
 
 
 FROM alpine:latest

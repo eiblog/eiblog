@@ -2,7 +2,7 @@ FROM golang:1.20 AS builder
 
 WORKDIR /eiblog
 COPY . .
-RUN ./scripts/build.sh backup
+RUN ./scripts/run_build.sh backup
 
 
 FROM alpine:latest
