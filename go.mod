@@ -6,7 +6,6 @@ require (
 	github.com/eiblog/blackfriday v0.0.0-20161010144836-c0ec111761ae
 	github.com/gin-contrib/sessions v0.0.3
 	github.com/gin-gonic/gin v1.9.0
-	github.com/golang/protobuf v1.5.0
 	github.com/lib/pq v1.10.1
 	github.com/qiniu/go-sdk/v7 v7.11.0
 	github.com/satori/go.uuid v1.2.0
@@ -14,8 +13,6 @@ require (
 	github.com/swaggo/gin-swagger v1.3.3
 	github.com/swaggo/swag v1.7.4
 	go.mongodb.org/mongo-driver v1.5.1
-	google.golang.org/grpc v1.35.0
-	google.golang.org/protobuf v1.28.1
 	gopkg.in/yaml.v3 v3.0.1
 	gorm.io/driver/clickhouse v0.1.0
 	gorm.io/driver/mysql v1.0.6
