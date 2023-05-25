@@ -1,3 +1,10 @@
+FROM golang:1.20 AS builder
+
+WORKDIR /eiblog
+COPY . .
+RUN ./scripts/build.sh eiblog
+
+
 FROM alpine:latest
 LABEL maintainer="deepzz.qi@gmail.com"
 
@@ -6,7 +13,7 @@ COPY README.md /app/README.md
 COPY CHANGELOG.md /app/CHANGELOG.md
 COPY LICENSE /app/LICENSE
 
-COPY bin/backend /app/backend
+COPY --from=builder /eiblog/bin/backend /app/backend
 COPY conf /app/conf
 COPY website /app/website
 COPY assets /app/assets
