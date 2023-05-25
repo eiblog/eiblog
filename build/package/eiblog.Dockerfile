@@ -2,7 +2,6 @@ FROM golang:1.20 AS builder
 
 WORKDIR /eiblog
 COPY . .
-RUN pwd
 RUN ./scripts/run_build.sh eiblog
 
 

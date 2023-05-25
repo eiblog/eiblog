@@ -1,12 +1,12 @@
 # Ignore all files and dirs
-*
+
 
 # Unignore files or dirs
-!build
-!bin
-!conf
-!assets
-!website
-!CHANGELOG.md
-!LICENSE
-!README.md
+.github
+bin
+docs
+.gitignore
+db.sqlite
+docker-compose.yml
+eiblog.conf
+Makefile
