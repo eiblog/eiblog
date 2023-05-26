@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.2.5](https://github.com/eiblog/eiblog/compare/v2.2.4...v2.2.5) (2023-05-26)
+
+
+### Bug Fixes
+
+* **backup:** libresolv.so.2: No such file or directory ([2c6c5bb](https://github.com/eiblog/eiblog/commit/2c6c5bb97708683bed8c889a7a1076f1f88ee5a8))
+
 ### [2.2.4](https://github.com/eiblog/eiblog/compare/v2.2.3...v2.2.4) (2023-05-25)
 
 
