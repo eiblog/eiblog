@@ -19,13 +19,6 @@ jobs:
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
-    - name: Inspect builder
-      run: |
-        echo "Name:      ${{ steps.buildx.outputs.name }}"
-        echo "Endpoint:  ${{ steps.buildx.outputs.endpoint }}"
-        echo "Status:    ${{ steps.buildx.outputs.status }}"
-        echo "Flags:     ${{ steps.buildx.outputs.flags }}"
-        echo "Platforms: ${{ steps.buildx.outputs.platforms }}"
 
     - name: Docker tag
       id: vars
@@ -45,6 +38,7 @@ jobs:
         push: true
         tags: |
           deepzz0/eiblog:${{ steps.vars.outputs.tag }}
+          deepzz0/eiblog:latest
 
     - name: Build and push backup
       uses: docker/build-push-action@v3
@@ -55,6 +49,7 @@ jobs:
         push: true
         tags: |
           deepzz0/backup:${{ steps.vars.outputs.tag }}
+          deepzz0/backup:latest
 
     - name: Package tar
       env:
