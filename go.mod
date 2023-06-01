@@ -5,7 +5,7 @@ go 1.15
 require (
 	github.com/eiblog/blackfriday v0.0.0-20161010144836-c0ec111761ae
 	github.com/gin-contrib/sessions v0.0.3
-	github.com/gin-gonic/gin v1.9.0
+	github.com/gin-gonic/gin v1.9.1
 	github.com/lib/pq v1.10.1
 	github.com/qiniu/go-sdk/v7 v7.11.0
 	github.com/satori/go.uuid v1.2.0
