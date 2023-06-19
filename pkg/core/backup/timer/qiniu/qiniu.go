@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"time"
 
 	"github.com/eiblog/eiblog/pkg/config"
@@ -71,7 +72,7 @@ func backupFromMongoDB(now time.Time) error {
 		return err
 	}
 	uploadParams := internal.UploadParams{
-		Name:           name,
+		Name:           filepath.Join("blog", name), // blog/eiblog-xx.tar.gz
 		Size:           s.Size(),
 		Data:           f,
 		NoCompletePath: true,
