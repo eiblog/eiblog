@@ -1,4 +1,4 @@
-# EiBlog [![Build Status](https://travis-ci.org/eiblog/eiblog.svg?branch=v1.3.0)](https://travis-ci.org/eiblog/eiblog) [![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE.md) [![Versuib](https://img.shields.io/github/tag/eiblog/eiblog.svg)](https://github.com/eiblog/eiblog/releases) 
+# EiBlog [![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE.md) [![Versuib](https://img.shields.io/github/tag/eiblog/eiblog.svg)](https://github.com/eiblog/eiblog/releases) 
 
 > 博客项目结构参考模版：https://github.com/deepzz0/appdemo
 
