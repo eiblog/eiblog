@@ -27,6 +27,7 @@ services:
     restart: always
   backup:
     image: deepzz0/backup:latest
+    #command: ./backend --restore true
     volumes:
     - ${PWD}/conf:/app/conf
     links:
