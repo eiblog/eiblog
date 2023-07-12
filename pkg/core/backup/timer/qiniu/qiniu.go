@@ -11,6 +11,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/eiblog/eiblog/pkg/cache/store"
 	"github.com/eiblog/eiblog/pkg/config"
 	"github.com/eiblog/eiblog/pkg/internal"
 )
@@ -97,6 +98,7 @@ func backupFromMongoDB(now time.Time) error {
 }
 
 func restoreToMongoDB() error {
+	// backup file
 	params := internal.ContentParams{
 		Prefix: "blog/",
 
@@ -115,6 +117,16 @@ func restoreToMongoDB() error {
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute*20)
 	defer cancel()
+	// drop database
+	store, err := store.NewStore(config.Conf.Database.Driver,
+		config.Conf.Database.Source)
+	if err != nil {
+		return err
+	}
+	err = store.DropDatabase(ctx)
+	if err != nil {
+		return err
+	}
 	// unarchive
 	arg := fmt.Sprintf("tar xzf /tmp/eiblog.tar.gz -C /tmp")
 	cmd := exec.CommandContext(ctx, "sh", "-c", arg)
@@ -123,7 +135,11 @@ func restoreToMongoDB() error {
 		return err
 	}
 	// restore
-	arg = fmt.Sprintf("mongorestore -h %s -d eiblog /tmp/eiblog", config.Conf.Database.Source)
+	u, err := url.Parse(config.Conf.Database.Source)
+	if err != nil {
+		return err
+	}
+	arg = fmt.Sprintf("mongorestore -h %s -d eiblog /tmp/eiblog", u.Host)
 	cmd = exec.CommandContext(ctx, "sh", "-c", arg)
 	return cmd.Run()
 }

@@ -64,6 +64,9 @@ type Store interface {
 	LoadArticle(ctx context.Context, id int) (*model.Article, error)
 	// LoadArticleList 查找文章列表
 	LoadArticleList(ctx context.Context, search SearchArticles) (model.SortedArticles, int, error)
+
+	// 危险操作
+	DropDatabase(ctx context.Context) error
 }
 
 // Driver 存储驱动

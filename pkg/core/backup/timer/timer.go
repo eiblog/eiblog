@@ -29,6 +29,7 @@ func Start(restore bool) (err error) {
 		if err != nil {
 			return err
 		}
+		logrus.Info("timer: RestoreData success")
 	}
 	// parse duration
 	interval, err := ParseDuration(config.Conf.BackupApp.Interval)

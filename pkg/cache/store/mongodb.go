@@ -326,6 +326,11 @@ func (db *mongodb) LoadArticleList(ctx context.Context, search SearchArticles) (
 	return articles, int(count), nil
 }
 
+// DropDatabase drop eiblog database
+func (db *mongodb) DropDatabase(ctx context.Context) error {
+	return db.Database(mongoDBName).Drop(ctx)
+}
+
 // counter counter
 type counter struct {
 	Name    string

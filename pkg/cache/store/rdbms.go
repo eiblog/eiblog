@@ -3,6 +3,7 @@ package store
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/eiblog/eiblog/pkg/model"
@@ -129,7 +130,7 @@ func (db *rdbms) InsertArticle(ctx context.Context, article *model.Article, star
 		if id < startID {
 			id = startID
 		} else {
-			id += 1
+			id++
 		}
 		article.ID = id
 	}
@@ -188,6 +189,11 @@ func (db *rdbms) LoadArticleList(ctx context.Context, search SearchArticles) (mo
 		Offset((search.Page - 1) * search.Limit).
 		Order("created_at DESC").Find(&articles).Error
 	return articles, int(count), err
+}
+
+// DropDatabase drop eiblog database
+func (db *rdbms) DropDatabase(ctx context.Context) error {
+	return errors.New("can not drop eiblog database in rdbms")
 }
 
 // register store

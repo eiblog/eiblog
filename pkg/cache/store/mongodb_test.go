@@ -13,7 +13,7 @@ var (
 	store   Store
 	acct    *model.Account
 	blogger *model.Blogger
-	series  *model.Series
+	series  *model.Serie
 	article *model.Article
 )
 
@@ -25,12 +25,12 @@ func init() {
 	}
 	// account
 	acct = &model.Account{
-		Username:   "deepzz",
-		Password:   "deepzz",
-		Email:      "deepzz@example.com",
-		PhoneN:     "12345678900",
-		Address:    "address",
-		CreateTime: time.Now(),
+		Username:  "deepzz",
+		Password:  "deepzz",
+		Email:     "deepzz@example.com",
+		PhoneN:    "12345678900",
+		Address:   "address",
+		CreatedAt: time.Now(),
 	}
 	// blogger
 	blogger = &model.Blogger{
@@ -41,11 +41,11 @@ func init() {
 		Copyright: "Copyright",
 	}
 	// series
-	series = &model.Series{
-		Slug:       "slug",
-		Name:       "series name",
-		Desc:       "series desc",
-		CreateTime: time.Now(),
+	series = &model.Serie{
+		Slug:      "slug",
+		Name:      "series name",
+		Desc:      "series desc",
+		CreatedAt: time.Now(),
 	}
 	// article
 	article = &model.Article{
@@ -55,21 +55,20 @@ func init() {
 		Count:   0,
 		Content: "### count",
 		SerieID: 0,
-		Tags:    "",
+		Tags:    nil,
 		IsDraft: false,
 
-		UpdateTime: time.Now(),
-		CreateTime: time.Now(),
+		UpdatedAt: time.Now(),
+		CreatedAt: time.Now(),
 	}
 }
 
 func TestLoadInsertAccount(t *testing.T) {
-	acct2, err := store.LoadInsertAccount(context.Background(), acct)
+	ok, err := store.LoadInsertAccount(context.Background(), acct)
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Log(acct2)
-	t.Log(acct == acct2)
+	t.Log(ok)
 }
 
 func TestUpdateAccount(t *testing.T) {
@@ -86,12 +85,11 @@ func TestUpdateAccount(t *testing.T) {
 }
 
 func TestLoadInsertBlogger(t *testing.T) {
-	blogger2, err := store.LoadInsertBlogger(context.Background(), blogger)
+	ok, err := store.LoadInsertBlogger(context.Background(), blogger)
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Log(blogger2)
-	t.Log(blogger == blogger2)
+	t.Log(ok)
 }
 
 func TestUpdateBlogger(t *testing.T) {
@@ -104,21 +102,21 @@ func TestUpdateBlogger(t *testing.T) {
 }
 
 func TestInsertSeries(t *testing.T) {
-	err := store.InsertSeries(context.Background(), series)
+	err := store.InsertSerie(context.Background(), series)
 	if err != nil {
 		t.Fatal(err)
 	}
 }
 
 func TestRemoveSeries(t *testing.T) {
-	err := store.RemoveSeries(context.Background(), 1)
+	err := store.RemoveSerie(context.Background(), 1)
 	if err != nil {
 		t.Fatal(err)
 	}
 }
 
 func TestUpdateSeries(t *testing.T) {
-	err := store.UpdateSeries(context.Background(), 2, map[string]interface{}{
+	err := store.UpdateSerie(context.Background(), 2, map[string]interface{}{
 		"desc": "update desc",
 	})
 	if err != nil {
@@ -127,7 +125,7 @@ func TestUpdateSeries(t *testing.T) {
 }
 
 func TestLoadAllSeries(t *testing.T) {
-	series, err := store.LoadAllSeries(context.Background())
+	series, err := store.LoadAllSerie(context.Background())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -136,7 +134,7 @@ func TestLoadAllSeries(t *testing.T) {
 
 func TestInsertArticle(t *testing.T) {
 	article.ID = 12
-	err := store.InsertArticle(context.Background(), article)
+	err := store.InsertArticle(context.Background(), article, 10)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -150,14 +148,14 @@ func TestRemoveArticle(t *testing.T) {
 }
 
 func TestDeleteArticle(t *testing.T) {
-	err := store.DeleteArticle(context.Background(), 12)
+	err := store.RemoveArticle(context.Background(), 12)
 	if err != nil {
 		t.Fatal(err)
 	}
 }
 
 func TestCleanArticles(t *testing.T) {
-	err := store.CleanArticles(context.Background())
+	err := store.CleanArticles(context.Background(), time.Now())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -173,33 +171,13 @@ func TestUpdateArticle(t *testing.T) {
 	}
 }
 
-func TestRecoverArticle(t *testing.T) {
-	err := store.RecoverArticle(context.Background(), 12)
-	if err != nil {
-		t.Fatal(err)
-	}
-}
-
 func TestLoadAllArticle(t *testing.T) {
-	articles, err := store.LoadAllArticle(context.Background())
+	_, total, err := store.LoadArticleList(context.Background(), SearchArticles{
+		Page:  1,
+		Limit: 1000,
+	})
 	if err != nil {
 		t.Fatal(err)
 	}
-	t.Logf("load all articles: %d", len(articles))
-}
-
-func TestLoadTrashArticles(t *testing.T) {
-	articles, err := store.LoadTrashArticles(context.Background())
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Logf("load trash articles: %d", len(articles))
-}
-
-func TestLoadDraftArticles(t *testing.T) {
-	articles, err := store.LoadDraftArticles(context.Background())
-	if err != nil {
-		t.Fatal(err)
-	}
-	t.Logf("load draft articles: %d", len(articles))
+	t.Logf("load all articles: %d", total)
 }
