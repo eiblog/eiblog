@@ -96,7 +96,7 @@ func backupFromMongoDB(now time.Time) error {
 
 func restoreToMongoDB() error {
 	params := internal.ContentParams{
-		Prefix: "eiblog",
+		Prefix: "blog/",
 
 		Conf: config.Conf.BackupApp.Qiniu,
 	}
