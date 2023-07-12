@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.2.8](https://github.com/eiblog/eiblog/compare/v2.2.7...v2.2.8) (2023-07-12)
+
+
+### Bug Fixes
+
+* **backup:** restore db and tests ([f28d0e7](https://github.com/eiblog/eiblog/commit/f28d0e77e06dd435dc13a1867f18a011e34b8f53))
+
 ### [2.2.7](https://github.com/eiblog/eiblog/compare/v2.2.6...v2.2.7) (2023-07-12)
 
 
