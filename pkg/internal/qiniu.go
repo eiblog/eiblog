@@ -128,7 +128,7 @@ func QiniuContent(params ContentParams) ([]byte, error) {
 	// manager
 	bucketManager := storage.NewBucketManager(mac, cfg)
 	// list file
-	files, _, _, _, err := bucketManager.ListFiles(params.Conf.Bucket, params.Prefix, "", "", 2)
+	files, _, _, _, err := bucketManager.ListFiles(params.Conf.Bucket, params.Prefix, "", "", 1)
 	if err != nil {
 		return nil, err
 	}
