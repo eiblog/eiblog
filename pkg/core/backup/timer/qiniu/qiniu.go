@@ -24,7 +24,8 @@ func (s Storage) BackupData(now time.Time) error {
 	case "mongodb":
 		return backupFromMongoDB(now)
 	default:
-		return errors.New("unsupported database source backup to qiniu")
+		return errors.New("unsupported source backup to qiniu: " +
+			config.Conf.Database.Driver)
 	}
 }
 
@@ -34,7 +35,8 @@ func (s Storage) RestoreData() error {
 	case "mongodb":
 		return restoreToMongoDB()
 	default:
-		return errors.New("unsupported database source backup to qiniu")
+		return errors.New("unsupported source restore from qiniu: " +
+			config.Conf.Database.Driver)
 	}
 }
 
