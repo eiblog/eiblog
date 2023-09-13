@@ -2,7 +2,7 @@ appname: eiblog
 database:
   driver: sqlite
   source: ./db.sqlite
-eshost:
+eshost: # http://elasticsearch:9200
 eiblogapp:
   mode:
     name: cmd-eiblog
