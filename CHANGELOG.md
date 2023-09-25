@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.2.9](https://github.com/eiblog/eiblog/compare/v2.2.8...v2.2.9) (2023-09-25)
+
+
+### Bug Fixes
+
+* google analytics not work, supported ga4 measurement protocol ([9b918ca](https://github.com/eiblog/eiblog/commit/9b918caccd9fd7faff7d253693e075ccd0150c17))
+
 ### [2.2.8](https://github.com/eiblog/eiblog/compare/v2.2.7...v2.2.8) (2023-07-12)
 
 
