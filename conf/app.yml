@@ -29,7 +29,7 @@ eiblogapp:
     accesstoken: 50023908f39f4607957e909b495326af
   google: # 谷歌分析
     url: https://www.google-analytics.com/g/collect
-    tid: G-S085VRC5PF
+    tid: G-xxxxxxxxxx
     v: "2"
     adsense: <script data-ad-client="ca-pub-5384494508691406" async src=""></script>
   qiniu: # 七牛OSS
