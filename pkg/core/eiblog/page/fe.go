@@ -7,6 +7,7 @@ import (
 	"fmt"
 	htemplate "html/template"
 	"io/ioutil"
+	"math/rand"
 	"net/http"
 	"strconv"
 	"strings"
@@ -335,27 +336,34 @@ func handleDisqusCreate(c *gin.Context) {
 }
 
 // handleBeaconPage 服务端推送谷歌统计
+// https://www.thyngster.com/ga4-measurement-protocol-cheatsheet/
 func handleBeaconPage(c *gin.Context) {
 	ua := c.Request.UserAgent()
 
 	vals := c.Request.URL.Query()
 	vals.Set("v", config.Conf.EiBlogApp.Google.V)
 	vals.Set("tid", config.Conf.EiBlogApp.Google.Tid)
-	vals.Set("t", config.Conf.EiBlogApp.Google.T)
 	cookie, _ := c.Cookie("u")
 	vals.Set("cid", cookie)
 
-	vals.Set("dl", c.Request.Referer())
-	vals.Set("uip", c.ClientIP())
+	vals.Set("dl", c.Request.Referer())                        // document location
+	vals.Set("en", "page_view")                                // event name
+	vals.Set("sct", "1")                                       // Session Count
+	vals.Set("seg", "1")                                       // Session Engagment
+	vals.Set("_uip", c.ClientIP())                             // user ip
+	vals.Set("_p", fmt.Sprint(201226219+rand.Intn(499999999))) // random page load hash
+	vals.Set("_ee", "1")                                       // external event
 	go func() {
-		req, err := http.NewRequest("POST", config.Conf.EiBlogApp.Google.URL,
-			strings.NewReader(vals.Encode()))
+		url := config.Conf.EiBlogApp.Google.URL + "?" + vals.Encode()
+		req, err := http.NewRequest("POST", url, nil)
 		if err != nil {
 			logrus.Error("HandleBeaconPage.NewRequest: ", err)
 			return
 		}
 		req.Header.Set("User-Agent", ua)
-		req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+		req.Header.Set("Sec-Ch-Ua", c.GetHeader("Sec-Ch-Ua"))
+		req.Header.Set("Sec-Ch-Ua-Platform", c.GetHeader("Sec-Ch-Ua-Platform"))
+		req.Header.Set("Sec-Ch-Ua-Mobile", c.GetHeader("Sec-Ch-Ua-Mobile"))
 		res, err := http.DefaultClient.Do(req)
 		if err != nil {
 			logrus.Error("HandleBeaconPage.Do: ", err)

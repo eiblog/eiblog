@@ -28,10 +28,9 @@ eiblogapp:
     publickey: wdSgxRm9rdGAlLKFcFdToBe3GT4SibmV7Y8EjJQ0r4GWXeKtxpopMAeIeoI2dTEg
     accesstoken: 50023908f39f4607957e909b495326af
   google: # 谷歌分析
-    url: https://www.google-analytics.com/collect
-    tid: UA-xxxxxx-1
-    v: "1"
-    t: pageview
+    url: https://www.google-analytics.com/g/collect
+    tid: G-S085VRC5PF
+    v: "2"
     adsense: <script data-ad-client="ca-pub-5384494508691406" async src=""></script>
   qiniu: # 七牛OSS
     bucket: eiblog
