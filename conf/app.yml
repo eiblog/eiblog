@@ -31,7 +31,7 @@ eiblogapp:
     url: https://www.google-analytics.com/g/collect
     tid: G-xxxxxxxxxx
     v: "2"
-    adsense: <script data-ad-client="ca-pub-5384494508691406" async src=""></script>
+    adsense: <script async src="https://pagead2.googlesyndication.com/xxx" crossorigin="anonymous"></script>
   qiniu: # 七牛OSS
     bucket: eiblog
     domain: st.deepzz.com
