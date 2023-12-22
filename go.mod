@@ -10,6 +10,7 @@ require (
 	github.com/qiniu/go-sdk/v7 v7.11.0
 	github.com/satori/go.uuid v1.2.0
 	github.com/sirupsen/logrus v1.4.2
+	github.com/swaggo/files v0.0.0-20190704085106-630677cd5c14
 	github.com/swaggo/gin-swagger v1.3.3
 	github.com/swaggo/swag v1.7.4
 	go.mongodb.org/mongo-driver v1.5.1

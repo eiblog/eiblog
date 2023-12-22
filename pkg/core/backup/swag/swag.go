@@ -5,8 +5,8 @@ import (
 	_ "github.com/eiblog/eiblog/pkg/core/backup/docs" // docs
 
 	"github.com/gin-gonic/gin"
+	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"github.com/swaggo/gin-swagger/swaggerFiles"
 )
 
 // RegisterRoutes register routes
