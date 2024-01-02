@@ -204,7 +204,7 @@ func handleDisqusList(c *gin.Context) {
 	if artc != nil {
 		dcs.Data.Thread = artc.Thread
 	}
-	postsList, err := internal.PostsList(slug, cursor)
+	postsList, err := internal.PostsList(artc, cursor)
 	if err != nil {
 		logrus.Error("hadnleDisqusList.PostsList: ", err)
 		dcs.ErrNo = 0

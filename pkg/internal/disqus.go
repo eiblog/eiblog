@@ -17,11 +17,13 @@ import (
 // disqus api
 const (
 	apiPostsCount    = "https://disqus.com/api/3.0/threads/set.json"
-	apiPostsList     = "https://disqus.com/api/3.0/threads/listPosts.json"
+	apiPostsList     = "https://disqus.com/api/3.0/threads/listPostsThreaded"
 	apiPostCreate    = "https://disqus.com/api/3.0/posts/create.json"
 	apiPostApprove   = "https://disqus.com/api/3.0/posts/approve.json"
 	apiThreadCreate  = "https://disqus.com/api/3.0/threads/create.json"
 	apiThreadDetails = "https://disqus.com/api/3.0/threads/details.json"
+
+	disqusAPIKey = "E8Uh5l5fHZ6gD8U3KycjAIAk46f68Zw7C6eW8WSjZvCLXebZ7p0r1yrYDrLilk2F"
 )
 
 func checkDisqusConfig() error {
@@ -123,16 +125,17 @@ type postDetail struct {
 }
 
 // PostsList 评论列表
-func PostsList(slug, cursor string) (*PostsListResp, error) {
+func PostsList(article *model.Article, cursor string) (*PostsListResp, error) {
 	if err := checkDisqusConfig(); err != nil {
 		return nil, err
 	}
 
 	vals := url.Values{}
-	vals.Set("api_key", config.Conf.EiBlogApp.Disqus.PublicKey)
+	vals.Set("api_key", disqusAPIKey)
 	vals.Set("forum", config.Conf.EiBlogApp.Disqus.ShortName)
-	vals.Set("thread:ident", "post-"+slug)
+	vals.Set("thread", article.Thread)
 	vals.Set("cursor", cursor)
+	vals.Set("order", "popular")
 	vals.Set("limit", "50")
 
 	resp, err := httpGet(apiPostsList + "?" + vals.Encode())
@@ -181,7 +184,7 @@ func PostCreate(pc *PostComment) (*PostCreateResp, error) {
 		return nil, err
 	}
 	vals := url.Values{}
-	vals.Set("api_key", "E8Uh5l5fHZ6gD8U3KycjAIAk46f68Zw7C6eW8WSjZvCLXebZ7p0r1yrYDrLilk2F")
+	vals.Set("api_key", disqusAPIKey)
 	vals.Set("message", pc.Message)
 	vals.Set("parent", pc.Parent)
 	vals.Set("thread", pc.Thread)
