@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.2.11](https://github.com/eiblog/eiblog/compare/v2.2.10...v2.2.11) (2024-01-02)
+
+
+### Bug Fixes
+
+* **disqus:** fix returned posts list not have parent post ([9d71ca8](https://github.com/eiblog/eiblog/commit/9d71ca81988bfc614d13fcb02079f0dba9ef43cc))
+
 ### [2.2.10](https://github.com/eiblog/eiblog/compare/v2.2.9...v2.2.10) (2023-12-22)
 
 ### [2.2.9](https://github.com/eiblog/eiblog/compare/v2.2.8...v2.2.9) (2023-09-25)
