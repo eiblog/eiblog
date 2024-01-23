@@ -398,6 +398,7 @@ func handleAPISerieCreate(c *gin.Context) {
 		serie.Slug = slug
 		serie.Name = name
 		serie.Desc = desc
+		cache.PagesCh <- cache.PageSeries
 	} else {
 		err = cache.Ei.AddSerie(&model.Serie{
 			Slug:      slug,
