@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.2.16](https://github.com/eiblog/eiblog/compare/v2.2.15...v2.2.16) (2025-03-13)
+
+
+### Bug Fixes
+
+* empty "beian" display issue ([79fccb9](https://github.com/eiblog/eiblog/commit/79fccb958c3eb8e21615389359c1d613c5fb079b))
+
 ### [2.2.15](https://github.com/eiblog/eiblog/compare/v2.2.14...v2.2.15) (2024-12-31)
 
 
