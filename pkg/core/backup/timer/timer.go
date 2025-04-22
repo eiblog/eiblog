@@ -40,7 +40,7 @@ func Start(restore bool) (err error) {
 	for now := range t.C {
 		err = storage.BackupData(now)
 		if err != nil {
-			logrus.Error("timer: Start.BackupData: ", now, err)
+			logrus.Error("timer: Start.BackupData: ", now.Format(time.RFC3339), err)
 		}
 	}
 	return nil

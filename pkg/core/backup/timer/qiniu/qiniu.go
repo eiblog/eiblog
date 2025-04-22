@@ -88,7 +88,7 @@ func backupFromMongoDB(now time.Time) error {
 	}
 	// after days delete
 	deleteParams := internal.DeleteParams{
-		Name:           name,
+		Name:           filepath.Join("blog", name), // blog/eiblog-xx.tar.gz
 		Days:           config.Conf.BackupApp.Validity,
 		NoCompletePath: true,
 
