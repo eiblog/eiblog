@@ -3,15 +3,19 @@ package main
 
 import (
 	"flag"
-	"fmt"
 
-	"github.com/eiblog/eiblog/pkg/config"
-	"github.com/eiblog/eiblog/pkg/core/backup/ping"
-	"github.com/eiblog/eiblog/pkg/core/backup/swag"
-	"github.com/eiblog/eiblog/pkg/core/backup/timer"
+	"github.com/eiblog/eiblog/cmd/backup/config"
+	"github.com/eiblog/eiblog/cmd/backup/handler/ping"
+	"github.com/eiblog/eiblog/cmd/backup/handler/swag"
+	"github.com/eiblog/eiblog/cmd/backup/handler/timer"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
+
+// @title backup API
+// @version 1.0
+// @description This is a backup server.
 
 var restore bool
 
@@ -20,15 +24,15 @@ func init() {
 }
 
 func main() {
-	fmt.Println("Hi, it's App " + config.Conf.BackupApp.Name)
-	flag.Parse()
+	logrus.Info("Hi, it's App " + config.Conf.Name)
 
+	flag.Parse()
 	endRun := make(chan error, 1)
 
 	runCommand(restore, endRun)
 
 	runHTTPServer(endRun)
-	fmt.Println(<-endRun)
+	logrus.Fatal(<-endRun)
 }
 
 func runCommand(restore bool, endRun chan error) {
@@ -38,11 +42,7 @@ func runCommand(restore bool, endRun chan error) {
 }
 
 func runHTTPServer(endRun chan error) {
-	if !config.Conf.BackupApp.EnableHTTP {
-		return
-	}
-
-	if config.Conf.RunMode == config.ModeProd {
+	if config.Conf.RunMode.IsReleaseMode() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	e := gin.Default()
@@ -54,9 +54,8 @@ func runHTTPServer(endRun chan error) {
 	ping.RegisterRoutes(e)
 
 	// start
-	address := fmt.Sprintf(":%d", config.Conf.BackupApp.HTTPPort)
 	go func() {
-		endRun <- e.Run(address)
+		endRun <- e.Run(config.Conf.Listen)
 	}()
-	fmt.Println("HTTP server running on: " + address)
+	logrus.Info("HTTP server running on: " + config.Conf.Listen)
 }

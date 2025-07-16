@@ -7,7 +7,6 @@
 *.DS_Store
 *.tar.gz
 *.db
-backend
 
 # Test binary, built with `go test -c`
 *.test
@@ -18,5 +17,7 @@ backend
 # Dependency directories (remove the comment below to include it)
 # vendor/
 bin
-assets/*.*
+assets/*.xml
+assets/*.txt
 db.sqlite
+cmd/*/backend

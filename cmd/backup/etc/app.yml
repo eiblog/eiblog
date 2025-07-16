@@ -1,0 +1,14 @@
+apimode:
+  name: cmd-backup
+  listen: 0.0.0.0:9000
+database: # 数据库配置
+  driver: sqlite
+  source: ./db.sqlite
+backupto: qiniu # 备份到, default: qiniu
+interval: 7d # 备份周期, default: 7d
+validity: 60 # 备份保留时间, default: 60
+qiniu: # 七牛OSS
+  bucket: eiblog
+  domain: st.deepzz.com
+  accesskey: MB6AXl_Sj_mmFsL-Lt59Dml2Vmy2o8XMmiCbbSeC
+  secretkey: BIrMy0fsZ0_SHNceNXk3eDuo7WmVYzj2-zrmd5Tf

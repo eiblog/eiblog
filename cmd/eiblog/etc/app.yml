@@ -1,0 +1,49 @@
+apimode:
+  name: cmd-eiblog
+  listen: 0.0.0.0:9000
+  host: example.com
+database: # 数据库配置
+  driver: sqlite
+  source: ./db.sqlite
+hotwords: # 热搜词
+  - docker
+  - mongodb
+  - curl
+  - dns
+staticversion: 1
+eshost: # http://elasticsearch:9200
+general: # 常规配置
+  pagenum: 10 # 首页展示文章数量
+  pagesize: 20 # 管理界面
+  descprefix: "Desc:" # 文章描述前缀
+  identifier: <!--more--> # 截取预览标识
+  length: 400 # 自动截取预览, 字符数
+  timezone: Asia/Shanghai # 时区
+disqus: # 评论相关
+  shortname: xxxxxx
+  publickey: wdSgxRm9rdGAlLKFcFdToBe3GT4SibmV7Y8EjJQ0r4GWXeKtxpopMAeIeoI2dTEg
+  accesstoken: 50023908f39f4607957e909b495326af
+google: # 谷歌分析
+  url: https://www.google-analytics.com/g/collect
+  tid: G-xxxxxxxxxx
+  v: "2"
+  adsense: <script async src="https://pagead2.googlesyndication.com/xxx" crossorigin="anonymous"></script>
+qiniu: # 七牛OSS
+  bucket: eiblog
+  domain: st.deepzz.com
+  accesskey: MB6AXl_Sj_mmFsL-Lt59Dml2Vmy2o8XMmiCbbSeC
+  secretkey: BIrMy0fsZ0_SHNceNXk3eDuo7WmVYzj2-zrmd5Tf
+twitter: # twitter card
+  card: summary
+  site: deepzz02
+  image: st.deepzz.com/static/img/avatar.jpg
+  address: twitter.com/deepzz02
+feedrpc: # rss ping
+  feedrurl: https://deepzz.superfeedr.com/
+  pingrpc:
+  - http://ping.baidu.com/ping/RPC2
+  - http://rpc.pingomatic.com/
+# 数据初始化操作，可到博客后台修改
+account:
+  username: deepzz # *后台登录用户名
+  password: deepzz # *登录明文密码

@@ -1,8 +1,8 @@
 #!/usr/bin/env sh
 
-for file in pkg/core/*; do
+for file in cmd/*; do
   if test -d $file; then
-    cd $file && swag init -g api.go;
+    cd $file && swag init -g main.go;
     cd -;
   fi
 done

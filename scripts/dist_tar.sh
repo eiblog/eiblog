@@ -5,7 +5,7 @@ set -e
 _tag="$1"
 _arch=$(go env GOARCH)
 
-for file in pkg/core/*; do
+for file in cmd/*; do
   app="$(basename $file)";
   # tar platform
   for os in linux darwin windows; do

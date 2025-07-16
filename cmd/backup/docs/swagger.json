@@ -1,0 +1,34 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "This is a backup server.",
+        "title": "backup API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "paths": {
+        "/ping": {
+            "get": {
+                "description": "ping",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "ping"
+                ],
+                "summary": "ping",
+                "responses": {
+                    "200": {
+                        "description": "it's ok",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

@@ -1,8 +1,0 @@
-basePath: /api
-info:
-  contact: {}
-  description: This is a sample server celler server.
-  title: APP Demo API
-  version: "1.0"
-paths: {}
-swagger: "2.0"

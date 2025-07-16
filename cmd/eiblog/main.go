@@ -2,52 +2,48 @@
 package main
 
 import (
-	"fmt"
 	"path/filepath"
 
-	"github.com/eiblog/eiblog/pkg/config"
-	"github.com/eiblog/eiblog/pkg/core/eiblog"
-	"github.com/eiblog/eiblog/pkg/core/eiblog/admin"
-	"github.com/eiblog/eiblog/pkg/core/eiblog/file"
-	"github.com/eiblog/eiblog/pkg/core/eiblog/page"
-	"github.com/eiblog/eiblog/pkg/core/eiblog/swag"
-	"github.com/eiblog/eiblog/pkg/mid"
+	"github.com/eiblog/eiblog/cmd/eiblog/config"
+	"github.com/eiblog/eiblog/cmd/eiblog/handler/admin"
+	"github.com/eiblog/eiblog/cmd/eiblog/handler/file"
+	"github.com/eiblog/eiblog/cmd/eiblog/handler/page"
+	"github.com/eiblog/eiblog/cmd/eiblog/handler/swag"
+
+	"github.com/eiblog/eiblog/pkg/middleware"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 func main() {
-	fmt.Println("Hi, it's App " + config.Conf.EiBlogApp.Name)
+	logrus.Info("Hi, it's App " + config.Conf.Name)
 
 	endRun := make(chan error, 1)
 
 	runHTTPServer(endRun)
-	fmt.Println(<-endRun)
+	logrus.Fatal(<-endRun)
 }
 
 func runHTTPServer(endRun chan error) {
-	if !config.Conf.EiBlogApp.EnableHTTP {
-		return
-	}
-
-	if config.Conf.RunMode == config.ModeProd {
+	if config.Conf.RunMode.IsReleaseMode() {
 		gin.SetMode(gin.ReleaseMode)
 	}
 	e := gin.Default()
 	// middleware
-	e.Use(mid.UserMiddleware())
-	e.Use(mid.SessionMiddleware(mid.SessionOpts{
-		Name:   "su",
-		Secure: config.Conf.RunMode == config.ModeProd,
-		Secret: []byte("ZGlzvcmUoMTAsICI="),
-	}))
+	e.Use(middleware.UserMiddleware())
+	e.Use(middleware.SessionMiddleware(
+		middleware.SessionOpts{
+			Name:   "su",
+			Secure: config.Conf.RunMode.IsReleaseMode(),
+			Secret: []byte("ZGlzvcmUoMTAsICI="),
+		}))
 
 	// swag
 	swag.RegisterRoutes(e)
 
 	// static files, page
-	root := filepath.Join(config.WorkDir, "assets")
-	e.Static("/static", root)
+	e.Static("/static", filepath.Join(config.WorkDir, "assets"))
 
 	// static files
 	file.RegisterRoutes(e)
@@ -57,16 +53,15 @@ func runHTTPServer(endRun chan error) {
 	admin.RegisterRoutes(e)
 
 	// admin router
-	group := e.Group("/admin", eiblog.AuthFilter)
+	group := e.Group("/admin", middleware.AuthFilter)
 	{
 		page.RegisterRoutesAuthz(group)
 		admin.RegisterRoutesAuthz(group)
 	}
 
 	// start
-	address := fmt.Sprintf(":%d", config.Conf.EiBlogApp.HTTPPort)
 	go func() {
-		endRun <- e.Run(address)
+		endRun <- e.Run(config.Conf.Listen)
 	}()
-	fmt.Println("HTTP server running on: " + address)
+	logrus.Info("HTTP server running on: " + config.Conf.Listen)
 }

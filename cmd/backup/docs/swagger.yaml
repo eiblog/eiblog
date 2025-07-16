@@ -1,0 +1,22 @@
+info:
+  contact: {}
+  description: This is a backup server.
+  title: backup API
+  version: "1.0"
+paths:
+  /ping:
+    get:
+      consumes:
+      - application/json
+      description: ping
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: it's ok
+          schema:
+            type: string
+      summary: ping
+      tags:
+      - ping
+swagger: "2.0"
