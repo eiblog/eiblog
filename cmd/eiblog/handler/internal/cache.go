@@ -39,22 +39,13 @@ var (
 func init() {
 	// init timezone
 	var err error
-	tools.TimeLocation, err = time.LoadLocation(
-		config.Conf.General.Timezone)
-	if err != nil {
-		panic(err)
-	}
-	// init store
-	logrus.Info("store drivers: ", store.Drivers())
-	store, err := store.NewStore(config.Conf.Database.Driver,
-		config.Conf.Database.Source)
+	tools.TimeLocation, err = time.LoadLocation(config.Conf.General.Timezone)
 	if err != nil {
 		panic(err)
 	}
 	// Ei init
 	Ei = &Cache{
 		lock:        sync.Mutex{},
-		Store:       store,
 		TagArticles: make(map[string]model.SortedArticles),
 		ArticlesMap: make(map[string]*model.Article),
 	}
@@ -70,7 +61,6 @@ func init() {
 // Cache 整站缓存
 type Cache struct {
 	lock sync.Mutex
-	store.Store
 
 	// load from db
 	Blogger  *model.Blogger
@@ -92,7 +82,7 @@ func (c *Cache) AddArticle(article *model.Article) error {
 	defer c.lock.Unlock()
 
 	// store
-	err := c.InsertArticle(context.Background(), article, ArticleStartID)
+	err := Store.InsertArticle(context.Background(), article, ArticleStartID)
 	if err != nil {
 		return err
 	}
@@ -131,7 +121,7 @@ func (c *Cache) DelArticle(id int) error {
 		return nil
 	}
 	// set delete
-	err := c.UpdateArticle(context.Background(), id, map[string]interface{}{
+	err := Store.UpdateArticle(context.Background(), id, map[string]interface{}{
 		"deleted_at": time.Now(),
 	})
 	if err != nil {
@@ -147,7 +137,7 @@ func (c *Cache) AddSerie(serie *model.Serie) error {
 	c.lock.Lock()
 	defer c.lock.Unlock()
 
-	err := c.InsertSerie(context.Background(), serie)
+	err := Store.InsertSerie(context.Background(), serie)
 	if err != nil {
 		return err
 	}
@@ -166,7 +156,7 @@ func (c *Cache) DelSerie(id int) error {
 			if len(serie.Articles) > 0 {
 				return errors.New("请删除该专题下的所有文章")
 			}
-			err := c.RemoveSerie(context.Background(), id)
+			err := Store.RemoveSerie(context.Background(), id)
 			if err != nil {
 				return err
 			}
@@ -236,7 +226,7 @@ func (c *Cache) PageArticleBE(se int, kw string, draft, del bool, p,
 			search.Fields[store.SearchArticleTitle] = kw
 		}
 	}
-	articles, count, err := c.LoadArticleList(context.Background(), search)
+	articles, count, err := Store.LoadArticleList(context.Background(), search)
 	if err != nil {
 		return nil, 0
 	}
@@ -410,7 +400,7 @@ func (c *Cache) loadOrInit() error {
 		BTitle:    fmt.Sprintf("%s's Blog", strings.Title(config.Conf.Account.Username)),
 		Copyright: `本站使用「<a href="//creativecommons.org/licenses/by/4.0/">署名 4.0 国际</a>」创作共享协议，转载请注明作者及原网址。`,
 	}
-	created, err := c.LoadInsertBlogger(context.Background(), blogger)
+	created, err := Store.LoadInsertBlogger(context.Background(), blogger)
 	if err != nil {
 		return err
 	}
@@ -423,7 +413,7 @@ func (c *Cache) loadOrInit() error {
 			Slug:      "about",
 			CreatedAt: time.Time{}.AddDate(0, 0, 1),
 		}
-		err = c.InsertArticle(context.Background(), about, ArticleStartID)
+		err = Store.InsertArticle(context.Background(), about, ArticleStartID)
 		if err != nil {
 			return err
 		}
@@ -436,7 +426,7 @@ func (c *Cache) loadOrInit() error {
 			Slug:      "blogroll",
 			CreatedAt: time.Time{}.AddDate(0, 0, 7),
 		}
-		err = c.InsertArticle(context.Background(), blogroll, ArticleStartID)
+		err = Store.InsertArticle(context.Background(), blogroll, ArticleStartID)
 		if err != nil {
 			return err
 		}
@@ -449,13 +439,13 @@ func (c *Cache) loadOrInit() error {
 		Username: config.Conf.Account.Username,
 		Password: pwd,
 	}
-	_, err = c.LoadInsertAccount(context.Background(), account)
+	_, err = Store.LoadInsertAccount(context.Background(), account)
 	if err != nil {
 		return err
 	}
 	c.Account = account
 	// series
-	series, err := c.LoadAllSerie(context.Background())
+	series, err := Store.LoadAllSerie(context.Background())
 	if err != nil {
 		return err
 	}
@@ -466,7 +456,7 @@ func (c *Cache) loadOrInit() error {
 		Limit:  9999,
 		Fields: map[string]interface{}{store.SearchArticleDraft: false},
 	}
-	articles, _, err := c.LoadArticleList(context.Background(), search)
+	articles, _, err := Store.LoadArticleList(context.Background(), search)
 	if err != nil {
 		return err
 	}
@@ -561,7 +551,7 @@ func (c *Cache) timerClean() {
 
 	for now := range ticker.C {
 		exp := now.Add(TrashArticleExp)
-		err := c.CleanArticles(context.Background(), exp)
+		err := Store.CleanArticles(context.Background(), exp)
 		if err != nil {
 			logrus.Error("cache.timerClean.CleanArticles: ", err)
 		}

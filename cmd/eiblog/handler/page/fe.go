@@ -238,7 +238,7 @@ func handleDisqusList(c *gin.Context) {
 		} else if internal.DisqusClient.ThreadDetails(artc) == nil {
 			dcs.Data.Thread = artc.Thread
 		}
-		internal.Ei.UpdateArticle(context.Background(), artc.ID,
+		internal.Store.UpdateArticle(context.Background(), artc.ID,
 			map[string]interface{}{
 				"thread": artc.Thread,
 			})

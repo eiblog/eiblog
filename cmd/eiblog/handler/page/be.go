@@ -60,7 +60,7 @@ func handleAdminPost(c *gin.Context) {
 	params := baseBEParams(c)
 	id, err := strconv.Atoi(c.Query("cid"))
 	if err == nil && id > 0 {
-		article, _ := internal.Ei.LoadArticle(context.Background(), id)
+		article, _ := internal.Store.LoadArticle(context.Background(), id)
 		if article != nil {
 			params["Title"] = "编辑文章 | " + internal.Ei.Blogger.BTitle
 			params["Edit"] = article
@@ -169,7 +169,7 @@ func handleDraftDelete(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "参数错误"})
 		return
 	}
-	err = internal.Ei.RemoveArticle(context.Background(), id)
+	err = internal.Store.RemoveArticle(context.Background(), id)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "删除错误"})
 		return
@@ -190,7 +190,7 @@ func handleAdminDraft(c *gin.Context) {
 		Limit:  9999,
 		Fields: map[string]interface{}{store.SearchArticleDraft: true},
 	}
-	params["List"], _, err = internal.Ei.LoadArticleList(context.Background(), search)
+	params["List"], _, err = internal.Store.LoadArticleList(context.Background(), search)
 	if err != nil {
 		logrus.Error("handleDraft.LoadDraftArticles: ", err)
 		c.Status(http.StatusBadRequest)
@@ -212,7 +212,7 @@ func handleAdminTrash(c *gin.Context) {
 		Limit:  9999,
 		Fields: map[string]interface{}{store.SearchArticleTrash: true},
 	}
-	params["List"], _, err = internal.Ei.LoadArticleList(context.Background(), search)
+	params["List"], _, err = internal.Store.LoadArticleList(context.Background(), search)
 	if err != nil {
 		logrus.Error("handleTrash.LoadArticleList: ", err)
 	}

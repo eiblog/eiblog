@@ -30,7 +30,7 @@ func init() {
 	// run mode
 	mode := config.RunMode(os.Getenv("RUN_MODE"))
 	if !mode.IsRunMode() {
-		panic("config: unsupported env RUN_MODE" + mode)
+		panic("config: unsupported env RUN_MODE: " + mode)
 	}
 	logrus.Infof("Run mode:%s", mode)
 
@@ -39,8 +39,8 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
-
 	path := filepath.Join(dir, "etc", "app.yml")
+
 	data, err := os.ReadFile(path)
 	if err != nil {
 		panic(err)

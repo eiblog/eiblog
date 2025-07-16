@@ -8,8 +8,9 @@ import (
 
 // RunMode 列表
 const (
-	RunModeDev  RunMode = "dev" // 开发环境
-	RunModeProd RunMode = "pro" // 生产环境
+	RunModeLocal RunMode = "local" // 本地环境
+	RunModeDev   RunMode = "dev"   // 开发环境
+	RunModeProd  RunMode = "pro"   // 生产环境
 )
 
 // RunMode 运行模式
@@ -20,14 +21,9 @@ func (mode RunMode) IsReleaseMode() bool {
 	return mode == RunModeProd
 }
 
-// IsDevMode  是否时开发模式
-func (mode RunMode) IsDevMode() bool {
-	return mode == RunModeDev
-}
-
 // IsRunMode 是否是runmode
 func (mode RunMode) IsRunMode() bool {
-	return mode == RunModeDev || mode == RunModeProd
+	return mode == RunModeDev || mode == RunModeProd || mode == RunModeLocal
 }
 
 // WalkWorkDir walk work dir

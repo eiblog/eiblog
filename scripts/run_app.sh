@@ -1,3 +1,3 @@
 #!/usr/bin/env sh
 
-go run cmd/$1/main.go
+cd cmd/$1 && go run main.go

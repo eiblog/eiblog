@@ -69,7 +69,7 @@ func handleAcctLogin(c *gin.Context) {
 
 	internal.Ei.Account.LoginIP = c.ClientIP()
 	internal.Ei.Account.LoginAt = time.Now()
-	internal.Ei.UpdateAccount(context.Background(), user, map[string]interface{}{
+	internal.Store.UpdateAccount(context.Background(), user, map[string]interface{}{
 		"login_ip": internal.Ei.Account.LoginIP,
 		"login_at": internal.Ei.Account.LoginAt,
 	})
@@ -89,7 +89,7 @@ func handleAPIBlogger(c *gin.Context) {
 		return
 	}
 
-	err := internal.Ei.UpdateBlogger(context.Background(), map[string]interface{}{
+	err := internal.Store.UpdateBlogger(context.Background(), map[string]interface{}{
 		"blog_name":    bn,
 		"b_title":      bt,
 		"bei_an":       ba,
@@ -124,7 +124,7 @@ func handleAPIAccount(c *gin.Context) {
 		return
 	}
 
-	err := internal.Ei.UpdateAccount(context.Background(), internal.Ei.Account.Username,
+	err := internal.Store.UpdateAccount(context.Background(), internal.Ei.Account.Username,
 		map[string]interface{}{
 			"email":   e,
 			"phone_n": pn,
@@ -160,7 +160,7 @@ func handleAPIPassword(c *gin.Context) {
 	}
 	newPwd := tools.EncryptPasswd(internal.Ei.Account.Username, nw)
 
-	err := internal.Ei.UpdateAccount(context.Background(), internal.Ei.Account.Username,
+	err := internal.Store.UpdateAccount(context.Background(), internal.Ei.Account.Username,
 		map[string]interface{}{
 			"password": newPwd,
 		})
@@ -181,7 +181,7 @@ func handleDraftDelete(c *gin.Context) {
 			responseNotice(c, NoticeNotice, "参数错误", "")
 			return
 		}
-		err = internal.Ei.RemoveArticle(context.Background(), id)
+		err = internal.Store.RemoveArticle(context.Background(), id)
 		if err != nil {
 			logrus.Error("handleDraftDelete.RemoveArticle: ", err)
 			responseNotice(c, NoticeNotice, "删除失败", "")
@@ -310,7 +310,7 @@ func handleAPIPostCreate(c *gin.Context) {
 		article.UpdatedAt = time.Now()
 	}
 	// 数据库更新
-	err = internal.Ei.UpdateArticle(context.Background(), article.ID, map[string]interface{}{
+	err = internal.Store.UpdateArticle(context.Background(), article.ID, map[string]interface{}{
 		"title":      article.Title,
 		"content":    article.Content,
 		"serie_id":   article.SerieID,
@@ -384,7 +384,7 @@ func handleAPISerieCreate(c *gin.Context) {
 			responseNotice(c, NoticeNotice, "专题不存在", "")
 			return
 		}
-		err = internal.Ei.UpdateSerie(context.Background(), mid, map[string]interface{}{
+		err = internal.Store.UpdateSerie(context.Background(), mid, map[string]interface{}{
 			"slug": slug,
 			"name": name,
 			"desc": desc,
@@ -422,7 +422,7 @@ func handleAPITrashDelete(c *gin.Context) {
 			responseNotice(c, NoticeNotice, "参数错误", "")
 			return
 		}
-		err = internal.Ei.RemoveArticle(context.Background(), id)
+		err = internal.Store.RemoveArticle(context.Background(), id)
 		if err != nil {
 			responseNotice(c, NoticeNotice, err.Error(), "")
 			return
@@ -440,7 +440,7 @@ func handleAPITrashRecover(c *gin.Context) {
 			return
 
 		}
-		err = internal.Ei.UpdateArticle(context.Background(), id, map[string]interface{}{
+		err = internal.Store.UpdateArticle(context.Background(), id, map[string]interface{}{
 			"deleted_at": time.Time{},
 			"is_draft":   true,
 		})

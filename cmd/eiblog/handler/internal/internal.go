@@ -2,6 +2,7 @@ package internal
 
 import (
 	"github.com/eiblog/eiblog/cmd/eiblog/config"
+	"github.com/eiblog/eiblog/cmd/eiblog/handler/internal/store"
 	"github.com/eiblog/eiblog/pkg/third/disqus"
 	"github.com/eiblog/eiblog/pkg/third/es"
 	"github.com/eiblog/eiblog/pkg/third/pinger"
@@ -15,6 +16,7 @@ var (
 	DisqusClient *disqus.DisqusClient
 	QiniuClient  *qiniu.QiniuClient
 	Pinger       *pinger.Pinger
+	Store        store.Store
 )
 
 func init() {
@@ -23,16 +25,25 @@ func init() {
 	if err != nil {
 		logrus.Fatal("init es client: ", err)
 	}
+
 	DisqusClient, err = disqus.NewDisqusClient(config.Conf.Host, config.Conf.Disqus)
 	if err != nil {
 		logrus.Fatal("init disqus client: ", err)
 	}
+
 	QiniuClient, err = qiniu.NewQiniuClient(config.Conf.Qiniu)
 	if err != nil {
 		logrus.Fatal("init qiniu client: ", err)
 	}
+
 	Pinger, err = pinger.NewPinger(config.Conf.Host, config.Conf.FeedRPC)
 	if err != nil {
 		logrus.Fatal("init pinger: ", err)
+	}
+
+	logrus.Info("store drivers: ", store.Drivers())
+	Store, err = store.NewStore(config.Conf.Database.Driver, config.Conf.Database.Source)
+	if err != nil {
+		logrus.Fatal("init store: ", err)
 	}
 }
