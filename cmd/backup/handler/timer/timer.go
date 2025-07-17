@@ -2,49 +2,71 @@ package timer
 
 import (
 	"errors"
+	"fmt"
 	"strconv"
 	"time"
 
 	"github.com/eiblog/eiblog/cmd/backup/config"
-	"github.com/eiblog/eiblog/cmd/backup/handler/timer/qiniu"
+	"github.com/eiblog/eiblog/cmd/backup/handler/timer/db"
+	"github.com/eiblog/eiblog/cmd/backup/handler/timer/to"
 
 	"github.com/sirupsen/logrus"
 )
 
-// BackupRestorer 备份恢复器
-type BackupRestorer interface {
-	Backup(now time.Time) error
-	Restore() error
-}
-
 // Start to backup with ticker
 func Start(restore bool) (err error) {
-	var storage BackupRestorer
+	var (
+		storage  db.Storage
+		backupTo to.BackupRestorer
+	)
 
-	// backup instance
+	// backup from
+	switch config.Conf.Database.Driver {
+	case "mongodb":
+		storage = db.MongoStorage{}
+
+	default:
+		return errors.New("timer: unknown backup from driver: " +
+			config.Conf.Database.Driver)
+	}
+
+	// backup to
 	switch config.Conf.BackupTo {
 	case "qiniu":
-		storage = qiniu.BackupRestorer{}
+		backupTo = to.QiniuBackupRestorer{}
 
 	default:
 		return errors.New("timer: unknown backup to driver: " +
 			config.Conf.BackupTo)
 	}
+
+	// restore
 	if restore {
-		err = storage.Restore()
+		path, err := backupTo.Download()
+		if err != nil {
+			return err
+		}
+		err = storage.Restore(path)
 		if err != nil {
 			return err
 		}
 		logrus.Info("timer: Restore success")
 	}
-	// parse duration
+
+	// backup
 	interval, err := ParseDuration(config.Conf.Interval)
 	if err != nil {
 		return err
 	}
 	t := time.NewTicker(interval)
 	for now := range t.C {
-		err = storage.Backup(now)
+		name := fmt.Sprintf("eiblog-%s.tar.gz", now.Format("2006-01-02"))
+		path, err := storage.Backup(name)
+		if err != nil {
+			logrus.Error("timer: Start.Backup: ", now.Format(time.RFC3339), err)
+			continue
+		}
+		err = backupTo.Upload(path)
 		if err != nil {
 			logrus.Error("timer: Start.Backup: ", now.Format(time.RFC3339), err)
 		}

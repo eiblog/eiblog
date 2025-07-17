@@ -35,11 +35,11 @@ func init() {
 	logrus.Infof("Run mode:%s", mode)
 
 	// 加载配置文件
-	dir, err := config.WalkWorkDir()
+	etc, err := config.WorkEtcPath()
 	if err != nil {
 		panic(err)
 	}
-	path := filepath.Join(dir, "etc", "app.yml")
+	path := filepath.Join(etc, "app.yml")
 
 	data, err := os.ReadFile(path)
 	if err != nil {
