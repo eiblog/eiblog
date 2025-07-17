@@ -22,8 +22,9 @@ var (
 	XMLTemplate  *template.Template // template/xml模板
 	HTMLTemplate *template.Template // website/html模板
 
-	Store store.Store // 数据库存储
-	Ei    *Cache      // 博客数据缓存
+	Store           store.Store // 数据库存储
+	Ei              *Cache      // 博客数据缓存
+	TwoFactorSecret string      // 缓存两步验证密钥
 
 	ESClient     *es.ESClient         // es 客户端
 	DisqusClient *disqus.DisqusClient // disqus 客户端

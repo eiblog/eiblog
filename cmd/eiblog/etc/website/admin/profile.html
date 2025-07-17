@@ -7,11 +7,37 @@
     <div class="row typecho-page-main">
         <div class="col-mb-12 col-tb-3">
             <p>
-	    <img class="profile-avatar" src="//{{$.Qiniu.Domain}}/static/img/avatar.png" alt="{{.Blogger.BlogName}}" />
+	        <img class="profile-avatar" src="//{{$.Qiniu.Domain}}/static/img/avatar.png" alt="{{.Blogger.BlogName}}" />
             </p>
             <h2>{{.Blogger.BlogName}}</h2>
             <p>{{.Blogger.SubTitle}}</p>
             <p>最后登录: {{dateformat .Account.LoginAt "2006/01/02 15:04"}}</p>
+            {{if .Account.TwoFactorSecret}}
+            <strong>2FA 已绑定 <a class="unbind-2fa" href="/admin/profile?unbind=true">解绑</a></strong>
+            {{end}}
+            {{if $.TwoFactorSecret}}
+            <strong>2FA 绑定</strong>
+            <form action="/admin/api/twofactor" method="post" enctype="application/x-www-form-urlencoded">
+                <ul class="typecho-option">
+                    <li>
+                        <img src="{{$.TwoFactorSecret}}" alt="2fa code" style="width:180px;height:180px;">
+                    </li>
+                </ul>
+                <ul class="typecho-option">
+                    <li>
+                        <input id="2fa-0-1" name="code" type="text" class="text" />
+                        <p class="description">
+                            输入 2FA 验证码, 用于确认绑定.</p>
+                    </li>
+                </ul>
+                <ul class="typecho-option typecho-option-submit">
+                    <li>
+                        <button type="submit" class="btn primary">
+                            确认绑定</button>
+                    </li>
+                </ul>
+            </form>
+            {{end}}
         </div>
         <div class="col-mb-12 col-tb-6 col-tb-offset-1 typecho-content-panel" role="form">
             <section>

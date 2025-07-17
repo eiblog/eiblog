@@ -22,10 +22,10 @@
                     <label for=password class="sr-only">密码</label>
                     <input type=password id=password name=password class="text-l w-100" placeholder="密码">
                 </p>
-                <!-- <p>
+                {{if .TwoFactor}}<p>
                     <label for=code class="sr-only">两步验证</label>
                     <input type=text id=code name=code class="text-l w-100" placeholder="两步验证">
-                </p> -->
+                </p>{{end}}
                 <p class=submit>
                     <button type=submit class="btn btn-l w-100 primary">登录</button>
                 </p>

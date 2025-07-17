@@ -9,11 +9,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/eiblog/eiblog/cmd/eiblog/config"
 	"github.com/eiblog/eiblog/cmd/eiblog/handler/internal"
 	"github.com/eiblog/eiblog/pkg/middleware"
 	"github.com/eiblog/eiblog/pkg/model"
 	"github.com/eiblog/eiblog/pkg/third/qiniu"
 	"github.com/eiblog/eiblog/tools"
+	"github.com/pquerna/otp/totp"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
@@ -46,13 +48,14 @@ func RegisterRoutesAuthz(group gin.IRoutes) {
 	group.POST("/api/trash-recover", handleAPITrashRecover)
 	group.POST("/api/file-upload", handleAPIQiniuUpload)
 	group.POST("/api/file-delete", handleAPIQiniuDelete)
+	group.POST("/api/twofactor", handleAPITwoFactor)
 }
 
 // handleAcctLogin 登录接口
 func handleAcctLogin(c *gin.Context) {
 	user := c.PostForm("user")
 	pwd := c.PostForm("password")
-	// code := c.PostForm("code") // 二次验证
+	code := c.PostForm("code")
 	if user == "" || pwd == "" {
 		logrus.Warnf("参数错误: %s %s", user, pwd)
 		c.Redirect(http.StatusFound, "/admin/login")
@@ -64,6 +67,16 @@ func handleAcctLogin(c *gin.Context) {
 		c.Redirect(http.StatusFound, "/admin/login")
 		return
 	}
+	// 两步验证
+	if config.Conf.General.TwoFactor &&
+		internal.Ei.Account.TwoFactorSecret != "" {
+		valid := totp.Validate(code, internal.Ei.Account.TwoFactorSecret)
+		if !valid {
+			logrus.Warnf("两步验证: %s", code)
+			c.Redirect(http.StatusFound, "/admin/login")
+			return
+		}
+	}
 	// 登录成功
 	middleware.SetLogin(c, user)
 
@@ -74,6 +87,33 @@ func handleAcctLogin(c *gin.Context) {
 		"login_at": internal.Ei.Account.LoginAt,
 	})
 	c.Redirect(http.StatusFound, "/admin/profile")
+}
+
+// handleAPITwoFactor 两步验证
+func handleAPITwoFactor(c *gin.Context) {
+	code := c.PostForm("code")
+	if code == "" {
+		responseNotice(c, NoticeNotice, "验证码不能为空", "")
+		return
+	}
+	valid := totp.Validate(code, internal.TwoFactorSecret)
+	if !valid {
+		responseNotice(c, NoticeNotice, "验证码错误", "")
+		return
+	}
+	err := internal.Store.UpdateAccount(context.Background(), internal.Ei.Account.Username,
+		map[string]interface{}{
+			"two_factor_secret": internal.TwoFactorSecret,
+		})
+	if err != nil {
+		logrus.Error("handleAPITwoFactor.UpdateAccount: ", err)
+		responseNotice(c, NoticeNotice, err.Error(), "")
+		return
+	}
+	internal.Ei.Account.TwoFactorSecret = internal.TwoFactorSecret
+	internal.TwoFactorSecret = ""
+	c.Request.Header.Set("Referer", "/admin/profile")
+	responseNotice(c, NoticeSuccess, "绑定成功", "")
 }
 
 // handleAPIBlogger 更新博客信息

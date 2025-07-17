@@ -8,6 +8,7 @@ import (
 
 	"github.com/eiblog/eiblog/pkg/model"
 
+	"github.com/sirupsen/logrus"
 	"gorm.io/driver/clickhouse"
 	"gorm.io/driver/mysql"
 	"gorm.io/driver/postgres"
@@ -63,12 +64,15 @@ func (db *rdbms) Init(name, source string) (Store, error) {
 		return nil, err
 	}
 	// auto migrate
-	gormDB.AutoMigrate(
+	err = gormDB.AutoMigrate(
 		&model.Account{},
 		&model.Blogger{},
 		&model.Article{},
 		&model.Serie{},
 	)
+	if err != nil {
+		logrus.Error("rdbms.AutoMigrate: ", err)
+	}
 	db.DB = gormDB
 	return db, nil
 }

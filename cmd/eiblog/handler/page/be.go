@@ -3,9 +3,11 @@ package page
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"html/template"
+	"image/png"
 	"net/http"
 	"strconv"
 
@@ -13,6 +15,7 @@ import (
 	"github.com/eiblog/eiblog/cmd/eiblog/handler/internal"
 	"github.com/eiblog/eiblog/cmd/eiblog/handler/internal/store"
 	"github.com/eiblog/eiblog/pkg/middleware"
+	"github.com/pquerna/otp/totp"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
@@ -35,7 +38,11 @@ func handleLoginPage(c *gin.Context) {
 		c.Redirect(http.StatusFound, "/admin/profile")
 		return
 	}
-	params := gin.H{"BTitle": internal.Ei.Blogger.BTitle}
+	params := gin.H{
+		"BTitle": internal.Ei.Blogger.BTitle,
+		"TwoFactor": config.Conf.General.TwoFactor &&
+			internal.Ei.Account.TwoFactorSecret != "",
+	}
 	renderHTMLAdminLayout(c, "login.html", params)
 }
 
@@ -46,6 +53,31 @@ func handleAdminProfile(c *gin.Context) {
 	params["Path"] = c.Request.URL.Path
 	params["Console"] = true
 	params["Ei"] = internal.Ei
+	if c.Query("unbind") == "true" {
+		internal.Ei.Account.TwoFactorSecret = ""
+		_ = internal.Store.UpdateAccount(context.Background(), internal.Ei.Account.Username,
+			map[string]interface{}{
+				"two_factor_secret": "",
+			})
+	}
+	if config.Conf.General.TwoFactor &&
+		internal.Ei.Account.TwoFactorSecret == "" {
+		key, err := totp.Generate(totp.GenerateOpts{
+			Issuer:      config.Conf.Host,
+			AccountName: internal.Ei.Account.Username,
+		})
+		internal.TwoFactorSecret = key.Secret()
+		if err == nil {
+			var buf bytes.Buffer
+			img, err := key.Image(200, 200)
+			if err != nil {
+				panic(err)
+			}
+			png.Encode(&buf, img)
+			b64 := base64.StdEncoding.EncodeToString(buf.Bytes())
+			params["TwoFactorSecret"] = "data:image/png;base64," + b64
+		}
+	}
 	renderHTMLAdminLayout(c, "admin-profile", params)
 }
 

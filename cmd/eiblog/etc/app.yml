@@ -19,6 +19,7 @@ general: # 常规配置
   identifier: <!--more--> # 截取预览标识
   length: 400 # 自动截取预览, 字符数
   timezone: Asia/Shanghai # 时区
+  twofactor: true # 是否启用两步验证
 disqus: # 评论相关
   shortname: xxxxxx
   publickey: wdSgxRm9rdGAlLKFcFdToBe3GT4SibmV7Y8EjJQ0r4GWXeKtxpopMAeIeoI2dTEg

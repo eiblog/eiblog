@@ -93,6 +93,8 @@ type General struct {
 	Length int
 	// 时区, 一般配置为 Asia/Shanghai
 	Timezone string
+	// 是否启用两步验证
+	TwoFactor bool
 }
 
 // Account 账户配置
@@ -101,12 +103,6 @@ type Account struct {
 	Username string
 	// *必须配置, 后台登录密码。登录后请后台立即修改
 	Password string
-	// 邮箱, 用于显示
-	Email string
-	// 手机号, 用于显示
-	PhoneNumber string
-	// 地址, 用于显示
-	Address string
 }
 
 // Blogger 博客配置, 无需配置，程序默认初始化，可在后台更改
