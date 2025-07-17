@@ -26,25 +26,26 @@ func (mode RunMode) IsRunMode() bool {
 	return mode == RunModeDev || mode == RunModeProd || mode == RunModeLocal
 }
 
-// WalkWorkDir walk work dir
-func WalkWorkDir() (string, error) {
+// WorkEtcPath walk etc dir
+func WorkEtcPath() (string, error) {
 	gopath := os.Getenv("GOPATH")
-	workDir, err := os.Getwd()
+	wd, err := os.Getwd()
 	if err != nil {
 		return "", err
 	}
-	// find work dir, try 3 times
-	for gopath != workDir && workDir != "/" {
-		dir := filepath.Join(workDir, "etc")
+	// find etc path, try 3 times
+	var etc string
+	for gopath != wd && wd != "/" {
+		etc = filepath.Join(wd, "etc")
 
-		_, err := os.Stat(dir)
+		_, err := os.Stat(etc)
 		if err == nil {
 			break
 		}
 		if !os.IsNotExist(err) {
 			return "", err
 		}
-		workDir = filepath.Dir(workDir)
+		wd = filepath.Dir(wd)
 	}
-	return workDir, nil
+	return etc, nil
 }

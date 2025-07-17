@@ -14,8 +14,8 @@ import (
 var (
 	// Conf 配置
 	Conf Config
-	// WorkDir 工作目录
-	WorkDir string
+	// EtcDir 工作目录
+	EtcDir string
 )
 
 // Config config
@@ -50,11 +50,11 @@ func init() {
 
 	// 加载配置文件
 	var err error
-	WorkDir, err = config.WalkWorkDir()
+	EtcDir, err = config.WorkEtcPath()
 	if err != nil {
 		panic(err)
 	}
-	path := filepath.Join(WorkDir, "etc", "app.yml")
+	path := filepath.Join(EtcDir, "app.yml")
 
 	data, err := os.ReadFile(path)
 	if err != nil {

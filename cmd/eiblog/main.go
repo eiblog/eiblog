@@ -43,7 +43,7 @@ func runHTTPServer(endRun chan error) {
 	swag.RegisterRoutes(e)
 
 	// static files, page
-	e.Static("/static", filepath.Join(config.WorkDir, "assets"))
+	e.Static("/static", filepath.Join(config.EtcDir, "assets"))
 
 	// static files
 	file.RegisterRoutes(e)

@@ -16,7 +16,7 @@ import (
 var xmlTmpl *template.Template
 
 func init() {
-	root := filepath.Join(config.WorkDir, "website", "template", "*.xml")
+	root := filepath.Join(config.EtcDir, "template", "*.xml")
 
 	var err error
 	xmlTmpl, err = template.New("").Funcs(template.FuncMap{

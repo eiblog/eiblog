@@ -17,17 +17,10 @@ var htmlTmpl *template.Template
 
 func init() {
 	htmlTmpl = template.New("eiblog").Funcs(tools.TplFuncMap)
-	root := filepath.Join(config.WorkDir, "website")
+	root := filepath.Join(config.EtcDir, "website")
 	files := tools.ReadDirFiles(root, func(fi fs.DirEntry) bool {
-		name := fi.Name()
-		if strings.HasPrefix(name, ".") {
-			return true
-		}
-		// should not read template dir
-		if fi.IsDir() && name == "template" {
-			return true
-		}
-		return false
+		// should not read dir & .DS_Store
+		return strings.HasPrefix(fi.Name(), ".") || fi.IsDir()
 	})
 	_, err := htmlTmpl.ParseFiles(files...)
 	if err != nil {
