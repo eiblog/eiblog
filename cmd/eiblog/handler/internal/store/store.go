@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/eiblog/eiblog/pkg/config"
 	"github.com/eiblog/eiblog/pkg/model"
 )
 
@@ -99,13 +100,14 @@ func Drivers() []string {
 }
 
 // NewStore 新建存储
-func NewStore(name string, source string) (Store, error) {
+func NewStore(conf config.Database) (Store, error) {
 	storeMu.RLock()
-	driver, ok := stores[name]
+	driver, ok := stores[conf.Driver]
 	storeMu.RUnlock()
+
 	if !ok {
-		return nil, fmt.Errorf("store: unknown driver %q (forgotten import?)", name)
+		return nil, fmt.Errorf("store: unknown driver %q (forgotten import?)", conf.Driver)
 	}
 
-	return driver.Init(name, source)
+	return driver.Init(conf.Driver, conf.Source)
 }

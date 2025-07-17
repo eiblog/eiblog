@@ -15,14 +15,9 @@ import (
 	"github.com/eiblog/eiblog/cmd/eiblog/handler/internal/store"
 	"github.com/eiblog/eiblog/pkg/model"
 	"github.com/eiblog/eiblog/tools"
-
-	"github.com/sirupsen/logrus"
 )
 
 var (
-	// Ei eiblog cache
-	Ei *Cache
-
 	// PagesCh regenerate pages chan
 	PagesCh = make(chan string, 2)
 	// PageSeries the page series regenerate flag
@@ -32,31 +27,7 @@ var (
 
 	// ArticleStartID article start id
 	ArticleStartID = 11
-	// TrashArticleExp trash article timeout
-	TrashArticleExp = time.Duration(-48) * time.Hour
 )
-
-func init() {
-	// init timezone
-	var err error
-	tools.TimeLocation, err = time.LoadLocation(config.Conf.General.Timezone)
-	if err != nil {
-		panic(err)
-	}
-	// Ei init
-	Ei = &Cache{
-		lock:        sync.Mutex{},
-		TagArticles: make(map[string]model.SortedArticles),
-		ArticlesMap: make(map[string]*model.Article),
-	}
-	err = Ei.loadOrInit()
-	if err != nil {
-		panic(err)
-	}
-	go Ei.regeneratePages()
-	go Ei.timerClean()
-	go Ei.timerDisqus()
-}
 
 // Cache 整站缓存
 type Cache struct {
@@ -76,10 +47,27 @@ type Cache struct {
 	ArticlesMap  map[string]*model.Article       // slug:article
 }
 
+// NewCache 缓存整个博客数据
+func NewCache() (*Cache, error) {
+	// Ei init
+	cache := &Cache{
+		lock:        sync.Mutex{},
+		TagArticles: make(map[string]model.SortedArticles),
+		ArticlesMap: make(map[string]*model.Article),
+	}
+	err := cache.loadOrInit()
+	if err != nil {
+		return nil, err
+	}
+	// 异步渲染series,archive页面
+	go cache.regeneratePages()
+	return cache, nil
+}
+
 // AddArticle 添加文章
-func (c *Cache) AddArticle(article *model.Article) error {
-	c.lock.Lock()
-	defer c.lock.Unlock()
+func (cache *Cache) AddArticle(article *model.Article) error {
+	cache.lock.Lock()
+	defer cache.lock.Unlock()
 
 	// store
 	err := Store.InsertArticle(context.Background(), article, ArticleStartID)
@@ -91,32 +79,32 @@ func (c *Cache) AddArticle(article *model.Article) error {
 		return nil
 	}
 	// 正式发布文章
-	c.refreshCache(article, false)
+	cache.refreshCache(article, false)
 	return nil
 }
 
 // RepArticle 替换文章
-func (c *Cache) RepArticle(oldArticle, newArticle *model.Article) {
-	c.lock.Lock()
-	defer c.lock.Unlock()
+func (cache *Cache) RepArticle(oldArticle, newArticle *model.Article) {
+	cache.lock.Lock()
+	defer cache.lock.Unlock()
 
-	c.ArticlesMap[newArticle.Slug] = newArticle
+	cache.ArticlesMap[newArticle.Slug] = newArticle
 	GenerateExcerptMarkdown(newArticle)
 	if newArticle.ID < ArticleStartID {
 		return
 	}
 	if oldArticle != nil { // 移除旧文章
-		c.refreshCache(oldArticle, true)
+		cache.refreshCache(oldArticle, true)
 	}
-	c.refreshCache(newArticle, false)
+	cache.refreshCache(newArticle, false)
 }
 
 // DelArticle 删除文章
-func (c *Cache) DelArticle(id int) error {
-	c.lock.Lock()
-	defer c.lock.Unlock()
+func (cache *Cache) DelArticle(id int) error {
+	cache.lock.Lock()
+	defer cache.lock.Unlock()
 
-	article, _ := c.FindArticleByID(id)
+	article, _ := cache.FindArticleByID(id)
 	if article == nil {
 		return nil
 	}
@@ -128,30 +116,30 @@ func (c *Cache) DelArticle(id int) error {
 		return err
 	}
 	// drop from tags,series,archives
-	c.refreshCache(article, true)
+	cache.refreshCache(article, true)
 	return nil
 }
 
 // AddSerie 添加专题
-func (c *Cache) AddSerie(serie *model.Serie) error {
-	c.lock.Lock()
-	defer c.lock.Unlock()
+func (cache *Cache) AddSerie(serie *model.Serie) error {
+	cache.lock.Lock()
+	defer cache.lock.Unlock()
 
 	err := Store.InsertSerie(context.Background(), serie)
 	if err != nil {
 		return err
 	}
-	c.Series = append(c.Series, serie)
+	cache.Series = append(cache.Series, serie)
 	PagesCh <- PageSeries
 	return nil
 }
 
 // DelSerie 删除专题
-func (c *Cache) DelSerie(id int) error {
-	c.lock.Lock()
-	defer c.lock.Unlock()
+func (cache *Cache) DelSerie(id int) error {
+	cache.lock.Lock()
+	defer cache.lock.Unlock()
 
-	for i, serie := range c.Series {
+	for i, serie := range cache.Series {
 		if serie.ID == id {
 			if len(serie.Articles) > 0 {
 				return errors.New("请删除该专题下的所有文章")
@@ -160,8 +148,8 @@ func (c *Cache) DelSerie(id int) error {
 			if err != nil {
 				return err
 			}
-			c.Series[i] = nil
-			c.Series = append(c.Series[:i], c.Series[i+1:]...)
+			cache.Series[i] = nil
+			cache.Series = append(cache.Series[:i], cache.Series[i+1:]...)
 			PagesCh <- PageSeries
 			break
 		}
@@ -170,12 +158,12 @@ func (c *Cache) DelSerie(id int) error {
 }
 
 // PageArticleFE 文章翻页
-func (c *Cache) PageArticleFE(page int, pageSize int) (prev,
+func (cache *Cache) PageArticleFE(page int, pageSize int) (prev,
 	next int, articles []*model.Article) {
 
 	var l int
-	for l = len(c.Articles); l > 0; l-- {
-		if c.Articles[l-1].ID >= ArticleStartID {
+	for l = len(cache.Articles); l > 0; l-- {
+		if cache.Articles[l-1].ID >= ArticleStartID {
 			break
 		}
 	}
@@ -200,12 +188,12 @@ func (c *Cache) PageArticleFE(page int, pageSize int) (prev,
 	if e > l {
 		e = l
 	}
-	articles = c.Articles[s:e]
+	articles = cache.Articles[s:e]
 	return
 }
 
 // PageArticleBE 后台文章分页
-func (c *Cache) PageArticleBE(se int, kw string, draft, del bool, p,
+func (cache *Cache) PageArticleBE(se int, kw string, draft, del bool, p,
 	n int) ([]*model.Article, int) {
 
 	search := store.SearchArticles{
@@ -238,8 +226,8 @@ func (c *Cache) PageArticleBE(se int, kw string, draft, del bool, p,
 }
 
 // FindArticleByID 通过ID查找文章
-func (c *Cache) FindArticleByID(id int) (*model.Article, int) {
-	for i, article := range c.Articles {
+func (cache *Cache) FindArticleByID(id int) (*model.Article, int) {
+	for i, article := range cache.Articles {
 		if article.ID == id {
 			return article, i
 		}
@@ -248,32 +236,32 @@ func (c *Cache) FindArticleByID(id int) (*model.Article, int) {
 }
 
 // refreshCache 刷新缓存
-func (c *Cache) refreshCache(article *model.Article, del bool) {
+func (cache *Cache) refreshCache(article *model.Article, del bool) {
 	if del {
-		_, idx := c.FindArticleByID(article.ID)
+		_, idx := cache.FindArticleByID(article.ID)
 
-		delete(c.ArticlesMap, article.Slug)
-		c.Articles = append(c.Articles[:idx], c.Articles[idx+1:]...)
+		delete(cache.ArticlesMap, article.Slug)
+		cache.Articles = append(cache.Articles[:idx], cache.Articles[idx+1:]...)
 		// 从链表移除
-		c.recalcLinkedList(article, true)
+		cache.recalcLinkedList(article, true)
 		// 从tag、serie、archive移除
-		c.redelArticle(article)
+		cache.redelArticle(article)
 		return
 	}
 	// 添加文章
 	defer GenerateExcerptMarkdown(article)
 
-	c.ArticlesMap[article.Slug] = article
-	c.Articles = append([]*model.Article{article}, c.Articles...)
-	sort.Sort(c.Articles)
+	cache.ArticlesMap[article.Slug] = article
+	cache.Articles = append([]*model.Article{article}, cache.Articles...)
+	sort.Sort(cache.Articles)
 	// 从链表添加
-	c.recalcLinkedList(article, false)
+	cache.recalcLinkedList(article, false)
 	// 从tag、serie、archive添加
-	c.readdArticle(article, true)
+	cache.readdArticle(article, true)
 }
 
 // recalcLinkedList 重算文章链表
-func (c *Cache) recalcLinkedList(article *model.Article, del bool) {
+func (cache *Cache) recalcLinkedList(article *model.Article, del bool) {
 	// 删除操作
 	if del {
 		if article.Prev == nil && article.Next != nil {
@@ -287,56 +275,56 @@ func (c *Cache) recalcLinkedList(article *model.Article, del bool) {
 		return
 	}
 	// 添加操作
-	_, idx := c.FindArticleByID(article.ID)
-	if idx == 0 && c.Articles[idx+1].ID >= ArticleStartID {
-		article.Next = c.Articles[idx+1]
-		c.Articles[idx+1].Prev = article
-	} else if idx > 0 && c.Articles[idx-1].ID >= ArticleStartID {
-		article.Prev = c.Articles[idx-1]
-		if c.Articles[idx-1].Next != nil {
-			article.Next = c.Articles[idx-1].Next
-			c.Articles[idx-1].Next.Prev = article
+	_, idx := cache.FindArticleByID(article.ID)
+	if idx == 0 && cache.Articles[idx+1].ID >= ArticleStartID {
+		article.Next = cache.Articles[idx+1]
+		cache.Articles[idx+1].Prev = article
+	} else if idx > 0 && cache.Articles[idx-1].ID >= ArticleStartID {
+		article.Prev = cache.Articles[idx-1]
+		if cache.Articles[idx-1].Next != nil {
+			article.Next = cache.Articles[idx-1].Next
+			cache.Articles[idx-1].Next.Prev = article
 		}
-		c.Articles[idx-1].Next = article
+		cache.Articles[idx-1].Next = article
 	}
 }
 
 // readdArticle 添加文章到tag、series、archive
-func (c *Cache) readdArticle(article *model.Article, needSort bool) {
+func (cache *Cache) readdArticle(article *model.Article, needSort bool) {
 	// tag
 	for _, tag := range article.Tags {
-		c.TagArticles[tag] = append(c.TagArticles[tag], article)
+		cache.TagArticles[tag] = append(cache.TagArticles[tag], article)
 		if needSort {
-			sort.Sort(c.TagArticles[tag])
+			sort.Sort(cache.TagArticles[tag])
 		}
 	}
 	// series
-	for i, serie := range c.Series {
+	for i, serie := range cache.Series {
 		if serie.ID != article.SerieID {
 			continue
 		}
-		c.Series[i].Articles = append(c.Series[i].Articles, article)
+		cache.Series[i].Articles = append(cache.Series[i].Articles, article)
 		if needSort {
-			sort.Sort(c.Series[i].Articles)
+			sort.Sort(cache.Series[i].Articles)
 			PagesCh <- PageSeries // 重建专题
 		}
 	}
 	// archive
 	y, m, _ := article.CreatedAt.Date()
-	for i, archive := range c.Archives {
+	for i, archive := range cache.Archives {
 		ay, am, _ := archive.Time.Date()
 		if y != ay || m != am {
 			continue
 		}
-		c.Archives[i].Articles = append(c.Archives[i].Articles, article)
+		cache.Archives[i].Articles = append(cache.Archives[i].Articles, article)
 		if needSort {
-			sort.Sort(c.Archives[i].Articles)
+			sort.Sort(cache.Archives[i].Articles)
 			PagesCh <- PageArchive // 重建归档
 		}
 		return
 	}
 	// 新建归档
-	c.Archives = append(c.Archives, &model.Archive{
+	cache.Archives = append(cache.Archives, &model.Archive{
 		Time:     article.CreatedAt,
 		Articles: model.SortedArticles{article},
 	})
@@ -346,25 +334,25 @@ func (c *Cache) readdArticle(article *model.Article, needSort bool) {
 }
 
 // redelArticle 从tag、series、archive删除文章
-func (c *Cache) redelArticle(article *model.Article) {
+func (cache *Cache) redelArticle(article *model.Article) {
 	// tag
 	for _, tag := range article.Tags {
-		for i, v := range c.TagArticles[tag] {
+		for i, v := range cache.TagArticles[tag] {
 			if v == article {
-				c.TagArticles[tag] = append(c.TagArticles[tag][0:i], c.TagArticles[tag][i+1:]...)
-				if len(c.TagArticles[tag]) == 0 {
-					delete(c.TagArticles, tag)
+				cache.TagArticles[tag] = append(cache.TagArticles[tag][0:i], cache.TagArticles[tag][i+1:]...)
+				if len(cache.TagArticles[tag]) == 0 {
+					delete(cache.TagArticles, tag)
 				}
 			}
 		}
 	}
 	// serie
-	for i, serie := range c.Series {
+	for i, serie := range cache.Series {
 		if serie.ID == article.SerieID {
 			for j, v := range serie.Articles {
 				if v == article {
-					c.Series[i].Articles = append(c.Series[i].Articles[0:j],
-						c.Series[i].Articles[j+1:]...)
+					cache.Series[i].Articles = append(cache.Series[i].Articles[0:j],
+						cache.Series[i].Articles[j+1:]...)
 					PagesCh <- PageSeries
 					break
 				}
@@ -372,15 +360,15 @@ func (c *Cache) redelArticle(article *model.Article) {
 		}
 	}
 	// archive
-	for i, archive := range c.Archives {
+	for i, archive := range cache.Archives {
 		ay, am, _ := archive.Time.Date()
 		if y, m, _ := article.CreatedAt.Date(); ay == y && am == m {
 			for j, v := range archive.Articles {
 				if v == article {
-					c.Archives[i].Articles = append(c.Archives[i].Articles[0:j],
-						c.Archives[i].Articles[j+1:]...)
-					if len(c.Archives[i].Articles) == 0 {
-						c.Archives = append(c.Archives[:i], c.Archives[i+1:]...)
+					cache.Archives[i].Articles = append(cache.Archives[i].Articles[0:j],
+						cache.Archives[i].Articles[j+1:]...)
+					if len(cache.Archives[i].Articles) == 0 {
+						cache.Archives = append(cache.Archives[:i], cache.Archives[i+1:]...)
 					}
 					PagesCh <- PageArchive
 					break
@@ -391,7 +379,7 @@ func (c *Cache) redelArticle(article *model.Article) {
 }
 
 // loadOrInit 读取数据或初始化
-func (c *Cache) loadOrInit() error {
+func (cache *Cache) loadOrInit() error {
 	// blogger
 	blogger := &model.Blogger{
 		BlogName:  strings.Title(config.Conf.Account.Username),
@@ -404,7 +392,7 @@ func (c *Cache) loadOrInit() error {
 	if err != nil {
 		return err
 	}
-	c.Blogger = blogger
+	cache.Blogger = blogger
 	if created { // init articles: about blogroll
 		about := &model.Article{
 			ID:        1, // 固定ID
@@ -432,8 +420,7 @@ func (c *Cache) loadOrInit() error {
 		}
 	}
 	// account
-	pwd := tools.EncryptPasswd(config.Conf.Account.Username,
-		config.Conf.Account.Password)
+	pwd := tools.EncryptPasswd(config.Conf.Account.Username, config.Conf.Account.Password)
 
 	account := &model.Account{
 		Username: config.Conf.Account.Username,
@@ -443,13 +430,13 @@ func (c *Cache) loadOrInit() error {
 	if err != nil {
 		return err
 	}
-	c.Account = account
+	cache.Account = account
 	// series
 	series, err := Store.LoadAllSerie(context.Background())
 	if err != nil {
 		return err
 	}
-	c.Series = series
+	cache.Series = series
 	// all articles
 	search := store.SearchArticles{
 		Page:   1,
@@ -464,7 +451,7 @@ func (c *Cache) loadOrInit() error {
 		// 渲染页面
 		GenerateExcerptMarkdown(v)
 
-		c.ArticlesMap[v.Slug] = v
+		cache.ArticlesMap[v.Slug] = v
 		// 分析文章
 		if v.ID < ArticleStartID {
 			continue
@@ -476,9 +463,9 @@ func (c *Cache) loadOrInit() error {
 			articles[i+1].ID >= ArticleStartID {
 			v.Next = articles[i+1]
 		}
-		c.readdArticle(v, false)
+		cache.readdArticle(v, false)
 	}
-	Ei.Articles = articles
+	cache.Articles = articles
 	// 重建专题与归档
 	PagesCh <- PageSeries
 	PagesCh <- PageArchive
@@ -486,15 +473,15 @@ func (c *Cache) loadOrInit() error {
 }
 
 // regeneratePages 重新生成series,archive页面
-func (c *Cache) regeneratePages() {
+func (cache *Cache) regeneratePages() {
 	for {
 		switch page := <-PagesCh; page {
 		case PageSeries:
-			sort.Sort(c.Series)
+			sort.Sort(cache.Series)
 			buf := bytes.Buffer{}
-			buf.WriteString(c.Blogger.SeriesSay)
+			buf.WriteString(cache.Blogger.SeriesSay)
 			buf.WriteString("\n\n")
-			for _, series := range c.Series {
+			for _, series := range cache.Series {
 				buf.WriteString(fmt.Sprintf("### %s{#toc-%d}", series.Name, series.ID))
 				buf.WriteByte('\n')
 				buf.WriteString(series.Desc)
@@ -507,16 +494,16 @@ func (c *Cache) regeneratePages() {
 				}
 				buf.WriteString("\n")
 			}
-			c.PageSeries = string(PageRender(buf.Bytes()))
+			cache.PageSeries = string(PageRender(buf.Bytes()))
 		case PageArchive:
-			sort.Sort(c.Archives)
+			sort.Sort(cache.Archives)
 			buf := bytes.Buffer{}
-			buf.WriteString(c.Blogger.ArchivesSay + "\n")
+			buf.WriteString(cache.Blogger.ArchivesSay + "\n")
 			var (
 				currentYear string
-				gt12Month   = len(c.Archives) > 12
+				gt12Month   = len(cache.Archives) > 12
 			)
-			for _, archive := range c.Archives {
+			for _, archive := range cache.Archives {
 				t := archive.Time.In(tools.TimeLocation)
 				if gt12Month {
 					year := t.Format("2006 年")
@@ -540,32 +527,7 @@ func (c *Cache) regeneratePages() {
 					}
 				}
 			}
-			c.PageArchives = string(PageRender(buf.Bytes()))
-		}
-	}
-}
-
-// timerClean 定时清理文章
-func (c *Cache) timerClean() {
-	ticker := time.NewTicker(time.Hour)
-
-	for now := range ticker.C {
-		exp := now.Add(TrashArticleExp)
-		err := Store.CleanArticles(context.Background(), exp)
-		if err != nil {
-			logrus.Error("cache.timerClean.CleanArticles: ", err)
-		}
-	}
-}
-
-// timerDisqus disqus定时操作
-func (c *Cache) timerDisqus() {
-	ticker := time.NewTicker(5 * time.Hour)
-
-	for range ticker.C {
-		err := DisqusClient.PostsCount(c.ArticlesMap)
-		if err != nil {
-			logrus.Error("cache.timerDisqus.PostsCount: ", err)
+			cache.PageArchives = string(PageRender(buf.Bytes()))
 		}
 	}
 }

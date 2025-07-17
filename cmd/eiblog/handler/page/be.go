@@ -5,7 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	htemplate "html/template"
+	"html/template"
 	"net/http"
 	"strconv"
 
@@ -242,19 +242,19 @@ func renderHTMLAdminLayout(c *gin.Context, name string, data gin.H) {
 	c.Header("Content-Type", "text/html; charset=utf-8")
 	// special page
 	if name == "login.html" {
-		err := htmlTmpl.ExecuteTemplate(c.Writer, name, data)
+		err := internal.HTMLTemplate.ExecuteTemplate(c.Writer, name, data)
 		if err != nil {
 			panic(err)
 		}
 		return
 	}
 	buf := bytes.Buffer{}
-	err := htmlTmpl.ExecuteTemplate(&buf, name, data)
+	err := internal.HTMLTemplate.ExecuteTemplate(&buf, name, data)
 	if err != nil {
 		panic(err)
 	}
-	data["LayoutContent"] = htemplate.HTML(buf.String())
-	err = htmlTmpl.ExecuteTemplate(c.Writer, "adminLayout.html", data)
+	data["LayoutContent"] = template.HTML(buf.String())
+	err = internal.HTMLTemplate.ExecuteTemplate(c.Writer, "adminLayout.html", data)
 	if err != nil {
 		panic(err)
 	}

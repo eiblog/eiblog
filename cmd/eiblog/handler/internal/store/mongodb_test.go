@@ -6,6 +6,7 @@ import (
 	"testing"
 	"time"
 
+	"github.com/eiblog/eiblog/pkg/config"
 	"github.com/eiblog/eiblog/pkg/model"
 )
 
@@ -19,7 +20,10 @@ var (
 
 func init() {
 	var err error
-	store, err = NewStore("mongodb", "mongodb://127.0.0.1:27017")
+	store, err = NewStore(config.Database{
+		Driver: "mongodb",
+		Source: "mongodb://127.0.0.1:27017",
+	})
 	if err != nil {
 		panic(err)
 	}

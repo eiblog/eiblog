@@ -25,6 +25,7 @@ func init() {
 	TplFuncMap["join"] = Join
 	TplFuncMap["isnotzero"] = IsNotZero
 	TplFuncMap["getavatar"] = GetAvatar
+	TplFuncMap["imgtonormal"] = ImgToNormal
 }
 
 // Str2html string to html

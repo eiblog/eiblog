@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	htemplate "html/template"
+	"html/template"
 	"io"
 	"math/rand"
 	"net/http"
@@ -143,14 +143,14 @@ func handleSearchPage(c *gin.Context) {
 	params["Description"] = "站内搜索，" + internal.Ei.Blogger.SubTitle
 	params["Path"] = ""
 	params["CurrentPage"] = "search-post"
-
 	q := strings.TrimSpace(c.Query("q"))
-	if q != "" {
+	params["Word"] = q
+
+	if q != "" && internal.ESClient != nil {
 		start, err := strconv.Atoi(c.Query("start"))
 		if start < 1 || err != nil {
 			start = 1
 		}
-		params["Word"] = q
 
 		vals := c.Request.URL.Query()
 		result, err := internal.ESClient.ElasticSearch(q, config.Conf.General.PageNum, start-1)
@@ -386,19 +386,19 @@ func renderHTMLHomeLayout(c *gin.Context, name string, data gin.H) {
 	c.Header("Content-Type", "text/html; charset=utf-8")
 	// special page
 	if name == "disqus.html" {
-		err := htmlTmpl.ExecuteTemplate(c.Writer, name, data)
+		err := internal.HTMLTemplate.ExecuteTemplate(c.Writer, name, data)
 		if err != nil {
 			panic(err)
 		}
 		return
 	}
 	buf := bytes.Buffer{}
-	err := htmlTmpl.ExecuteTemplate(&buf, name, data)
+	err := internal.HTMLTemplate.ExecuteTemplate(&buf, name, data)
 	if err != nil {
 		panic(err)
 	}
-	data["LayoutContent"] = htemplate.HTML(buf.String())
-	err = htmlTmpl.ExecuteTemplate(c.Writer, "homeLayout.html", data)
+	data["LayoutContent"] = template.HTML(buf.String())
+	err = internal.HTMLTemplate.ExecuteTemplate(c.Writer, "homeLayout.html", data)
 	if err != nil {
 		panic(err)
 	}

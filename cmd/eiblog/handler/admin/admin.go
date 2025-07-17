@@ -210,12 +210,14 @@ func handleAPIPostDelete(c *gin.Context) {
 		ids = append(ids, id)
 	}
 	// elasticsearch
-	err := internal.ESClient.ElasticDelIndex(ids)
-	if err != nil {
-		logrus.Error("handleAPIPostDelete.ElasticDelIndex: ", err)
+	if internal.ESClient != nil {
+		err := internal.ESClient.ElasticDelIndex(ids)
+		if err != nil {
+			logrus.Error("handleAPIPostDelete.ElasticDelIndex: ", err)
+		}
 	}
 	// TODO disqus delete
-	responseNotice(c, NoticeSuccess, "删除成功", "")
+	responseNotice(c, NoticeSuccess, "删除成功，已移入到回收箱", "")
 }
 
 // handleAPIPostCreate 创建文章
@@ -291,7 +293,9 @@ func handleAPIPostCreate(c *gin.Context) {
 			// 异步执行，快
 			go func() {
 				// elastic
-				internal.ESClient.ElasticAddIndex(article)
+				if internal.ESClient != nil {
+					internal.ESClient.ElasticAddIndex(article)
+				}
 				// rss
 				internal.Pinger.PingFunc(internal.Ei.Blogger.BTitle, slug)
 			}()
@@ -332,7 +336,9 @@ func handleAPIPostCreate(c *gin.Context) {
 		// 异步执行，快
 		go func() {
 			// elastic
-			internal.ESClient.ElasticAddIndex(article)
+			if internal.ESClient != nil {
+				internal.ESClient.ElasticAddIndex(article)
+			}
 			// rss
 			internal.Pinger.PingFunc(internal.Ei.Blogger.BTitle, slug)
 		}()

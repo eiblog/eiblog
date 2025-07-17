@@ -1,32 +1,8 @@
 package page
 
 import (
-	"io/fs"
-	"path/filepath"
-	"strings"
-	"text/template"
-
-	"github.com/eiblog/eiblog/cmd/eiblog/config"
-	"github.com/eiblog/eiblog/tools"
-
 	"github.com/gin-gonic/gin"
 )
-
-// htmlTmpl html template cache
-var htmlTmpl *template.Template
-
-func init() {
-	htmlTmpl = template.New("eiblog").Funcs(tools.TplFuncMap)
-	root := filepath.Join(config.EtcDir, "website")
-	files := tools.ReadDirFiles(root, func(fi fs.DirEntry) bool {
-		// should not read dir & .DS_Store
-		return strings.HasPrefix(fi.Name(), ".") || fi.IsDir()
-	})
-	_, err := htmlTmpl.ParseFiles(files...)
-	if err != nil {
-		panic(err)
-	}
-}
 
 // RegisterRoutes register routes
 func RegisterRoutes(e *gin.Engine) {
