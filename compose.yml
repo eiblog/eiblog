@@ -13,7 +13,7 @@ services:
   eiblog:
     image: deepzz0/eiblog:latest
     volumes:
-    - ${PWD}/conf:/app/conf
+    - ${PWD}/eiblog/etc:/app/etc
     extra_hosts:
     - "disqus.com:151.101.192.134"
     - "deepzz.disqus.com:151.101.192.134"
@@ -30,7 +30,7 @@ services:
     image: deepzz0/backup:latest
     #command: ./backend --restore true
     volumes:
-    - ${PWD}/conf:/app/conf
+    - ${PWD}/backup/etc:/app/etc
     links:
     - mongodb
     restart: always
