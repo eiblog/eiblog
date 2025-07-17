@@ -11,11 +11,7 @@ for file in cmd/*; do
   for os in linux darwin windows; do
     _target="$app-$_tag.$os-$_arch.tar.gz"
     GOOS=$os GOARCH=$_arch \
-      go build -tags prod -ldflags '-extldflags "-static"' -o backend "./cmd/$app"
-    if [ "$app" = "eiblog" ]; then
-      tar czf $_target conf website assets backend
-    else
-      tar czf $_target conf backend
-    fi
+      go build -ldflags '-extldflags "-static"' -o ./cmd/$app/backend ./cmd/$app
+    tar czf $_target ./cmd/$app/etc ./cmd/$app/backend
   done
 done
