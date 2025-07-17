@@ -37,6 +37,7 @@ type Config struct {
 	Twitter config.Twitter
 	FeedRPC config.FeedRPC
 	Account config.Account
+	Pages   []config.CustomPage
 }
 
 // init 初始化配置

@@ -118,3 +118,13 @@ type Blogger struct {
 	// 版权, 如 本站使用「<a href="//creativecommons.org/licenses/by/4.0/">署名 4.0 国际</a>」创作共享协议，转载请注明作者及原网址。
 	Copyright string // 版权
 }
+
+// CustomPage 自定义页面配置
+type CustomPage struct {
+	// 页面名称, 如 独立作品
+	Name string
+	// 页面链接, 如 /works
+	Path string
+	// 是否显示在导航栏, 如 true
+	ShowInNav bool
+}

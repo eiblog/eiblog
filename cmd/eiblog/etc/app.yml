@@ -12,6 +12,10 @@ hotwords: # 热搜词
   - dns
 staticversion: 1
 eshost: # http://elasticsearch:9200
+pages:
+  - name: 自定义页面
+    path: /page/custom.html
+    showinnav: true
 general: # 常规配置
   pagenum: 10 # 首页展示文章数量
   pagesize: 20 # 管理界面

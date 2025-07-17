@@ -39,12 +39,12 @@ func init() {
 		logrus.Fatal("init timezone: ", err)
 	}
 	// 模板解析初始化
-	root := filepath.Join(config.EtcDir, "template", "*.xml")
+	root := filepath.Join(config.EtcDir, "xml", "*.xml")
 	XMLTemplate, err = template.New("eiblog").Funcs(tools.TplFuncMap).ParseGlob(root)
 	if err != nil {
 		logrus.Fatal("init xml template: ", err)
 	}
-	root = filepath.Join(config.EtcDir, "website")
+	root = filepath.Join(config.EtcDir, "template")
 	files := tools.ReadDirFiles(root, func(fi fs.DirEntry) bool {
 		// should not read dir & .DS_Store
 		return strings.HasPrefix(fi.Name(), ".")

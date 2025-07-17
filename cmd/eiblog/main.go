@@ -44,6 +44,8 @@ func runHTTPServer(endRun chan error) {
 
 	// static files, page
 	e.Static("/static", filepath.Join(config.EtcDir, "assets"))
+	// custom pages
+	e.Static("/page", filepath.Join(config.EtcDir, "page"))
 
 	// static files
 	file.RegisterRoutes(e)

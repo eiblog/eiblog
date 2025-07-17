@@ -42,6 +42,7 @@ func baseFEParams(c *gin.Context) gin.H {
 		"Disqus":   config.Conf.Disqus,
 		"AdSense":  config.Conf.Google.AdSense,
 		"Version":  version,
+		"Pages":    config.Conf.Pages,
 	}
 }
 
