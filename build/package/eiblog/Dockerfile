@@ -13,10 +13,8 @@ COPY README.md /app/README.md
 COPY CHANGELOG.md /app/CHANGELOG.md
 COPY LICENSE /app/LICENSE
 
-COPY --from=builder /eiblog/bin/backend /app/backend
-COPY conf /app/conf
-COPY website /app/website
-COPY assets /app/assets
+COPY --from=builder /eiblog/cmd/eiblog/backend /app/backend
+COPY cmd/eiblog/etc /app/etc
 
 EXPOSE 9000
 

@@ -14,8 +14,8 @@ COPY README.md /app/README.md
 COPY CHANGELOG.md /app/CHANGELOG.md
 COPY LICENSE /app/LICENSE
 
-COPY --from=builder /eiblog/bin/backend /app/backend
-COPY conf /app/conf
+COPY --from=builder /eiblog/cmd/backup/backend /app/backend
+COPY cmd/backup/etc /app/etc
 
 EXPOSE 9001
 
