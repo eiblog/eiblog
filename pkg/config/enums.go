@@ -127,4 +127,6 @@ type CustomPage struct {
 	Path string
 	// 是否显示在导航栏, 如 true
 	ShowInNav bool
+	// 是否嵌入, 如 true
+	IsEmbed bool
 }

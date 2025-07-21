@@ -1,4 +1,4 @@
-package page
+package pages
 
 import (
 	"bytes"
@@ -14,6 +14,7 @@ import (
 
 	"github.com/eiblog/eiblog/cmd/eiblog/config"
 	"github.com/eiblog/eiblog/cmd/eiblog/handler/internal"
+	pconfig "github.com/eiblog/eiblog/pkg/config"
 	"github.com/eiblog/eiblog/pkg/third/disqus"
 	"github.com/eiblog/eiblog/tools"
 
@@ -382,12 +383,49 @@ func handleBeaconPage(c *gin.Context) {
 	c.Status(http.StatusNoContent)
 }
 
+// handleCustomPage 自定义页面
+func handleCustomPage(c *gin.Context) {
+	path := c.Request.URL.Path
+	if !strings.HasSuffix(path, ".html") {
+		handleNotFound(c)
+		return
+	}
+	// find config
+	var page *pconfig.CustomPage
+	for _, p := range config.Conf.Pages {
+		if p.Path == path {
+			page = &p
+			break
+		}
+	}
+	if page == nil {
+		handleNotFound(c)
+		return
+	}
+	var params gin.H
+	if page.IsEmbed {
+		params = baseFEParams(c)
+		params["Path"] = c.Request.URL.Path
+		params["Title"] = page.Name + " | " + internal.Ei.Blogger.SubTitle
+	}
+	// serve custom page
+	name := c.Param("path")
+	renderHTMLHomeLayout(c, name, params)
+}
+
 // renderHTMLHomeLayout homelayout html
 func renderHTMLHomeLayout(c *gin.Context, name string, data gin.H) {
 	c.Header("Content-Type", "text/html; charset=utf-8")
 	// special page
-	if name == "disqus.html" {
+	switch {
+	case name == "disqus.html":
 		err := internal.HTMLTemplate.ExecuteTemplate(c.Writer, name, data)
+		if err != nil {
+			panic(err)
+		}
+		return
+	case data == nil:
+		err := internal.HTMLTemplate.ExecuteTemplate(c.Writer, name, nil)
 		if err != nil {
 			panic(err)
 		}

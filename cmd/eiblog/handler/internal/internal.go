@@ -20,7 +20,7 @@ import (
 
 var (
 	XMLTemplate  *template.Template // template/xml模板
-	HTMLTemplate *template.Template // website/html模板
+	HTMLTemplate *template.Template // page/html | website/html模板
 
 	Store           store.Store // 数据库存储
 	Ei              *Cache      // 博客数据缓存
@@ -49,6 +49,11 @@ func init() {
 		// should not read dir & .DS_Store
 		return strings.HasPrefix(fi.Name(), ".")
 	})
+	root = filepath.Join(config.EtcDir, "page")
+	pageFiles := tools.ReadDirFiles(root, func(fi fs.DirEntry) bool {
+		return !strings.HasSuffix(fi.Name(), ".html")
+	})
+	files = append(files, pageFiles...)
 	HTMLTemplate, err = template.New("eiblog").Funcs(tools.TplFuncMap).ParseFiles(files...)
 	if err != nil {
 		logrus.Fatal("init html template: ", err)

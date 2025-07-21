@@ -1,8 +1,13 @@
-package page
+package pages
 
 import (
 	"github.com/gin-gonic/gin"
 )
+
+// RegisterRoutesCustomPages 注册自定义页面
+func RegisterRoutesCustomPages(e *gin.Engine) {
+	e.GET("/page/:path", handleCustomPage)
+}
 
 // RegisterRoutes register routes
 func RegisterRoutes(e *gin.Engine) {

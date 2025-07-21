@@ -7,7 +7,7 @@ import (
 	"github.com/eiblog/eiblog/cmd/eiblog/config"
 	"github.com/eiblog/eiblog/cmd/eiblog/handler/admin"
 	"github.com/eiblog/eiblog/cmd/eiblog/handler/file"
-	"github.com/eiblog/eiblog/cmd/eiblog/handler/page"
+	"github.com/eiblog/eiblog/cmd/eiblog/handler/pages"
 	"github.com/eiblog/eiblog/cmd/eiblog/handler/swag"
 
 	"github.com/eiblog/eiblog/pkg/middleware"
@@ -44,20 +44,21 @@ func runHTTPServer(endRun chan error) {
 
 	// static files, page
 	e.Static("/static", filepath.Join(config.EtcDir, "assets"))
+
 	// custom pages
-	e.Static("/page", filepath.Join(config.EtcDir, "page"))
+	pages.RegisterRoutesCustomPages(e)
 
 	// static files
 	file.RegisterRoutes(e)
 	// frontend pages
-	page.RegisterRoutes(e)
+	pages.RegisterRoutes(e)
 	// unauthz api
 	admin.RegisterRoutes(e)
 
 	// admin router
 	group := e.Group("/admin", middleware.AuthFilter)
 	{
-		page.RegisterRoutesAuthz(group)
+		pages.RegisterRoutesAuthz(group)
 		admin.RegisterRoutesAuthz(group)
 	}
 

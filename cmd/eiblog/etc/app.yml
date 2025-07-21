@@ -16,6 +16,11 @@ pages:
   - name: 自定义页面
     path: /page/custom.html
     showinnav: true
+    isembed: false
+  - name: 自定义页面2
+    path: /page/custom2.html
+    showinnav: true
+    isembed: true
 general: # 常规配置
   pagenum: 10 # 首页展示文章数量
   pagesize: 20 # 管理界面
