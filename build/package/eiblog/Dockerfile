@@ -2,13 +2,13 @@ FROM golang:1.20 AS builder
 
 WORKDIR /eiblog
 COPY . .
-RUN ./scripts/run_build.sh eiblog
-
+RUN scripts/run_build.sh eiblog
 
 FROM alpine:latest
 LABEL maintainer="deepzz.qi@gmail.com"
 
-RUN apk add --update --no-cache tzdata
+RUN apk add --update --no-cache tzdata ca-certificates
+
 COPY README.md /app/README.md
 COPY CHANGELOG.md /app/CHANGELOG.md
 COPY LICENSE /app/LICENSE

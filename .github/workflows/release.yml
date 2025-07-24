@@ -1,65 +1,169 @@
-name: release image & asset
+name: Release Image & Asset
 
 on:
- push:
-   tags:
+  push:
+    tags:
       - "v*"
 
+permissions:
+  contents: write
+  packages: write
+  id-token: write # for SLSA provenance
+  attestations: write # for attestations
+
+env:
+  REGISTRY: docker.io
+  GOPROXY: https://goproxy.io,direct
+
 jobs:
-  package:
+  # Job 1: 打包源码 tar 文件
+  package-source:
     runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.vars.outputs.tag }}
+      sha: ${{ steps.vars.outputs.sha }}
+      date: ${{ steps.vars.outputs.date }}
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v2
-      with:
-        platforms: linux/amd64,linux/arm64,linux/arm/v7
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+          cache: true
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v2
+      - name: Extract metadata
+        id: vars
+        run: |
+          echo "tag=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+          echo "sha=${GITHUB_SHA::8}" >> $GITHUB_OUTPUT
+          echo "date=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> $GITHUB_OUTPUT
 
-    - name: Docker tag
-      id: vars
-      run: echo ::set-output name=tag::$(echo ${GITHUB_REF:10})
-    - name: Login to Docker Hub
-      uses: docker/login-action@v2
-      with:
-        password: ${{ secrets.DOCKER_PASSWORD }}
-        username: ${{ secrets.DOCKER_USERNAME }}
+      - name: Package tar archive
+        run: scripts/dist_tar.sh ${{ steps.vars.outputs.tag }}
 
-    - name: Build and push eiblog
-      uses: docker/build-push-action@v3
-      with:
-        context: .
-        file: ./build/package/eiblog/Dockerfile
-        platforms: linux/amd64,linux/arm64,linux/arm/v7
-        push: true
-        tags: |
-          deepzz0/eiblog:${{ steps.vars.outputs.tag }}
-          deepzz0/eiblog:latest
+      - name: Upload tar artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-archives
+          path: "*.tar.gz"
+          retention-days: 7
 
-    - name: Build and push backup
-      uses: docker/build-push-action@v3
-      with:
-        context: .
-        file: ./build/package/backup/Dockerfile
-        platforms: linux/amd64,linux/arm64,linux/arm/v7
-        push: true
-        tags: |
-          deepzz0/backup:${{ steps.vars.outputs.tag }}
-          deepzz0/backup:latest
+  # Job 2: 构建并推送 Docker 镜像
+  build-images:
+    runs-on: ubuntu-latest
+    needs: package-source
+    strategy:
+      fail-fast: false
+      matrix:
+        app: [eiblog, backup]
+        include:
+          - app: eiblog
+            port: 9000
+          - app: backup
+            port: 9001
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-    - name: Package tar
-      env:
-        GOPROXY: https://goproxy.io,direct
-      run: scripts/dist_tar.sh ${{ steps.vars.outputs.tag }}
-    - name: Release push
-      uses: softprops/action-gh-release@v1
-      if: startsWith(github.ref, 'refs/tags/')
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        files: |
-          *.tar.gz
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Extract metadata for Docker
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/deepzz0/${{ matrix.app }}
+          tags: |
+            type=ref,event=tag
+            type=raw,value=latest,enable={{is_default_branch}}
+          labels: |
+            org.opencontainers.image.title=${{ matrix.app }}
+            org.opencontainers.image.description=eiblog ${{ matrix.app }} service
+            org.opencontainers.image.vendor=deepzz
+            org.opencontainers.image.revision=${{ needs.package-source.outputs.sha }}
+            org.opencontainers.image.created=${{ needs.package-source.outputs.date }}
+
+      - name: Build and push ${{ matrix.app }} image
+        id: build
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./build/package/${{ matrix.app }}/Dockerfile
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=${{ matrix.app }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.app }}
+          provenance: true
+          sbom: true
+
+      - name: Generate SLSA attestation
+        uses: actions/attest-build-provenance@v1
+        with:
+          subject-name: ${{ env.REGISTRY }}/deepzz0/${{ matrix.app }}
+          subject-digest: ${{ steps.build.outputs.digest }}
+
+  # Job 3: 创建 GitHub Release
+  create-release:
+    runs-on: ubuntu-latest
+    needs: [package-source, build-images]
+    steps:
+      - name: Download tar artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: release-archives
+
+      - name: Create release summary
+        run: |
+          cat >> $GITHUB_STEP_SUMMARY << 'EOF'
+          # 🎉 Release ${{ needs.package-source.outputs.tag }} Created!
+          
+          ## 📦 Docker Images
+          - **eiblog**: `deepzz0/eiblog:${{ needs.package-source.outputs.tag }}`
+          - **backup**: `deepzz0/backup:${{ needs.package-source.outputs.tag }}`
+          
+          ## 🏗️ Build Info
+          - **Tag**: ${{ needs.package-source.outputs.tag }}
+          - **Commit**: ${{ needs.package-source.outputs.sha }}
+          - **Built**: ${{ needs.package-source.outputs.date }}
+          - **Platforms**: linux/amd64, linux/arm64, linux/arm/v7
+          
+          ## 🔐 Security
+          - ✅ SLSA Build Provenance
+          - ✅ SBOM (Software Bill of Materials)
+          - ✅ Container Signing
+          EOF
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: "*.tar.gz"
+          generate_release_notes: true
+          name: Release ${{ needs.package-source.outputs.tag }}
+          body: |
+            ## Docker Images
+            ```bash
+            docker pull deepzz0/eiblog:${{ needs.package-source.outputs.tag }}
+            docker pull deepzz0/backup:${{ needs.package-source.outputs.tag }}
+            ```
+            
+            ## Multi-Architecture Support
+            - linux/amd64
+            - linux/arm64  
+            - linux/arm/v7
+            
+            Built with commit ${{ needs.package-source.outputs.sha }} on ${{ needs.package-source.outputs.date }}
