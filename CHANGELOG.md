@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0](https://github.com/eiblog/eiblog/compare/v2.2.17...v3.0.0) (2025-07-24)
+
+
+### Features
+
+* support custom page ([b69248f](https://github.com/eiblog/eiblog/commit/b69248f6a4937f8157d2393bd44c6c55174ae3e7))
+* twofactor bind ([e5100fa](https://github.com/eiblog/eiblog/commit/e5100fa018e2955c3d649b70245e3a379658d7ba))
+
+
+### Bug Fixes
+
+* ci ([f4c70b4](https://github.com/eiblog/eiblog/commit/f4c70b46c19d8761c252b767c92016c195299c0c))
+* ci dist tar ([24bfe52](https://github.com/eiblog/eiblog/commit/24bfe528b28b995c3d5b2c13314c8849a036942b))
+* custom page support embed ([aee4194](https://github.com/eiblog/eiblog/commit/aee4194c71dd98a7a84da96810a060f716d1ea57))
+
 ### [2.2.16](https://github.com/eiblog/eiblog/compare/v2.2.15...v2.2.16) (2025-03-13)
 
 
