@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"net/url"
-	"time"
 
 	"github.com/eiblog/eiblog/pkg/config"
 
@@ -16,7 +15,7 @@ import (
 // NewMDB new mongodb
 // https://docs.mongodb.com/manual/reference/connection-string/
 // mongodb://db0.example.com,db1.example.com,db2.example.com/dbname?replicaSet=myRepl&w=majority&wtimeoutMS=5000
-func NewMDB(opts config.Database) (*mongo.Database, error) {
+func NewMDB(ctx context.Context, opts config.Database) (*mongo.Database, error) {
 	if opts.Driver != "mongodb" {
 		return nil, errors.New("db: driver must be mongodb, but " + opts.Driver)
 	}
@@ -29,8 +28,6 @@ func NewMDB(opts config.Database) (*mongo.Database, error) {
 		return nil, errors.New("db: please specify a database")
 	}
 	database = database[1:]
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
-	defer cancel()
 
 	// remove database
 	u.Path = ""

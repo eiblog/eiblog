@@ -6,17 +6,18 @@ import (
 	"sort"
 	"time"
 
+	"github.com/eiblog/eiblog/cmd/eiblog/config"
+	pdb "github.com/eiblog/eiblog/pkg/connector/db"
 	"github.com/eiblog/eiblog/pkg/model"
 
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
 // example:
 //   driver: mongodb
-//   source: mongodb://localhost:27017
+//   source: mongodb://localhost:27017/eiblog
 
 const (
 	mongoDBName       = "eiblog"
@@ -31,44 +32,39 @@ const (
 )
 
 type mongodb struct {
-	*mongo.Client
+	*mongo.Database
 }
 
 // Init init mongodb client
 func (db *mongodb) Init(name, source string) (Store, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*20)
 	defer cancel()
 
-	opts := options.Client().ApplyURI(source)
-	client, err := mongo.Connect(ctx, opts)
+	database, err := pdb.NewMDB(ctx, config.Conf.Database)
 	if err != nil {
 		return nil, err
 	}
-	err = client.Ping(ctx, readpref.Primary())
-	if err != nil {
-		return nil, err
-	}
-	db.Client = client
+	db.Database = database
 	// create index
 	indexModel := mongo.IndexModel{
 		Keys:    bson.D{bson.E{Key: "username", Value: 1}},
 		Options: options.Index().SetUnique(true).SetSparse(true),
 	}
-	db.Database(mongoDBName).Collection(collectionAccount).
+	db.Database.Collection(collectionAccount).
 		Indexes().
 		CreateOne(context.Background(), indexModel)
 	indexModel = mongo.IndexModel{
 		Keys:    bson.D{bson.E{Key: "slug", Value: 1}},
 		Options: options.Index().SetUnique(true).SetSparse(true),
 	}
-	db.Database(mongoDBName).Collection(collectionArticle).
+	db.Database.Collection(collectionArticle).
 		Indexes().
 		CreateOne(context.Background(), indexModel)
 	indexModel = mongo.IndexModel{
 		Keys:    bson.D{bson.E{Key: "slug", Value: 1}},
 		Options: options.Index().SetUnique(true).SetSparse(true),
 	}
-	db.Database(mongoDBName).Collection(collectionSerie).
+	db.Database.Collection(collectionSerie).
 		Indexes().
 		CreateOne(context.Background(), indexModel)
 	return db, nil
@@ -78,7 +74,7 @@ func (db *mongodb) Init(name, source string) (Store, error) {
 func (db *mongodb) LoadInsertBlogger(ctx context.Context,
 	blogger *model.Blogger) (created bool, err error) {
 
-	collection := db.Database(mongoDBName).Collection(collectionBlogger)
+	collection := db.Database.Collection(collectionBlogger)
 
 	filter := bson.M{}
 	result := collection.FindOne(ctx, filter)
@@ -99,7 +95,7 @@ func (db *mongodb) LoadInsertBlogger(ctx context.Context,
 func (db *mongodb) UpdateBlogger(ctx context.Context,
 	fields map[string]interface{}) error {
 
-	collection := db.Database(mongoDBName).Collection(collectionBlogger)
+	collection := db.Database.Collection(collectionBlogger)
 
 	filter := bson.M{}
 	params := bson.M{}
@@ -115,7 +111,7 @@ func (db *mongodb) UpdateBlogger(ctx context.Context,
 func (db *mongodb) LoadInsertAccount(ctx context.Context,
 	acct *model.Account) (created bool, err error) {
 
-	collection := db.Database(mongoDBName).Collection(collectionAccount)
+	collection := db.Database.Collection(collectionAccount)
 
 	filter := bson.M{"username": acct.Username}
 	result := collection.FindOne(ctx, filter)
@@ -136,7 +132,7 @@ func (db *mongodb) LoadInsertAccount(ctx context.Context,
 func (db *mongodb) UpdateAccount(ctx context.Context, name string,
 	fields map[string]interface{}) error {
 
-	collection := db.Database(mongoDBName).Collection(collectionAccount)
+	collection := db.Database.Collection(collectionAccount)
 
 	filter := bson.M{"username": name}
 	params := bson.M{}
@@ -150,7 +146,7 @@ func (db *mongodb) UpdateAccount(ctx context.Context, name string,
 
 // InsertSerie 创建专题
 func (db *mongodb) InsertSerie(ctx context.Context, serie *model.Serie) error {
-	collection := db.Database(mongoDBName).Collection(collectionSerie)
+	collection := db.Database.Collection(collectionSerie)
 
 	serie.ID = db.nextValue(ctx, counterNameSerie)
 	_, err := collection.InsertOne(ctx, serie)
@@ -159,7 +155,7 @@ func (db *mongodb) InsertSerie(ctx context.Context, serie *model.Serie) error {
 
 // RemoveSerie 删除专题
 func (db *mongodb) RemoveSerie(ctx context.Context, id int) error {
-	collection := db.Database(mongoDBName).Collection(collectionSerie)
+	collection := db.Database.Collection(collectionSerie)
 
 	filter := bson.M{"id": id}
 	_, err := collection.DeleteOne(ctx, filter)
@@ -170,7 +166,7 @@ func (db *mongodb) RemoveSerie(ctx context.Context, id int) error {
 func (db *mongodb) UpdateSerie(ctx context.Context, id int,
 	fields map[string]interface{}) error {
 
-	collection := db.Database(mongoDBName).Collection(collectionSerie)
+	collection := db.Database.Collection(collectionSerie)
 
 	filter := bson.M{"id": id}
 	params := bson.M{}
@@ -184,7 +180,7 @@ func (db *mongodb) UpdateSerie(ctx context.Context, id int,
 
 // LoadAllSerie 查询所有专题
 func (db *mongodb) LoadAllSerie(ctx context.Context) (model.SortedSeries, error) {
-	collection := db.Database(mongoDBName).Collection(collectionSerie)
+	collection := db.Database.Collection(collectionSerie)
 
 	opts := options.Find().SetSort(bson.M{"id": -1})
 	filter := bson.M{}
@@ -218,14 +214,14 @@ func (db *mongodb) InsertArticle(ctx context.Context, article *model.Article, st
 		}
 	}
 
-	collection := db.Database(mongoDBName).Collection(collectionArticle)
+	collection := db.Database.Collection(collectionArticle)
 	_, err := collection.InsertOne(ctx, article)
 	return err
 }
 
 // RemoveArticle 硬删除文章
 func (db *mongodb) RemoveArticle(ctx context.Context, id int) error {
-	collection := db.Database(mongoDBName).Collection(collectionArticle)
+	collection := db.Database.Collection(collectionArticle)
 
 	filter := bson.M{"id": id}
 	_, err := collection.DeleteOne(ctx, filter)
@@ -234,7 +230,7 @@ func (db *mongodb) RemoveArticle(ctx context.Context, id int) error {
 
 // CleanArticles 清理回收站文章
 func (db *mongodb) CleanArticles(ctx context.Context, exp time.Time) error {
-	collection := db.Database(mongoDBName).Collection(collectionArticle)
+	collection := db.Database.Collection(collectionArticle)
 
 	// 超过两天自动删除
 	filter := bson.M{"deleted_at": bson.M{"$gt": time.Time{}, "$lt": exp}}
@@ -246,7 +242,7 @@ func (db *mongodb) CleanArticles(ctx context.Context, exp time.Time) error {
 func (db *mongodb) UpdateArticle(ctx context.Context, id int,
 	fields map[string]interface{}) error {
 
-	collection := db.Database(mongoDBName).Collection(collectionArticle)
+	collection := db.Database.Collection(collectionArticle)
 
 	filter := bson.M{"id": id}
 	params := bson.M{}
@@ -260,7 +256,7 @@ func (db *mongodb) UpdateArticle(ctx context.Context, id int,
 
 // LoadArticle 查找文章
 func (db *mongodb) LoadArticle(ctx context.Context, id int) (*model.Article, error) {
-	collection := db.Database(mongoDBName).Collection(collectionArticle)
+	collection := db.Database.Collection(collectionArticle)
 
 	filter := bson.M{"id": id}
 	result := collection.FindOne(ctx, filter)
@@ -276,7 +272,7 @@ func (db *mongodb) LoadArticle(ctx context.Context, id int) (*model.Article, err
 // LoadArticleList 获取文章列表
 func (db *mongodb) LoadArticleList(ctx context.Context, search SearchArticles) (
 	model.SortedArticles, int, error) {
-	collection := db.Database(mongoDBName).Collection(collectionArticle)
+	collection := db.Database.Collection(collectionArticle)
 
 	filter := bson.M{}
 	for k, v := range search.Fields {
@@ -334,7 +330,7 @@ type counter struct {
 
 // nextValue counter value
 func (db *mongodb) nextValue(ctx context.Context, name string) int {
-	collection := db.Database(mongoDBName).Collection(collectionCounter)
+	collection := db.Database.Collection(collectionCounter)
 
 	opts := options.FindOneAndUpdate().SetUpsert(true).
 		SetReturnDocument(options.After)

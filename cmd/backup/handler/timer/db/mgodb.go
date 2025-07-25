@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/eiblog/eiblog/cmd/backup/config"
-	"github.com/eiblog/eiblog/pkg/connector/db"
+	pdb "github.com/eiblog/eiblog/pkg/connector/db"
 )
 
 // MongoStorage 备份恢复器
@@ -46,11 +46,11 @@ func (r MongoStorage) Restore(path string) error {
 	defer cancel()
 
 	// drop database
-	mdb, err := db.NewMDB(config.Conf.Database)
+	database, err := pdb.NewMDB(ctx, config.Conf.Database)
 	if err != nil {
 		return err
 	}
-	err = mdb.Drop(ctx)
+	err = database.Drop(ctx)
 	if err != nil {
 		return err
 	}
