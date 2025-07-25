@@ -2,8 +2,8 @@ apimode:
   name: cmd-backup
   listen: 0.0.0.0:9000
 database: # 数据库配置
-  driver: sqlite
-  source: ./db.sqlite
+  driver: mongodb
+  source: mongodb://localhost:27017
 backupto: qiniu # 备份到, default: qiniu
 interval: 7d # 备份周期, default: 7d
 validity: 60 # 备份保留时间, default: 60

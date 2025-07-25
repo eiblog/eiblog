@@ -11,6 +11,10 @@ for file in cmd/*; do
   for os in linux darwin windows; do
     _target="$app-$_tag.$os-$_arch.tar.gz"
     GOOS=$os GOARCH=$_arch scripts/run_build.sh $app
-    tar czf $_target ./cmd/$app/etc ./cmd/$app/backend
+
+    # Create tar with flattened structure using -C parameter
+    tar czf "$_target" \
+      CHANGELOG.md LICENSE README.md \
+      -C "./cmd/$app" etc backend
   done
 done
