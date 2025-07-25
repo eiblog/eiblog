@@ -6,7 +6,7 @@ import (
 	"github.com/gin-contrib/sessions"
 	"github.com/gin-contrib/sessions/cookie"
 	"github.com/gin-gonic/gin"
-	uuid "github.com/satori/go.uuid"
+	"github.com/google/uuid"
 )
 
 // SessionOpts 设置选项
@@ -40,7 +40,7 @@ func UserMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		cookie, err := c.Cookie("u")
 		if err != nil || cookie == "" {
-			u1 := uuid.NewV4().String()
+			u1 := uuid.New().String()
 			c.SetCookie("u", u1, 86400*730, "/", "", true, true)
 		}
 	}

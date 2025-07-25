@@ -11,6 +11,7 @@ import (
 
 	"github.com/eiblog/eiblog/pkg/config"
 	"github.com/eiblog/eiblog/pkg/model"
+	"github.com/sirupsen/logrus"
 )
 
 // disqus api
@@ -179,6 +180,10 @@ type PostCreateResp struct {
 
 // PostCreate 评论文章
 func (cli *DisqusClient) PostCreate(pc *PostComment) (*PostCreateResp, error) {
+	if cli == nil {
+		return nil, errors.New("disqus client is nil, please init")
+	}
+
 	vals := url.Values{}
 	vals.Set("api_key", disqusAPIKey)
 	vals.Set("message", pc.Message)
@@ -226,6 +231,11 @@ type approvedResp struct {
 
 // PostApprove 批准评论
 func (cli *DisqusClient) PostApprove(post string) error {
+	if cli == nil {
+		logrus.Warnf("disqus client is nil, please init")
+		return nil
+	}
+
 	vals := url.Values{}
 	vals.Set("api_key", disqusAPIKey)
 	vals.Set("access_token", cli.Conf.AccessToken)
@@ -266,6 +276,10 @@ type threadCreateResp struct {
 
 // ThreadCreate 创建thread
 func (cli *DisqusClient) ThreadCreate(article *model.Article, btitle string) error {
+	if cli == nil {
+		return errors.New("disqus client is nil, please init")
+	}
+
 	vals := url.Values{}
 	vals.Set("api_key", disqusAPIKey)
 	vals.Set("access_token", cli.Conf.AccessToken)
@@ -315,6 +329,10 @@ type threadDetailsResp struct {
 
 // ThreadDetails thread详细
 func (cli *DisqusClient) ThreadDetails(article *model.Article) error {
+	if cli == nil {
+		return errors.New("disqus client is nil, please init")
+	}
+
 	vals := url.Values{}
 	vals.Set("api_key", disqusAPIKey)
 	vals.Set("access_token", cli.Conf.AccessToken)
