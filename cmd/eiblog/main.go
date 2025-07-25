@@ -9,9 +9,8 @@ import (
 	"github.com/eiblog/eiblog/cmd/eiblog/handler/file"
 	"github.com/eiblog/eiblog/cmd/eiblog/handler/pages"
 	"github.com/eiblog/eiblog/cmd/eiblog/handler/swag"
-	"github.com/eiblog/eiblog/tools"
-
 	"github.com/eiblog/eiblog/pkg/middleware"
+	"github.com/eiblog/eiblog/tools"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
