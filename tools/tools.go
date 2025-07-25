@@ -2,6 +2,7 @@
 package tools
 
 import (
+	"crypto/rand"
 	"crypto/sha256"
 	"fmt"
 	"io"
@@ -127,4 +128,15 @@ func IgnoreHTMLTag(src string) string {
 	src = regexpBrackets.ReplaceAllString(src, "")
 	// 去除换行符
 	return regexpEnter.ReplaceAllString(src, "")
+}
+
+// CryptoRand random with crypto/rand
+func CryptoRand(byteLen int) []byte {
+	buf := make([]byte, byteLen)
+
+	_, err := rand.Read(buf)
+	if err != nil {
+		panic(fmt.Sprintf("rand: error reading random bytes: %s", err))
+	}
+	return buf
 }

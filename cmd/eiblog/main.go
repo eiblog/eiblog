@@ -9,6 +9,7 @@ import (
 	"github.com/eiblog/eiblog/cmd/eiblog/handler/file"
 	"github.com/eiblog/eiblog/cmd/eiblog/handler/pages"
 	"github.com/eiblog/eiblog/cmd/eiblog/handler/swag"
+	"github.com/eiblog/eiblog/tools"
 
 	"github.com/eiblog/eiblog/pkg/middleware"
 
@@ -36,7 +37,7 @@ func runHTTPServer(endRun chan error) {
 		middleware.SessionOpts{
 			Name:   "su",
 			Secure: config.Conf.RunMode.IsReleaseMode(),
-			Secret: []byte("ZGlzvcmUoMTAsICI="),
+			Secret: tools.CryptoRand(16),
 		}))
 
 	// swag
