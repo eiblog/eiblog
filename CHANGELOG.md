@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.0.2](https://github.com/eiblog/eiblog/compare/v3.0.1...v3.0.2) (2025-07-25)
+
+
+### Bug Fixes
+
+* ci ([ccb5e45](https://github.com/eiblog/eiblog/commit/ccb5e4546e224182c949e72e9eae82fbbe1a02fe))
+
 ### [3.0.1](https://github.com/eiblog/eiblog/compare/v3.0.0...v3.0.1) (2025-07-25)
 
 
