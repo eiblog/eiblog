@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.0.6](https://github.com/eiblog/eiblog/compare/v3.0.5...v3.0.6) (2025-07-25)
+
+
+### Bug Fixes
+
+* feed & sitemap not generate ([629ad78](https://github.com/eiblog/eiblog/commit/629ad782c45fae7af9efdf99513bafdf87e7758c))
+
 ### [3.0.5](https://github.com/eiblog/eiblog/compare/v3.0.4...v3.0.5) (2025-07-25)
 
 
