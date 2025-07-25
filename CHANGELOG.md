@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.0.5](https://github.com/eiblog/eiblog/compare/v3.0.4...v3.0.5) (2025-07-25)
+
+
+### Bug Fixes
+
+* admin login session ([c1d73f1](https://github.com/eiblog/eiblog/commit/c1d73f1a453af62d15c25a79c382d9cefd8a3d2e))
+* mongodb uri error ([33afbd3](https://github.com/eiblog/eiblog/commit/33afbd351d2b41f9edf36959908c3f183745d903))
+* RUN_MODE error ([eaeeaaa](https://github.com/eiblog/eiblog/commit/eaeeaaafb98a4aa0a42dba74b411b1d361faf1d5))
+
 ### [3.0.4](https://github.com/eiblog/eiblog/compare/v3.0.3...v3.0.4) (2025-07-25)
 
 
