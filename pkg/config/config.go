@@ -10,7 +10,7 @@ import (
 const (
 	RunModeLocal RunMode = "local" // 本地环境
 	RunModeDev   RunMode = "dev"   // 开发环境
-	RunModeProd  RunMode = "pro"   // 生产环境
+	RunModeProd  RunMode = "prod"  // 生产环境
 )
 
 // RunMode 运行模式
