@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.0.4](https://github.com/eiblog/eiblog/compare/v3.0.3...v3.0.4) (2025-07-25)
+
+
+### Bug Fixes
+
+* **ci:** golang version ([9f77fb7](https://github.com/eiblog/eiblog/commit/9f77fb7b3f283aacb9d9c2a0e2f79c8a6c412edb))
+
 ### [3.0.2](https://github.com/eiblog/eiblog/compare/v3.0.1...v3.0.2) (2025-07-25)
 
 
