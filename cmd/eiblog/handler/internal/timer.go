@@ -90,32 +90,28 @@ func generateCrossdomain() error {
 
 // refreshFeedAndSitemap 定时刷新feed和sitemap
 func refreshFeedAndSitemap() {
-	defer time.AfterFunc(time.Hour, refreshFeedAndSitemap)
+	defer time.AfterFunc(time.Hour*4, refreshFeedAndSitemap)
 
 	now := time.Now()
 	// generate feed & sitemap
-	if now.Hour()%4 == 0 {
-		err := generateFeed()
-		if err != nil {
-			logrus.Error("startTimer.generateFeed: ", err)
-		}
-		err = generateSitemap()
-		if err != nil {
-			logrus.Error("startTimer.generateSitemap: ", err)
-		}
+	err := generateFeed()
+	if err != nil {
+		logrus.Error("startTimer.generateFeed: ", err)
+	}
+	err = generateSitemap()
+	if err != nil {
+		logrus.Error("startTimer.generateSitemap: ", err)
 	}
 	// clean expired articles
 	exp := now.Add(-48 * time.Hour)
-	err := Store.CleanArticles(context.Background(), exp)
+	err = Store.CleanArticles(context.Background(), exp)
 	if err != nil {
 		logrus.Error("startTimer.CleanArticles: ", err)
 	}
 	// fetch disqus count
-	if now.Hour()%5 == 0 {
-		err = DisqusClient.PostsCount(Ei.ArticlesMap)
-		if err != nil {
-			logrus.Error("startTimer.PostsCount: ", err)
-		}
+	err = DisqusClient.PostsCount(Ei.ArticlesMap)
+	if err != nil {
+		logrus.Error("startTimer.PostsCount: ", err)
 	}
 }
 
