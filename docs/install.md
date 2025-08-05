@@ -5,7 +5,7 @@
 * [准备工作](#准备工作)
 * [开始部署](#开始部署)
 
-博主提供了下面将要用到的镜像，可到这里查看：[https://hub.docker.com/u/deepzz0](https://hub.docker.com/u/deepzz0)。由于所有配置均在 `app/conf.yml` 下，所以在通过 docker 部署时建议将配置映射出来方便调试。
+博主提供了下面将要用到的镜像，可到这里查看：[https://hub.docker.com/u/deepzz0](https://hub.docker.com/u/deepzz0)。在通过 docker 部署时建议将配置映射出来方便调试。
 
 ### 存储后端
 
@@ -13,7 +13,7 @@
 
 ```
 # driver     # source
-mongodb      mongodb://localhost:27017
+mongodb      mongodb://localhost:27017/eiblog
 postgres     host=localhost port=5432 user=user dbname=eiblog sslmode=disable password=password
 mysql        user:password@tcp(127.0.0.1:3306)/eiblog?charset=utf8mb4&parseTime=True&loc=Local
 sqlite       /path/eiblog.db
@@ -74,8 +74,8 @@ eshost: http://localhost:9200
 | favicon.ico        | st.example.com/static/img/favicon.ico        | cdn 名为 `static/img/favicon.ico`。你也可以在代理服务器自行配置，只要通过 example.com/favicon.ico 也是能够访问到。 |
 | bg04.jpg           | st.example.com/static/img/bg04.jpg           | cdn 名为 `static/img/bg04.jpg`，首页左侧的大背景图，需要更名请到 website/st_blog.css 修改。 |
 | avatar.png         | st.example.com/static/img/avatar.png         | cdn 名为 `static/img/avatar.png`，个人博客头像               |
-| blank.gif          | st.example.com/static/img/blank.gif          | cdn 名为 `static/img/blank.gif`，空白图片，复制链接下载 https://st.deepzz.com/static/img/blank.gif。 |
-| default_avatar.png | st.example.com/static/img/default_avatar.png | cdn 名为 `static/img/default_avatar.png`，disqus 默认头像图片，复制链接下载 https://st.deepzz.com/static/img/default_avatar.png |
+| blank.gif          | st.example.com/static/img/blank.gif          | cdn 名为 `static/img/blank.gif`，空白图片，复制链接下载 https://st.deepzz.cn/static/img/blank.gif。 |
+| default_avatar.png | st.example.com/static/img/default_avatar.png | cdn 名为 `static/img/default_avatar.png`，disqus 默认头像图片，复制链接下载 https://st.deepzz.cn/static/img/default_avatar.png |
 
 >  注意：
 >
@@ -85,21 +85,27 @@ eshost: http://localhost:9200
 
 #### 配置说明
 
-走到这里，我相信只走到 `80%` 的路程。放弃还来得及。这里会对 `eiblog/conf` 下的所有文件做说明，希望你做好准备。
+走到这里，我相信只走到 `80%` 的路程。这里会对 `cmd/eiblog/etc` 下的所有文件做说明：
 
-具体的配置内容已经在 `app.yml` 中进行说明了。
+```
+cmd/eiblog/etc
+├── app.yml  # 博客配置文件
+├── assets   # 后台所需的资源文件
+├── page     # 自定义的页面文件
+├── template # 前台渲染的模板
+└── xml      # xml 渲染模板，如 sitemap
+```
 
-如果用 nginx 作为代理服务器，博主提供了一份示例配置 `eiblog/eiblog.conf`，该配置涉及到 `ssl` 相关配置建议存放于 `/etc/nginx/ssl` 下。其中关于 `ssl_dhparam`、站点认证均提供了相关配置。
+具体的配置内容已经在 `app.yml` 中进行说明了。如果用 nginx 作为代理服务器，博主提供了一份示例配置 `eiblog/eiblog.conf`，该配置涉及到 `ssl` 相关配置建议存放于 `/etc/nginx/ssl` 下。其中关于 `ssl_dhparam`、站点认证均提供了相关配置。
 
 ### 开始部署
 
 下面是博主通过 `docker-compose` 一键部署的文件内容，仅供参考：
 
 ```
-version: '3'
 services:
   mongodb:
-    image: mongo:3.2
+    image: mongo:3.6
     volumes:
     - ${PWD}/mgodb:/data/db
     restart: always
@@ -108,24 +114,32 @@ services:
     volumes:
     - ${PWD}/esdata:/usr/share/elasticsearch/data
     restart: always
+
   eiblog:
-    iamge: deepzz0/eiblog:latest
+    image: deepzz0/eiblog:latest
     volumes:
-    - ${PWD}/conf:/app/conf
+    - ${PWD}/eiblog/etc/app.yml:/app/etc/app.yml
     extra_hosts:
     - "disqus.com:151.101.192.134"
+    - "deepzz.disqus.com:151.101.192.134"
     links:
     - elasticsearch
     - mongodb
+    environment:
+    - RUN_MODE=prod
     ports:
-    - 9000:9000
+    - 127.0.0.1:9000:9000
     restart: always
+
   backup:
     image: deepzz0/backup:latest
+    #command: ./backend --restore true
     volumes:
-    - ${PWD}/conf:/app/conf
+    - ${PWD}/backup/etc/app.yml:/app/etc/app.yml
     links:
     - mongodb
+    environment:
+    - RUN_MODE=prod
     restart: always
 ```
 

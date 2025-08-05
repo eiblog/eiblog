@@ -24,14 +24,17 @@ func (r MongoStorage) Backup(name string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	arg := fmt.Sprintf("mongodump -h %s -d eiblog -o /tmp", u.Host)
+	if u.Path == "" {
+		return "", fmt.Errorf("no database specified")
+	}
+	arg := fmt.Sprintf("mongodump -h %s -d %s -o /tmp", u.Host, u.Path)
 	cmd := exec.CommandContext(ctx, "sh", "-c", arg)
 	err = cmd.Run()
 	if err != nil {
 		return "", err
 	}
 	// tar
-	arg = fmt.Sprintf("tar czf /tmp/%s -C /tmp eiblog", name)
+	arg = fmt.Sprintf("tar czf /tmp/%s -C /tmp %s", name, u.Path)
 	cmd = exec.CommandContext(ctx, "sh", "-c", arg)
 	err = cmd.Run()
 	if err != nil {
@@ -66,7 +69,7 @@ func (r MongoStorage) Restore(path string) error {
 	if err != nil {
 		return err
 	}
-	arg = fmt.Sprintf("mongorestore -h %s -d eiblog /tmp/eiblog", u.Host)
+	arg = fmt.Sprintf("mongorestore -h %s -d %s /tmp/%s", u.Host, u.Path, u.Path)
 	cmd = exec.CommandContext(ctx, "sh", "-c", arg)
 	return cmd.Run()
 }

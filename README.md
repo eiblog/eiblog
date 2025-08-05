@@ -1,8 +1,6 @@
 # EiBlog [![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE.md) [![Versuib](https://img.shields.io/github/tag/eiblog/eiblog.svg)](https://github.com/eiblog/eiblog/releases) 
 
-> 博客项目结构参考模版：https://github.com/deepzz0/appdemo
-
-用过其它博客系统，不喜欢，不够轻，不够快！这是我开发的第二款博客系统，也实在不想再在这件事情上过多纠结了。`EiBlog` 是一个比较稳定的博客系统，现已迭代至 `2.0` 版本，稳定性和维护你是不用担心的。
+用过其它博客系统，不喜欢，不够轻，不够快！这是我开发的第二款博客系统，也实在不想再在这件事情上过多纠结了。`EiBlog` 是一个比较稳定的博客系统，现已迭代至 `3.0` 版本，稳定性和维护你是不用担心的。
 
 但它有着部署简单（上线复杂！）的特点，不推荐没有计算机知识的朋友搭建，欢迎咨询。该博客的个中优点（简洁、轻快，安全），等你体验。
 
@@ -11,6 +9,13 @@ Docker镜像地址：
 * 博客服务：[deepzz0/eiblog](https://hub.docker.com/r/deepzz0/eiblog)
 * 博客搜索：[deepzz0/elasticsearch](https://hub.docker.com/r/deepzz0/elasticsearch)
 * 数据备份：[deepzz0/backup](https://hub.docker.com/r/deepzz0/backup)
+
+### 功能变化
+
+- [x] 增对 **TOTP 双因素认证** 的支持，配置开启后后台绑定
+- [x] 新增 **自定义页面**，支持独立页面和内嵌页面
+- [x] 优化项目结构，更加清晰，各个 app 之间配置独立
+- [ ] 支持多搜索引擎，如数据库原生、[zincsearch](https://github.com/zincsearch/zincsearch)、bleve 等
 
 ### 快速体验
 
@@ -33,8 +38,6 @@ $ docker run --name eiblog \
 参考项目根目录下的 [docker-compose.yml](https://github.com/eiblog/eiblog/blob/v2/docker-compose.yml)，修改相关配置：
 
 ```
-$ docker compose up -d
-或
 $ docker-compose up -d
 ```
 
@@ -46,7 +49,7 @@ $ docker-compose up -d
 
 | 类型（driver） | 地址（source）示例                                           |
 | -------------- | ------------------------------------------------------------ |
-| mongodb        | mongodb://localhost:27017                                    |
+| mongodb        | mongodb://localhost:27017/eiblog                             |
 | mysql          | user:password@tcp(localhost:3306)/eiblog?charset=utf8mb4&parseTime=True&loc=Local |
 | postgres       | host=localhost port=5432 user=user password=password dbname=eiblog sslmode=disable |
 | sqlite         | /path/eiblog.db                                              |

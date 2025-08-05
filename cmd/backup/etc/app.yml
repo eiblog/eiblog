@@ -3,7 +3,7 @@ apimode:
   listen: 0.0.0.0:9000
 database: # 数据库配置
   driver: mongodb
-  source: mongodb://localhost:27017
+  source: mongodb://localhost:27017/eiblog
 backupto: qiniu # 备份到, default: qiniu
 interval: 7d # 备份周期, default: 7d
 validity: 60 # 备份保留时间, default: 60

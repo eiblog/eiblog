@@ -7,19 +7,20 @@ EiBlog 镜像仓库地址：https://hub.docker.com/u/deepzz0，备份镜像为�
 目前仅支持同步 mongodb 数据到七牛云，参考 `app.yml`：
 
 ```
-backupapp:
-  mode:
-    name: cmd-backup
-    enablehttp: true
-    httpport: 9001
-  backupto: qiniu # 备份到七牛云
-  interval: 7d # 多久备份一次
-  validity: 60 # 保存时长days
-  qiniu: # 七牛OSS
-    bucket: backup
-    domain: st.deepzz.com
-    accesskey: MB6AXl_Sj_mmFsL-Lt59Dml2Vmy2o8XMmiCbbSeC
-    secretkey: BIrMy0fsZ0_SHNceNXk3eDuo7WmVYzj2-zrmd5Tf
+apimode:
+  name: cmd-backup
+  listen: 0.0.0.0:9000
+database: # 数据库配置
+  driver: mongodb
+  source: mongodb://localhost:27017/eiblog
+backupto: qiniu # 备份到, default: qiniu
+interval: 7d # 备份周期, default: 7d
+validity: 60 # 备份保留时间, default: 60
+qiniu: # 七牛OSS
+  bucket: eiblog
+  domain: st.deepzz.cn
+  accesskey: MB6AXl_Sj_mmFsL-Lt59Dml2Vmy2o8XMmiCbbSeC
+  secretkey: BIrMy0fsZ0_SHNceNXk3eDuo7WmVYzj2-zrmd5Tf
 ```
 
 
@@ -36,7 +37,7 @@ $ docker pull deepzz0/backup
 
 ```
 $ docker run --name backup \
-    -v ${PWD}/conf:/app/conf
+    -v ${PWD}/etc/app.yml:/app/etc/app.yml
 ```
 
 Docker-compose 请参考项目根目录下的 `docker-compose.yml` 文件。
