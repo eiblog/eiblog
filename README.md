@@ -1,6 +1,6 @@
 # EiBlog [![License](https://img.shields.io/badge/license-MIT-brightgreen.svg)](LICENSE.md) [![Versuib](https://img.shields.io/github/tag/eiblog/eiblog.svg)](https://github.com/eiblog/eiblog/releases) 
 
-用过其它博客系统，不喜欢，不够轻，不够快！这是我开发的第二款博客系统，也实在不想再在这件事情上过多纠结了。`EiBlog` 是一个比较稳定的博客系统，现已迭代至 `2.0` 版本，稳定性和维护你是不用担心的。前往 [V3 版本](/v3) 体验最新功能。
+用过其它博客系统，不喜欢，不够轻，不够快！这是我开发的第二款博客系统，也实在不想再在这件事情上过多纠结了。`EiBlog` 是一个比较稳定的博客系统，现已迭代至 `2.0` 版本，稳定性和维护你是不用担心的。[V3 版本](https://github.com/eiblog/eiblog/tree/v3) 正在积极开发中！
 
 但它有着部署简单（上线复杂！）的特点，不推荐没有计算机知识的朋友搭建，欢迎咨询。该博客的个中优点（简洁、轻快，安全），等你体验。
 
