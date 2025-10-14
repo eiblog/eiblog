@@ -42,7 +42,7 @@ type UploadParams struct {
 func (cli *QiniuClient) Upload(params UploadParams) (string, error) {
 	key := params.Name
 	if !params.NoCompletePath {
-		key = filepath.Base(params.Name)
+		key = completeQiniuKey(params.Name)
 	}
 
 	mac := qbox.NewMac(cli.Conf.AccessKey,
