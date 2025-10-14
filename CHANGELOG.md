@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.0.8](https://github.com/eiblog/eiblog/compare/v3.0.7...v3.0.8) (2025-10-14)
+
+
+### Bug Fixes
+
+* upload file path ([523ee64](https://github.com/eiblog/eiblog/commit/523ee64931a0dc1f9f743682fe84b1a1f250686c))
+
 ### [3.0.7](https://github.com/eiblog/eiblog/compare/v3.0.6...v3.0.7) (2025-07-26)
 
 
