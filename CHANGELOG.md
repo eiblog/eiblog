@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.0.10](https://github.com/eiblog/eiblog/compare/v3.0.9...v3.0.10) (2025-11-12)
+
+
+### Bug Fixes
+
+* default RUN_MODE=prod ([5aa8152](https://github.com/eiblog/eiblog/commit/5aa81528027eca648e430503a1f5a04118ca650e))
+
 ### [3.0.9](https://github.com/eiblog/eiblog/compare/v3.0.8...v3.0.9) (2025-11-12)
 
 
