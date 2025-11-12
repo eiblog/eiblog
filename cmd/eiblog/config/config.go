@@ -43,9 +43,12 @@ type Config struct {
 // init 初始化配置
 func init() {
 	// run mode
-	mode := config.RunMode(os.Getenv("RUN_MODE"))
-	if !mode.IsRunMode() {
-		panic("config: unsupported env RUN_MODE: " + mode)
+	mode := config.RunModeProd
+	if rm := os.Getenv("RUN_MODE"); rm != "" {
+		mode = config.RunMode(rm)
+		if !mode.IsRunMode() {
+			panic("config: unsupported env RUN_MODE: " + mode)
+		}
 	}
 	logrus.Infof("Run mode:%s", mode)
 
