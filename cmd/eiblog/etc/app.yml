@@ -40,13 +40,13 @@ google: # 谷歌分析
   adsense: <script async src="https://pagead2.googlesyndication.com/xxx" crossorigin="anonymous"></script>
 qiniu: # 七牛OSS
   bucket: eiblog
-  domain: st.deepzz.com
+  domain: st.deepzz.cn
   accesskey: MB6AXl_Sj_mmFsL-Lt59Dml2Vmy2o8XMmiCbbSeC
   secretkey: BIrMy0fsZ0_SHNceNXk3eDuo7WmVYzj2-zrmd5Tf
 twitter: # twitter card
   card: summary
   site: deepzz02
-  image: st.deepzz.com/static/img/avatar.jpg
+  image: st.deepzz.cn/static/img/avatar.jpg
   address: twitter.com/deepzz02
 feedrpc: # rss ping
   feedrurl: https://deepzz.superfeedr.com/
