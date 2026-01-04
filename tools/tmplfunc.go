@@ -3,6 +3,7 @@ package tools
 
 import (
 	"encoding/base64"
+	"html"
 	htmpl "html/template"
 	"io"
 	"log"
@@ -26,6 +27,7 @@ func init() {
 	TplFuncMap["isnotzero"] = IsNotZero
 	TplFuncMap["getavatar"] = GetAvatar
 	TplFuncMap["imgtonormal"] = ImgToNormal
+	TplFuncMap["xmlescape"] = html.EscapeString
 }
 
 // Str2html string to html

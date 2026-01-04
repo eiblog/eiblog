@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
-        <title>{{.Title}}</title>
+        <title>{{xmlescape .Title}}</title>
         <link>https://{{.Host}}</link>
-        <description>{{.SubTitle}}</description>
+        <description>{{xmlescape .SubTitle}}</description>
         <atom:link href="https://{{.Host}}/rss.html" rel="self" />
         <atom:link href="{{.FeedrURL}}" rel="hub" />
         <language>zh-CN</language>
         <lastBuildDate>{{.BuildDate}}</lastBuildDate>
         {{range .Articles}}
         <item>
-            <title>{{.Title}}</title>
+            <title>{{xmlescape .Title}}</title>
             <link>https://{{$.Host}}/post/{{.Slug}}.html</link>
             <comments>https://{{$.Host}}/post/{{.Slug}}.html#comments</comments>
             <guid>https://{{$.Host}}/post/{{.Slug}}.html</guid>
