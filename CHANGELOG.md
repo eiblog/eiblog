@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.0.11](https://github.com/eiblog/eiblog/compare/v3.0.10...v3.0.11) (2026-01-04)
+
+
+### Bug Fixes
+
+* title in xml not escape ([14b4534](https://github.com/eiblog/eiblog/commit/14b4534c1e034684b19808168ad0fbf5464e18ef))
+
 ### [3.0.10](https://github.com/eiblog/eiblog/compare/v3.0.9...v3.0.10) (2025-11-12)
 
 
