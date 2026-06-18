@@ -1,6 +1,13 @@
 # Changelog
 
-All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
+All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
+
+## [3.1.0](https://github.com/eiblog/eiblog/compare/v3.0.11...v3.1.0) (2026-06-18)
+
+
+### Features
+
+* 支持文章中 mermaid 图表渲染 ([13ecb47](https://github.com/eiblog/eiblog/commit/13ecb478eb5daf84de38fbb3d60d58580cac654a))
 
 ### [3.0.11](https://github.com/eiblog/eiblog/compare/v3.0.10...v3.0.11) (2026-01-04)
 
