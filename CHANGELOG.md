@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## [3.1.1](https://github.com/eiblog/eiblog/compare/v3.1.0...v3.1.1) (2026-06-18)
+
+
+### Bug Fixes
+
+* 升级 Docker builder 镜像到 golang:1.24 ([4123ee1](https://github.com/eiblog/eiblog/commit/4123ee1e7a36d99a1ef4be4f159e26459a589696))
+
 ## [3.1.0](https://github.com/eiblog/eiblog/compare/v3.0.11...v3.1.0) (2026-06-18)
 
 
